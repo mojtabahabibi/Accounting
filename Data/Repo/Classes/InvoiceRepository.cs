@@ -27,9 +27,9 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         InvoiceId = i.Id,
                         Title = i.Title,
                         SerialNumber = i.SerialNumber,
-                        Price = i.InvoiceItems.Sum(i => i.Price * i.Count),
-                        Off = i.InvoiceItems.Sum(i => i.Off),
-                        TotalPrice = i.InvoiceItems.Sum(i => i.Price * i.Count - i.Off),
+                        Price = i.Price,
+                        Off = i.Off,
+                        TotalPrice = i.TotalPrice,
                         Date = i.Date,
                         InvoiceItems = i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
                         {
@@ -63,9 +63,9 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         InvoiceId = i.Id,
                         Title = i.Title,
                         SerialNumber = i.SerialNumber,
-                        Price = i.InvoiceItems.Sum(i => i.Price * i.Count),
-                        Off = i.InvoiceItems.Sum(i => i.Off),
-                        TotalPrice = i.InvoiceItems.Sum(i => i.Price * i.Count - i.Off),
+                        Price = i.Price,
+                        Off = i.Off,
+                        TotalPrice = i.TotalPrice,
                         Date = i.Date,
                         InvoiceItems = i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
                         {

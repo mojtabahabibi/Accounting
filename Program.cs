@@ -31,6 +31,7 @@ builder.Services.AddDbContext<AccountingDbContext>(options =>
 builder.Services.AddTransient<IAccountingFinancialYearRepo, AccountingFinancialYearRepo>();
 builder.Services.AddTransient<IAccountRepo, AccountRepo>();
 builder.Services.AddTransient<IAccountUserRepository, AccountUserRepository>();
+builder.Services.AddTransient<IAccountTransactionRepository, AccountTransactionRepository>();
 builder.Services.AddTransient<ICompanyRepository, CompanyRepository>();
 builder.Services.AddTransient<IItemRepository, ItemRepository>();
 builder.Services.AddTransient<IInvoiceItemRepository, InvoiceItemRepository>();
@@ -43,6 +44,7 @@ builder.Services.AddTransient<IPaymentRepository, PaymentRepository>();
 builder.Services.AddTransient<IAccountantService, AccountantService>();
 builder.Services.AddTransient<IFinancialYearService, FinancialYearService>();
 builder.Services.AddTransient<IAccountUserService, AccountUserService>();
+builder.Services.AddTransient<IAccountTransactionService, AccountTransactionService>();
 builder.Services.AddTransient<ICompanyService, CompanyService>();
 builder.Services.AddTransient<IItemService, ItemService>();
 builder.Services.AddTransient<IInvoiceItemService, InvoiceItemService>();

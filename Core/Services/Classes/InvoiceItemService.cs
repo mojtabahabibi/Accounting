@@ -87,22 +87,11 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await invoiceItemRepository.AddAsync(mapper.Map<InvoiceItem>(dto));
+                    var result = await invoiceItemRepository.CreateInvoiceItemAsync(mapper.Map<InvoiceItem>(dto));
                     logger.LogInformation("InvoiceItemService CreateInvoiceItem Done");
-                    if (result.Id != 0)
-                    {
-                        response.ErrorCode = Data.Enums.ErrorCodes.OK;
-                        response.Status = true;
-                        response.Message = "ایجاد شد";
-                    }
-                    else
-                    {
-                        response.ErrorCode = Data.Enums.ErrorCodes.NoContent;
-                        response.Status = false;
-                        response.Message = "نوع خرید باید از یک نوع باشد";
-
-                    }
-
+                    response.ErrorCode = Data.Enums.ErrorCodes.OK;
+                    response.Status = true;
+                    response.Message = "ایجاد شد";
                 }
                 return response;
             }

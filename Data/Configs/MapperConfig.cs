@@ -49,6 +49,10 @@ namespace EcoBar.Accounting.Data.Configs
             #region Payment
             CreateMap<Payment,CreatePaymentDto>().ReverseMap();
             #endregion
+
+            #region AccountTransactio
+            CreateMap<AccountTransaction ,AccountTransactionListDto>().ReverseMap();
+            #endregion
         }
 
     }
