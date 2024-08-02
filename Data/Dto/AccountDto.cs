@@ -2,7 +2,7 @@ namespace EcoBar.Accounting.Data.Dto
 {
     public class BaseAccountDto
     {
-        public long BaseUserId { get; set; }
+        public long AccountUserId { get; set; }
         public string Title { get; set; }
         public string AccountNumber { get; set; }
     }

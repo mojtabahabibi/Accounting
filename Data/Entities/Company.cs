@@ -1,7 +1,11 @@
-namespace EcoBar.Accounting.Data.Entities
+﻿namespace EcoBar.Accounting.Data.Entities
 {
     public class Company : BaseEntity
     {
-        public string Title { get; set; }
+        public long AccountUserId { get; set; }
+        public AccountUser? AccountUser { get; set; }
+
+        public string Name { get; set; }
+        public string Economicalnumber { get; set; }
     }
 }

@@ -14,12 +14,41 @@ namespace EcoBar.Accounting.Data.Configs
             CreateMap<Account, BaseAccountIdDto>().ReverseMap();
             #endregion Account
 
+            #region AccountUser
+            CreateMap<AccountUser, CreateAccountUserDto>().ReverseMap();
+            #endregion AccountUser
+
+            #region Comapny
+            CreateMap<Company, CreateCompanyDto>().ReverseMap();
+            #endregion
+
             #region FinancialYear
             CreateMap<AccountingFinancialYear, GetAllFinancialYearDto>().ReverseMap();
             CreateMap<AccountingFinancialYear, GetByIdFinancialYearDto>().ReverseMap();
             CreateMap<AccountingFinancialYear, CreateFinancialYearDto>().ReverseMap();
             CreateMap<AccountingFinancialYear, UpdateFinancialYearDto>().ReverseMap();
             #endregion FinancialYear
+
+            #region Item
+            CreateMap<Item, BaseItemDto>().ReverseMap();
+            CreateMap<Item, ItemListDto>().ReverseMap();
+            #endregion
+
+            #region InvoiceItem
+            CreateMap<InvoiceItem, BaseInvoiceItemDto>().ReverseMap();
+            CreateMap<InvoiceItem, UpdateInvoiceItemDto>().ReverseMap();
+            #endregion
+
+            #region Invoice
+            CreateMap<Invoice, CreateInvoiceDto>().ReverseMap();
+            CreateMap<Invoice, UpdateInvoiceDto>().ReverseMap();
+            CreateMap<Invoice, DeleteInvoiceDto>().ReverseMap();
+            CreateMap<Invoice, InvoiceListDto>().ReverseMap();
+            #endregion
+
+            #region Payment
+            CreateMap<Payment,CreatePaymentDto>().ReverseMap();
+            #endregion
         }
 
     }

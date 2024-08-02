@@ -2,6 +2,11 @@ using EcoBar.Accounting.Core.Services.Classes;
 using EcoBar.Accounting.Core.Services.Interfaces;
 using EcoBar.Accounting.Core.Validation.Account;
 using EcoBar.Accounting.Core.Validation.AccountingFinancialYear;
+using EcoBar.Accounting.Core.Validation.Company;
+using EcoBar.Accounting.Core.Validation.Invoice;
+using EcoBar.Accounting.Core.Validation.InvoiceItem;
+using EcoBar.Accounting.Core.Validation.Item;
+using EcoBar.Accounting.Core.Validation.Payment;
 using EcoBar.Accounting.Data.Configs;
 using EcoBar.Accounting.Data.Dto;
 using EcoBar.Accounting.Data.Repo.Classes;
@@ -23,31 +28,69 @@ builder.Services.AddDbContext<AccountingDbContext>(options =>
 
 
 #region Repository
-builder.Services.AddTransient<IAccountingDocumentRepo, AccountingDocumentRepo>();
-builder.Services.AddTransient<IAccountingFactorDetailRepo, AccountingFactorDetailRepo>();
-builder.Services.AddTransient<IAccountingFactorSequenceCnfgRepo, AccountingFactorSequenceCnfgRepo>();
 builder.Services.AddTransient<IAccountingFinancialYearRepo, AccountingFinancialYearRepo>();
-builder.Services.AddTransient<IAccountingTransactionRepo, AccountingTransactionRepo>();
 builder.Services.AddTransient<IAccountRepo, AccountRepo>();
-builder.Services.AddTransient<ICompanyRepo, CompanyRepo>();
+builder.Services.AddTransient<IAccountUserRepository, AccountUserRepository>();
+builder.Services.AddTransient<ICompanyRepository, CompanyRepository>();
+builder.Services.AddTransient<IItemRepository, ItemRepository>();
+builder.Services.AddTransient<IInvoiceItemRepository, InvoiceItemRepository>();
+builder.Services.AddTransient<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddTransient<IPaymentRepository, PaymentRepository>();
+
 #endregion Repository
 
 #region Services
 builder.Services.AddTransient<IAccountantService, AccountantService>();
 builder.Services.AddTransient<IFinancialYearService, FinancialYearService>();
+builder.Services.AddTransient<IAccountUserService, AccountUserService>();
+builder.Services.AddTransient<ICompanyService, CompanyService>();
+builder.Services.AddTransient<IItemService, ItemService>();
+builder.Services.AddTransient<IInvoiceItemService, InvoiceItemService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 #endregion
 
 #region Validation
+
+#region Account
 builder.Services.AddScoped<IValidator<BaseAccountDto>, AccountCreateValidation>();
 builder.Services.AddScoped<IValidator<UpdateAccountDto>, AccountUpdateValidation>();
 builder.Services.AddScoped<IValidator<BaseAccountIdDto>, AccountDeleteValidation>();
 builder.Services.AddScoped<IValidator<BaseAccountIdDto>, AccountGetByIdValidation>();
+#endregion 
 
-
+#region FinancialYearId
 builder.Services.AddScoped<IValidator<BaseFinancialYearIdDto>, FinancialYearGetByIdValidation>();
 builder.Services.AddScoped<IValidator<CreateFinancialYearDto>, FinancialYearCreateValidation>();
 builder.Services.AddScoped<IValidator<UpdateFinancialYearDto>, FinancialYearUpdateValidation>();
 #endregion
+
+#region Company
+builder.Services.AddScoped<IValidator<CreateCompanyDto>, CreateCompanyValidation>();
+#endregion
+
+#region Item
+builder.Services.AddScoped<IValidator<BaseItemDto>, CreateItemValidation>();
+#endregion
+
+#region InvoiceItem
+builder.Services.AddScoped<IValidator<BaseInvoiceItemDto>, CreateInvoiceItemValidation>();
+builder.Services.AddScoped<IValidator<UpdateInvoiceItemDto>, UpdateInvoiceItemValidation>();
+builder.Services.AddScoped<IValidator<DeleteInvoiceItemDto>, DeleteInvoiceItemValidation>();
+#endregion
+
+#region Invoice
+builder.Services.AddScoped<IValidator<CreateInvoiceDto>, CreateInvoiceValidation>();
+builder.Services.AddScoped<IValidator<UpdateInvoiceDto>, UpdateInvoiceValidation>();
+builder.Services.AddScoped<IValidator<DeleteInvoiceDto>, DeleteInvoiceValidation>();
+#endregion
+
+#region Payment
+builder.Services.AddScoped<IValidator<CreatePaymentDto>, CreatePaymentValidation>();
+#endregion
+
+#endregion
+
 builder.Services.AddAuthorization();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();

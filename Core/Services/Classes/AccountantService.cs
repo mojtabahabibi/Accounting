@@ -83,7 +83,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 {
                     response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
                     response.Status = false;
-                    response.Message = "اعتبارسنجی معتبر نمی باشد";
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {
@@ -113,7 +113,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 {
                     response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
                     response.Status = false;
-                    response.Message = "اعتبارسنجی معتبر نمی باشد";
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {
@@ -143,7 +143,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 {
                     response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
                     response.Status = false;
-                    response.Message = "اعتبارسنجی معتبر نمی باشد";
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {

@@ -81,16 +81,16 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 var response = new BaseResponseDto<bool?>();
                 if (!validation.IsValid)
                 {
-                    response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
+                    response.ErrorCode = ErrorCodes.BadRequest;
                     response.Status = false;
-                    response.Message = "اعتبارسنجی معتبر نمی باشد";
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {
                     var acc = await accountingFinancialYearRepo.AddAsync(mapper.Map<AccountingFinancialYear>(dto));
                     logger.LogInformation("FinancialYearService CreateFinancialYear Done");
 
-                    response.ErrorCode = Data.Enums.ErrorCodes.OK;
+                    response.ErrorCode =ErrorCodes.OK;
                     response.Status = true;
                     response.Message = "ایجاد شد";
                 }
@@ -111,16 +111,16 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 var response = new BaseResponseDto<bool?>();
                 if (!validation.IsValid)
                 {
-                    response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
+                    response.ErrorCode = ErrorCodes.BadRequest;
                     response.Status = false;
-                    response.Message = "اعتبارسنجی معتبر نمی باشد";
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {
                     var result = await accountingFinancialYearRepo.UpdateAsync(mapper.Map<AccountingFinancialYear>(dto));
                     logger.LogInformation("FinancialYearService UpdateFinancialYear Done");
 
-                    response.ErrorCode = Data.Enums.ErrorCodes.OK;
+                    response.ErrorCode = ErrorCodes.OK;
                     response.DataCount = 1;
                     response.Status = true;
                     response.Message = "ویرایش شد";
@@ -142,9 +142,9 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 var response = new BaseResponseDto<bool?>();
                 if (!validation.IsValid)
                 {
-                    response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
+                    response.ErrorCode =ErrorCodes.BadRequest;
                     response.Status = false;
-                    response.Message = "اعتبارسنجی معتبر نمی باشد";
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {
@@ -153,7 +153,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                     {
                         logger.LogInformation("FinancialYearService SetActiveFinancialYear Done");
 
-                        response.ErrorCode = Data.Enums.ErrorCodes.OK;
+                        response.ErrorCode = ErrorCodes.OK;
                         response.Status = true;
                         response.Message = "سال مالی جاری بسته شد";
                     }
@@ -199,9 +199,9 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 var response = new BaseResponseDto<bool?>();
                 if (!validation.IsValid)
                 {
-                    response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
+                    response.ErrorCode = ErrorCodes.BadRequest;
                     response.Status = false;
-                    response.Message = "اعتبارسنجی معتبر نمی باشد";
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {
@@ -210,7 +210,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                     {
                         logger.LogInformation("FinancialYearService SetCloseFinancialYear Done");
 
-                        response.ErrorCode = Data.Enums.ErrorCodes.OK;
+                        response.ErrorCode = ErrorCodes.OK;
                         response.Status = true;
                         response.Message = "سال مالی جاری فعال شد";
                     }
@@ -240,16 +240,16 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 var response = new BaseResponseDto<bool?>();
                 if (!validation.IsValid)
                 {
-                    response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
+                    response.ErrorCode = ErrorCodes.BadRequest;
                     response.Status = false;
-                    response.Message = "اعتبارسنجی معتبر نمی باشد";
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {
                     var result = await accountingFinancialYearRepo.DeleteAsync(dto.Id);
                     logger.LogInformation("FinancialYearService UpdateFinancialYear Done");
 
-                    response.ErrorCode = Data.Enums.ErrorCodes.OK;
+                    response.ErrorCode = ErrorCodes.OK;
                     response.Status = true;
                     response.Message = "حذف شد";
                 }

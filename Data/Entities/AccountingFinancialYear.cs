@@ -7,6 +7,5 @@ namespace EcoBar.Accounting.Data.Entities
         public string  Title { get; set; }
         public bool IsActive { get; set; }
         public bool IsClose { get; set; }
-        public virtual  ICollection<AccountingDocument> Documents { get; set; }        
     }
 }
