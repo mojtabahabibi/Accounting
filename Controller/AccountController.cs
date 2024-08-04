@@ -10,8 +10,8 @@ namespace EcoBar.Accounting.Controller
     public class AccountController : ControllerBase
     {
         private readonly ILogger<AccountController> logger;
-        private readonly IAccountantService accountantService;
-        public AccountController(ILogger<AccountController> logger, IAccountantService accountantService)
+        private readonly IAccountService accountantService;
+        public AccountController(ILogger<AccountController> logger, IAccountService accountantService)
         {
             this.logger = logger;
             this.accountantService = accountantService;

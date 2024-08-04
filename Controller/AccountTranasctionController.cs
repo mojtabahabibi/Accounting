@@ -41,5 +41,55 @@ namespace EcoBar.Accounting.Controller
                 );
             }
         }
+        [HttpGet("GetByUsername")]
+        public async Task<ActionResult<AccountTranasctionGetAllResponseDto>> GetByUsername([FromQuery]AccountTransactionUserNameDto dto)
+        {
+            logger.LogInformation("AccountTranasctionController GetByUsername Began");
+            try
+            {
+                var result = await accountTransactionService.GetByUsernameAsync(dto.AccountUserName);
+                logger.LogInformation("AccountTranasctionController GetByUsername Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "AccountTranasctionController GetByUsername Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
+        [HttpGet("GetByTransactionNumber")]
+        public async Task<ActionResult<AccountTranasctionGetByUsernameResponseDto>> GetByTransactionNumber([FromQuery]AccountTransactionNumberDto dto)
+        {
+            logger.LogInformation("AccountTranasctionController GetByTransactionNumber Began");
+            try
+            {
+                var result = await accountTransactionService.GetByTransactionNumberAsync(dto.TransactionNumber);
+                logger.LogInformation("AccountTranasctionController GetByTransactionNumber Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "AccountTranasctionController GetByTransactionNumber Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
     }
 }

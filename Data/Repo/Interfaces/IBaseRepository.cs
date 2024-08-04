@@ -2,7 +2,7 @@ using EcoBar.Accounting.Data.Entities;
 
 namespace EcoBar.Accounting.Data.Repo.Interfaces
 {
-    public interface IBaseRepo<T> where T : BaseEntity
+    public interface IBaseRepository<T> where T : BaseEntity
     {
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(long id);

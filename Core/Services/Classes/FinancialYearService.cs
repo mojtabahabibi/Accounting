@@ -16,9 +16,9 @@ namespace EcoBar.Accounting.Core.Services.Classes
         private readonly IValidator<UpdateFinancialYearDto> updateValidator;
         private readonly IValidator<BaseFinancialYearIdDto> validator;
         private readonly IMapper mapper;
-        private readonly IAccountingFinancialYearRepo accountingFinancialYearRepo;
+        private readonly IAccountingFinancialYearRepository accountingFinancialYearRepo;
         public FinancialYearService(ILogger<FinancialYearService> logger, IValidator<CreateFinancialYearDto> createValidator, IValidator<UpdateFinancialYearDto> updateValidator,
-            IValidator<BaseFinancialYearIdDto> validator, IMapper mapper, IAccountingFinancialYearRepo accountingFinancialYearRepo)
+            IValidator<BaseFinancialYearIdDto> validator, IMapper mapper, IAccountingFinancialYearRepository accountingFinancialYearRepo)
         {
             this.logger = logger;
             this.createValidator = createValidator;

@@ -8,8 +8,7 @@ namespace EcoBar.Accounting.Core.Validation.Invoice
     {
         public DeleteInvoiceValidation(AccountingDbContext context)
         {
-            RuleFor(i => i.Id).Must(id=>context.Invoices.Any(i=>i.Id.Equals(id)))
-                .WithMessage("آی دی فاکتور اشتباه است");
+            RuleFor(i => i.Id).Must(id=>context.Invoices.Any(i=>i.Id.Equals(id))) .WithMessage("آی دی فاکتور اشتباه است");
         }
     }
 }

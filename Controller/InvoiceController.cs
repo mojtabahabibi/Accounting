@@ -17,7 +17,7 @@ namespace EcoBar.Accounting.Controller
             this.invoiceService = invoiceService;
         }
         [HttpGet("GetAll")]
-        public  async Task<ActionResult<GetAllInvoiceResponseDto>> GetAll()
+        public async Task<ActionResult<GetAllInvoiceResponseDto>> GetAll()
         {
             logger.LogInformation("InvoiceController GetAllInvoice Began");
             try
@@ -42,7 +42,7 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpGet("GetById")]
-        public async Task<ActionResult<GetByIdInvoiceResponseDto>> GetById([FromQuery]DeleteInvoiceDto dto)
+        public async Task<ActionResult<GetByIdInvoiceResponseDto>> GetById([FromQuery] DeleteInvoiceDto dto)
         {
             logger.LogInformation("InvoiceController GetByIdInvoice Began");
             try
@@ -141,19 +141,69 @@ namespace EcoBar.Accounting.Controller
                 );
             }
         }
-        [HttpPost("Payment")]
-        public async Task<ActionResult<BaseResponseDto<bool?>>> Payment(long invoiceId)
+        [HttpPost("CloseInvoice")]
+        public async Task<ActionResult<BaseResponseDto<bool?>>> CloseInvoice([FromQuery] CloseInvoiceDto model)
         {
-            logger.LogInformation("InvoiceController DeleteInvoice Began");
+            logger.LogInformation("InvoiceController CloseInvoice Began");
             try
             {
-                var result = await invoiceService.PaymentAsync(invoiceId);
-                logger.LogInformation("InvoiceController DeleteInvoice Done");
+                var result = await invoiceService.CloseInvoiceAsync(model);
+                logger.LogInformation("InvoiceController CloseInvoice Done");
                 return result;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "InvoiceController DeleteInvoice Began");
+                logger.LogError(ex, "InvoiceController CloseInvoice Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
+        [HttpPost("Payment")]
+        public async Task<ActionResult<BaseResponseDto<bool?>>> Payment([FromQuery] PaymentInvoiceDto model)
+        {
+            logger.LogInformation("InvoiceController PaymentInvoice Began");
+            try
+            {
+                var result = await invoiceService.PaymentAsync(model);
+                logger.LogInformation("InvoiceController PaymentInvoice Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceController PaymentInvoice Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
+        [HttpPost("Deposit")]
+        public async Task<ActionResult<BaseResponseDto<bool?>>> Deposit(CreatePaymentDto model)
+        {
+            logger.LogInformation("InvoiceController PaymentInvoice Began");
+            try
+            {
+                var result = await invoiceService.DepositAsync(model);
+                logger.LogInformation("InvoiceController PaymentInvoice Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceController PaymentInvoice Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()

@@ -6,15 +6,15 @@ using EcoBar.Accounting.Data.Repo.Interfaces;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class InvoiceItemRepository : BaseRepo<InvoiceItem>, IInvoiceItemRepository
+    public class InvoiceItemRepository : BaseRepository<InvoiceItem>, IInvoiceItemRepository
     {
-        public InvoiceItemRepository(AccountingDbContext dbContext, ILogger<BaseRepo<InvoiceItem>> logger) : base(dbContext, logger)
+        public InvoiceItemRepository(AccountingDbContext dbContext, ILogger<BaseRepository<InvoiceItem>> logger) : base(dbContext, logger)
         {
 
         }
         public async Task<InvoiceItem> CreateInvoiceItemAsync(InvoiceItem entity)
         {
-            logger.LogInformation("BaseRepo AddAsync was called for ");
+            logger.LogInformation("InvoiceItemRepository CreateInvoiceItemAsync was called for ");
             try
             {
                 await dbContext.InvoiceItems.AddAsync(entity);
@@ -27,12 +27,12 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     invoice.TotalPrice = invoice.Price - invoice.Off;
                 }
                 await dbContext.SaveChangesAsync();
-                logger.LogInformation("BaseRepo AddAsync was Done for ");
+                logger.LogInformation("InvoiceItemRepository CreateInvoiceItemAsync was Done for ");
                 return entity;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "BaseRepo AddAsync was Failed for ");
+                logger.LogError(ex, "InvoiceItemRepository CreateInvoiceItemAsync was Failed for ");
                 throw;
             }
         }
@@ -54,6 +54,24 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             catch (AccountingException ex)
             {
                 throw new AccountingException(ex.Message.ToString(), false, ErrorCodes.NotFound);
+            }
+        }
+        public async Task<bool> InvoiceStatus(long invoiceId)
+        {
+            logger.LogInformation("InvoiceItemRepository InvoiceStatus was called for ");
+            try
+            {
+                var result = await dbContext.Invoices.FindAsync(invoiceId);
+                logger.LogInformation("InvoiceItemRepository InvoiceStatus was Done for ");
+                if (result != null)
+                    return result.Status;
+                else
+                    return false;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceItemRepository InvoiceStatus was Failed for ");
+                throw;
             }
         }
     }

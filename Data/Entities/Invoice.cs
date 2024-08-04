@@ -4,8 +4,6 @@
     {
         public long AccountUserId { get; set; }
         public AccountUser? AccountUser { get; set; }
-        public long ComapnyId { get; set; }
-        public Company? Company { get; set; }
 
         public string Title { get; set; }
         public string SerialNumber { get; set; }

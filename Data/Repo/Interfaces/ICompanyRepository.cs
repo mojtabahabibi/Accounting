@@ -2,7 +2,7 @@
 
 namespace EcoBar.Accounting.Data.Repo.Interfaces
 {
-    public interface ICompanyRepository : IBaseRepo<Company>
+    public interface ICompanyRepository : IBaseRepository<Company>
     {
         Task<Company> AddComapnyAsync(Company entity);
     }

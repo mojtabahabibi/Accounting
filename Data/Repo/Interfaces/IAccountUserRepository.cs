@@ -2,7 +2,7 @@
 
 namespace EcoBar.Accounting.Data.Repo.Interfaces
 {
-    public interface IAccountUserRepository : IBaseRepo<AccountUser>
+    public interface IAccountUserRepository : IBaseRepository<AccountUser>
     {
 
     }

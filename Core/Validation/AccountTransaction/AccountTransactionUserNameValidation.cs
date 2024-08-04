@@ -8,7 +8,7 @@ namespace EcoBar.Accounting.Core.Validation.AccountTransaction
     {
         public AccountTransactionUserNameValidation(AccountingDbContext context)
         {
-            RuleFor(i=>i.AccountUserName).Must(username=>context.AccountUsers.Any(i=>i.UserName.Equals(username)))
+            RuleFor(i=>i.AccountUserName).Must(username=>context.AccountUsers.Any(i=>i.UserName==username))
                 .WithMessage("شماره کاربری مورد نظر هیچگونه تراکنشی ندارد");
         }
     }

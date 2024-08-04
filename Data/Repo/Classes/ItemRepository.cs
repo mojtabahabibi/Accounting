@@ -4,9 +4,9 @@ using EcoBar.Accounting.Data.Repo.Interfaces;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class ItemRepository : BaseRepo<Item>, IItemRepository
+    public class ItemRepository : BaseRepository<Item>, IItemRepository
     {
-        public ItemRepository(AccountingDbContext dbContext, ILogger<BaseRepo<Item>> logger) : base(dbContext, logger)
+        public ItemRepository(AccountingDbContext dbContext, ILogger<BaseRepository<Item>> logger) : base(dbContext, logger)
         {
         }
     }

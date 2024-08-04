@@ -8,16 +8,16 @@ using FluentValidation;
 
 namespace EcoBar.Accounting.Core.Services.Classes
 {
-    public class AccountantService : IAccountantService
+    public class AccountService : IAccountService
     {
-        private readonly ILogger<AccountantService> logger;
+        private readonly ILogger<AccountService> logger;
         private readonly IValidator<BaseAccountDto> validator;
         private readonly IValidator<UpdateAccountDto> updateValidator;
         private readonly IValidator<BaseAccountIdDto> deleteValidator;
         private readonly IMapper mapper;
-        private readonly IAccountRepo accountRepo;
-        public AccountantService(ILogger<AccountantService> logger, IValidator<BaseAccountDto> validator, IValidator<UpdateAccountDto> updateValidator,
-            IValidator<BaseAccountIdDto> deleteValidator, IMapper mapper, IAccountRepo accountRepo)
+        private readonly IAccountRepository accountRepo;
+        public AccountService(ILogger<AccountService> logger, IValidator<BaseAccountDto> validator, IValidator<UpdateAccountDto> updateValidator,
+            IValidator<BaseAccountIdDto> deleteValidator, IMapper mapper, IAccountRepository accountRepo)
         {
             this.logger = logger;
             this.validator = validator;
@@ -87,7 +87,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await accountRepo.AddAsync(mapper.Map<Account>(dto));
+                    var result = await accountRepo.CreateAsync(mapper.Map<Account>(dto));
                     logger.LogInformation("AccountantService GetAllAccounts Done");
 
                     response.ErrorCode = Data.Enums.ErrorCodes.OK;

@@ -2,11 +2,13 @@ using EcoBar.Accounting.Core.Services.Classes;
 using EcoBar.Accounting.Core.Services.Interfaces;
 using EcoBar.Accounting.Core.Validation.Account;
 using EcoBar.Accounting.Core.Validation.AccountingFinancialYear;
+using EcoBar.Accounting.Core.Validation.AccountTransaction;
 using EcoBar.Accounting.Core.Validation.Company;
 using EcoBar.Accounting.Core.Validation.Invoice;
 using EcoBar.Accounting.Core.Validation.InvoiceItem;
 using EcoBar.Accounting.Core.Validation.Item;
 using EcoBar.Accounting.Core.Validation.Payment;
+using EcoBar.Accounting.Core.Validation.Wallet;
 using EcoBar.Accounting.Data.Configs;
 using EcoBar.Accounting.Data.Dto;
 using EcoBar.Accounting.Data.Repo.Classes;
@@ -28,8 +30,8 @@ builder.Services.AddDbContext<AccountingDbContext>(options =>
 
 
 #region Repository
-builder.Services.AddTransient<IAccountingFinancialYearRepo, AccountingFinancialYearRepo>();
-builder.Services.AddTransient<IAccountRepo, AccountRepo>();
+builder.Services.AddTransient<IAccountingFinancialYearRepository, AccountingFinancialYearRepository>();
+builder.Services.AddTransient<IAccountRepository, AccountRepository>();
 builder.Services.AddTransient<IAccountUserRepository, AccountUserRepository>();
 builder.Services.AddTransient<IAccountTransactionRepository, AccountTransactionRepository>();
 builder.Services.AddTransient<ICompanyRepository, CompanyRepository>();
@@ -37,11 +39,12 @@ builder.Services.AddTransient<IItemRepository, ItemRepository>();
 builder.Services.AddTransient<IInvoiceItemRepository, InvoiceItemRepository>();
 builder.Services.AddTransient<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddTransient<IPaymentRepository, PaymentRepository>();
+builder.Services.AddTransient<IWalletRepository, WalletRepository>();
 
 #endregion Repository
 
 #region Services
-builder.Services.AddTransient<IAccountantService, AccountantService>();
+builder.Services.AddTransient<IAccountService, AccountService>();
 builder.Services.AddTransient<IFinancialYearService, FinancialYearService>();
 builder.Services.AddTransient<IAccountUserService, AccountUserService>();
 builder.Services.AddTransient<IAccountTransactionService, AccountTransactionService>();
@@ -50,6 +53,7 @@ builder.Services.AddTransient<IItemService, ItemService>();
 builder.Services.AddTransient<IInvoiceItemService, InvoiceItemService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
 #endregion
 
 #region Validation
@@ -60,6 +64,11 @@ builder.Services.AddScoped<IValidator<UpdateAccountDto>, AccountUpdateValidation
 builder.Services.AddScoped<IValidator<BaseAccountIdDto>, AccountDeleteValidation>();
 builder.Services.AddScoped<IValidator<BaseAccountIdDto>, AccountGetByIdValidation>();
 #endregion 
+
+#region AccountTransaction
+builder.Services.AddScoped<IValidator<AccountTransactionUserNameDto>, AccountTransactionUserNameValidation>();
+builder.Services.AddScoped<IValidator<AccountTransactionNumberDto>, AccountTransactionNumberValidation>();
+#endregion
 
 #region FinancialYearId
 builder.Services.AddScoped<IValidator<BaseFinancialYearIdDto>, FinancialYearGetByIdValidation>();
@@ -85,12 +94,17 @@ builder.Services.AddScoped<IValidator<DeleteInvoiceItemDto>, DeleteInvoiceItemVa
 builder.Services.AddScoped<IValidator<CreateInvoiceDto>, CreateInvoiceValidation>();
 builder.Services.AddScoped<IValidator<UpdateInvoiceDto>, UpdateInvoiceValidation>();
 builder.Services.AddScoped<IValidator<DeleteInvoiceDto>, DeleteInvoiceValidation>();
+builder.Services.AddScoped<IValidator<CloseInvoiceDto>, CloseInvoiceValidation>();
+builder.Services.AddScoped<IValidator<PaymentInvoiceDto>, PaymentInvoiceValidation>();
 #endregion
 
 #region Payment
 builder.Services.AddScoped<IValidator<CreatePaymentDto>, CreatePaymentValidation>();
 #endregion
 
+#region Wallet
+builder.Services.AddScoped<IValidator<WalletGetByusernameDto>, WalletGetByusernameValidation>();
+#endregion
 #endregion
 
 builder.Services.AddAuthorization();

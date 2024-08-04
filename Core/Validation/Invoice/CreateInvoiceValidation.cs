@@ -8,8 +8,7 @@ namespace EcoBar.Accounting.Core.Validation.Invoice
     {
         public CreateInvoiceValidation(AccountingDbContext context)
         {
-            RuleFor(i => i.AccountUserId).Must(id => context.AccountUsers.Any(i => i.Id.Equals(id))).WithMessage("آی دی خریدار اشتباه است");
-            RuleFor(i => i.ComapnyId).Must(id => context.Companies.Any(i => i.Id.Equals(id))).WithMessage("آی دی شرکت اشتباه است");
+            RuleFor(i => i.AccountUserId).Must(id => context.AccountUsers.Any(i => i.Id.Equals(id))).WithMessage("آی دی کاربر در سیستم وجود ندارد ");
         }
     }
 }

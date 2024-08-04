@@ -1,4 +1,5 @@
 ﻿using EcoBar.Accounting.Data.Dto;
+using EcoBar.Accounting.Data.Entities;
 
 namespace EcoBar.Accounting.Core.Services.Interfaces
 {
@@ -9,6 +10,8 @@ namespace EcoBar.Accounting.Core.Services.Interfaces
         Task<BaseResponseDto<bool?>> CreateInvoiceAsync(CreateInvoiceDto dto);
         Task<BaseResponseDto<bool?>> UpdateInvoiceAsync(UpdateInvoiceDto dto);
         Task<BaseResponseDto<bool?>> DeleteAccountAsync(DeleteInvoiceDto dto);
-        Task<BaseResponseDto<bool?>> PaymentAsync(long invoiceId);
+        Task<BaseResponseDto<bool?>> PaymentAsync(PaymentInvoiceDto dto);
+        Task<BaseResponseDto<bool?>> CloseInvoiceAsync(CloseInvoiceDto dto);
+        Task<BaseResponseDto<bool?>> DepositAsync(CreatePaymentDto dto);
     }
 }

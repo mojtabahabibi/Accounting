@@ -2,7 +2,7 @@ using EcoBar.Accounting.Data.Dto;
 
 namespace EcoBar.Accounting.Core.Services.Interfaces
 {
-    public interface IAccountantService
+    public interface IAccountService
     {
         Task<AccountCreateGetResponseDto> GetAllAccounts();
         Task<AccountGetByIdResponseDto> GetByIdAccounts(BaseAccountIdDto dto);

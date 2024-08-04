@@ -2,9 +2,10 @@
 
 namespace EcoBar.Accounting.Data.Repo.Interfaces
 {
-    public interface IInvoiceItemRepository : IBaseRepo<InvoiceItem>
+    public interface IInvoiceItemRepository : IBaseRepository<InvoiceItem>
     {
         Task<InvoiceItem> CreateInvoiceItemAsync(InvoiceItem entity);
         Task<bool> UpdateInvoiceItemAsync(InvoiceItem entity);
+        Task<bool> InvoiceStatus(long invoiceId);
     }
 }

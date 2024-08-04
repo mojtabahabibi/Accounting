@@ -3,7 +3,6 @@
     public class CreateInvoiceDto
     {
         public long AccountUserId { get; set; }
-        public long ComapnyId { get; set; }
         public string Title { get; set; }
         public string SerialNumber { get; set; }
         public DateTime Date { get; set; }
@@ -12,7 +11,6 @@
     {
         public long Id { get; set; }
         public long AccountUserId { get; set; }
-        public long ComapnyId { get; set; }
         public string Title { get; set; }
         public string SerialNumber { get; set; }
         public DateTime Date { get; set; }
@@ -21,11 +19,17 @@
     {
         public long Id { get; set; }
     }
-
+    public class CloseInvoiceDto
+    {
+        public long Id { get; set; }
+    }
+    public class PaymentInvoiceDto
+    {
+        public long Id { get; set; }
+    }
     public class InvoiceListDto
     {
         public long AccountUserId { get; set; }
-        public long ComapnyId { get; set; }
         public long InvoiceId { get; set; }
         public string Title { get; set; }
         public string SerialNumber { get; set; }

@@ -5,9 +5,9 @@ using EcoBar.Accounting.Data.Repo.Interfaces;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class CompanyRepository : BaseRepo<Company>, ICompanyRepository
+    public class CompanyRepository : BaseRepository<Company>, ICompanyRepository
     {
-        public CompanyRepository(AccountingDbContext dbContext, ILogger<BaseRepo<Company>> logger) : base(dbContext, logger)
+        public CompanyRepository(AccountingDbContext dbContext, ILogger<BaseRepository<Company>> logger) : base(dbContext, logger)
         {
 
         }

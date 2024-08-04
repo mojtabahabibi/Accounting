@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class PaymentRepository : BaseRepo<Payment>, IPaymentRepository
+    public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
     {
-        public PaymentRepository(AccountingDbContext dbContext, ILogger<BaseRepo<Payment>> logger) : base(dbContext, logger)
+        public PaymentRepository(AccountingDbContext dbContext, ILogger<BaseRepository<Payment>> logger) : base(dbContext, logger)
         {
 
         }

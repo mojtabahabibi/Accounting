@@ -4,13 +4,14 @@ using EcoBar.Accounting.Data.Dto;
 using EcoBar.Accounting.Data.Entities;
 using EcoBar.Accounting.Data.Enums;
 using EcoBar.Accounting.Data.Repo.Interfaces;
+using EcoBar.Accounting.Data.SeedData;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class InvoiceRepository : BaseRepo<Invoice>, IInvoiceRepository
+    public class InvoiceRepository : BaseRepository<Invoice>, IInvoiceRepository
     {
-        public InvoiceRepository(AccountingDbContext dbContext, ILogger<BaseRepo<Invoice>> logger) : base(dbContext, logger)
+        public InvoiceRepository(AccountingDbContext dbContext, ILogger<BaseRepository<Invoice>> logger) : base(dbContext, logger)
         {
 
         }
@@ -23,7 +24,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     .Select(i => new InvoiceListDto
                     {
                         AccountUserId = i.AccountUserId,
-                        ComapnyId = i.ComapnyId,
                         InvoiceId = i.Id,
                         Title = i.Title,
                         SerialNumber = i.SerialNumber,
@@ -59,7 +59,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     .Select(i => new InvoiceListDto
                     {
                         AccountUserId = i.AccountUserId,
-                        ComapnyId = i.ComapnyId,
                         InvoiceId = i.Id,
                         Title = i.Title,
                         SerialNumber = i.SerialNumber,
@@ -88,51 +87,151 @@ namespace EcoBar.Accounting.Data.Repo.Classes
         }
         public async Task<PaymentResult> PaymentAsync(long invoiceId)
         {
-            var invoice = await dbContext.Invoices.Include(i => i.InvoiceItems).FirstOrDefaultAsync(i => i.Id == invoiceId);
-            if (invoice != null)
+            var invoice = await dbContext.Invoices.Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.Id.Equals(invoiceId));
+            var accountUserId = invoice.AccountUserId;
+            var wallets = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.AccountUserId.Equals(accountUserId));
+            long totallPrice = invoice.TotalPrice;
+            if (totallPrice != 0)
             {
-                var account = await dbContext.Accounts.FirstOrDefaultAsync(i => i.AccountUserId == invoice.AccountUserId);
-                if (account != null)
+                if (wallets.Amount > totallPrice)
                 {
-                    var wallets = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == account.Id);
-                    if (wallets != null)
+                    var type = await dbContext.TransactionTypes.FirstOrDefaultAsync(i => i.Id == 2);
+                    var transaction = new AccountTransaction()
                     {
-                        long totallPrice = invoice.InvoiceItems.Sum(i => i.Price * i.Count - i.Off);
-                        if (totallPrice != 0)
+                        InvoiceId = invoiceId,
+                        Invocie = invoice,
+                        TransactionTypeId = type.Id,
+                        TransactionType = type,
+                        TransactionNumber = Guid.NewGuid(),
+                        Time = DateTime.Now,
+                    };
+                    await dbContext.AccountTransactions.AddAsync(transaction);
+                    await dbContext.SaveChangesAsync();
+
+                    // حساب مشتری 
+                    var accountUser = await dbContext.Accounts.Include(i => i.AccountUser)
+                        .FirstOrDefaultAsync(i => i.AccountUserId == invoice.AccountUserId);
+                    if (accountUser != null)
+                    {
+                        var accountBook = new AccountBook()
                         {
-                            if (wallets.Amount > totallPrice)
-                            {
-                                invoice.Status = true;
-                                var transaction = new AccountTransaction()
-                                {
-                                    InvoiceId = invoiceId,
-                                    Invocie = invoice,
-                                    TransactionNumber = Guid.NewGuid(),
-                                    Time = DateTime.Now,
-                                };
-                                await dbContext.AccountTransactions.AddAsync(transaction);
-                                await dbContext.SaveChangesAsync();
+                            TransactionId = transaction.Id,
+                            AccountTransaction = transaction,
+                            AccountId = accountUser.Id,
+                            Account = accountUser,
+                            Amount = -(invoice.TotalPrice)
+                        };
+                        await dbContext.AccountBooks.AddAsync(accountBook);
 
-                                long amount = wallets.Amount;
-                                wallets.Amount = amount - totallPrice;
-
-                                await dbContext.SaveChangesAsync();
-                                return PaymentResult.Done;
-                            }
-                            else
-                                return PaymentResult.DontMoney;
-                        }
-                        else
-                            return PaymentResult.DontInvoiceItem;
+                        var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == accountUser.Id);
+                        if (wallet != null)
+                            wallet.Amount -= invoice.TotalPrice;
                     }
-                    else
-                        return PaymentResult.DontWallet;
+                    // حساب شرکت
+                    var accountCompany = await dbContext.Accounts.FirstOrDefaultAsync();
+                    if (accountCompany != null)
+                    {
+                        var accountBook = new AccountBook()
+                        {
+                            TransactionId = transaction.Id,
+                            AccountTransaction = transaction,
+                            AccountId = accountCompany.Id,
+                            Account = accountCompany,
+                            Amount = invoice.TotalPrice
+                        };
+                        await dbContext.AccountBooks.AddAsync(accountBook);
+
+                        var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == accountCompany.Id);
+                        if (wallet != null)
+                            wallet.Amount += invoice.TotalPrice;
+                    }
+                    await dbContext.SaveChangesAsync();
+                    return PaymentResult.Done;
                 }
                 else
-                    return PaymentResult.DontAccount;
+                    return PaymentResult.DontMoney;
             }
             else
-                return PaymentResult.DontInvoice;
+                return PaymentResult.DontInvoiceItem;
+        }
+        public async Task<bool> CloseInvoice(long invoiceId)
+        {
+            logger.LogInformation("InvoiceRepository CloseInvoice was called for ");
+            try
+            {
+                var invoice = await dbContext.Invoices.FindAsync(invoiceId);
+                if (invoice != null && invoice.Status == false)
+                {
+                    invoice.Status = true;
+                    await dbContext.SaveChangesAsync();
+                    logger.LogInformation("InvoiceRepository CloseInvoice was Done for ");
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceRepository CloseInvoice was Failed for ");
+                throw;
+            }
+        }
+        public async Task<Payment> DepositAsync(Payment payment)
+        {
+            await dbContext.Payments.AddAsync(payment);
+            await dbContext.SaveChangesAsync();
+
+            var type = await dbContext.TransactionTypes.FirstOrDefaultAsync();
+            var transaction = new AccountTransaction()
+            {
+                PaymentId = payment.Id,
+                Payment = payment,
+                TransactionTypeId = type.Id,
+                TransactionType = type,
+                TransactionNumber = Guid.NewGuid(),
+                Time = DateTime.Now
+            };
+            await dbContext.AccountTransactions.AddAsync(transaction);
+            await dbContext.SaveChangesAsync();
+            // حساب مشتری 
+            var account = await dbContext.Accounts.Include(i => i.AccountUser)
+                .FirstOrDefaultAsync(i => i.AccountUserId == payment.AccountUserId);
+            if (account != null)
+            {
+                var accountBook = new AccountBook()
+                {
+                    TransactionId = transaction.Id,
+                    AccountTransaction = transaction,
+                    AccountId = account.Id,
+                    Account = account,
+                    Amount = payment.Price
+                };
+                await dbContext.AccountBooks.AddAsync(accountBook);
+
+                var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == account.Id);
+                if (wallet != null)
+                    wallet.Amount += payment.Price;
+            }
+            // حساب شرکت
+            var accountCompany = await dbContext.Accounts.FirstOrDefaultAsync();
+            if (accountCompany != null)
+            {
+                var accountBook = new AccountBook()
+                {
+                    TransactionId = transaction.Id,
+                    AccountTransaction = transaction,
+                    AccountId = accountCompany.Id,
+                    Account = accountCompany,
+                    Amount = -(payment.Price)
+                };
+                await dbContext.AccountBooks.AddAsync(accountBook);
+
+                var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == accountCompany.Id);
+                if (wallet != null)
+                    wallet.Amount -= payment.Price;
+            }
+            await dbContext.SaveChangesAsync();
+            return payment;
         }
     }
 }

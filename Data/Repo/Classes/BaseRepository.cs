@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class BaseRepo<T> : IBaseRepo<T> where T : BaseEntity
+    public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         protected readonly AccountingDbContext dbContext;
-        protected readonly ILogger<BaseRepo<T>> logger;
+        protected readonly ILogger<BaseRepository<T>> logger;
 
-        public BaseRepo(AccountingDbContext dbContext, ILogger<BaseRepo<T>> logger)
+        public BaseRepository(AccountingDbContext dbContext, ILogger<BaseRepository<T>> logger)
         {
             this.dbContext = dbContext;
             this.logger = logger;

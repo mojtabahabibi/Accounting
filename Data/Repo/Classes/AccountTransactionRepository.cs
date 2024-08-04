@@ -8,9 +8,9 @@ using static System.TimeZoneInfo;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class AccountTransactionRepository : BaseRepo<AccountTransaction>, IAccountTransactionRepository
+    public class AccountTransactionRepository : BaseRepository<AccountTransaction>, IAccountTransactionRepository
     {
-        public AccountTransactionRepository(AccountingDbContext dbContext, ILogger<BaseRepo<AccountTransaction>> logger) : base(dbContext, logger)
+        public AccountTransactionRepository(AccountingDbContext dbContext, ILogger<BaseRepository<AccountTransaction>> logger) : base(dbContext, logger)
         {
 
         }

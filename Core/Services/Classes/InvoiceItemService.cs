@@ -87,11 +87,21 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await invoiceItemRepository.CreateInvoiceItemAsync(mapper.Map<InvoiceItem>(dto));
-                    logger.LogInformation("InvoiceItemService CreateInvoiceItem Done");
-                    response.ErrorCode = Data.Enums.ErrorCodes.OK;
-                    response.Status = true;
-                    response.Message = "ایجاد شد";
+                    var invoiceStatus = await invoiceItemRepository.InvoiceStatus(dto.InvoiceId);
+                    if (invoiceStatus == false)
+                    {
+                        var result = await invoiceItemRepository.CreateInvoiceItemAsync(mapper.Map<InvoiceItem>(dto));
+                        logger.LogInformation("InvoiceItemService CreateInvoiceItem Done");
+                        response.ErrorCode = Data.Enums.ErrorCodes.OK;
+                        response.Status = true;
+                        response.Message = "ایجاد شد";
+                    }
+                    else
+                    {
+                        response.ErrorCode = Data.Enums.ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "فاکتور مورد نظر بسته شده است";
+                    }
                 }
                 return response;
             }

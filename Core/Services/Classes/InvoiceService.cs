@@ -16,9 +16,13 @@ namespace EcoBar.Accounting.Core.Services.Classes
         private readonly IValidator<CreateInvoiceDto> createValidator;
         private readonly IValidator<UpdateInvoiceDto> updateValidator;
         private readonly IValidator<DeleteInvoiceDto> deleteValidator;
+        private readonly IValidator<CloseInvoiceDto> closeValidator;
+        private readonly IValidator<CreatePaymentDto> createPaymentValidator;
+        private readonly IValidator<PaymentInvoiceDto> paymentValidator;
         private readonly IInvoiceRepository invoiceRepository;
         public InvoiceService(ILogger<InvoiceService> logger, IMapper mapper, IInvoiceRepository invoiceRepository, IValidator<CreateInvoiceDto> createValidator
-            , IValidator<UpdateInvoiceDto> updateValidator, IValidator<DeleteInvoiceDto> deleteValidator)
+            , IValidator<UpdateInvoiceDto> updateValidator, IValidator<CloseInvoiceDto> closeValidator
+            , IValidator<DeleteInvoiceDto> deleteValidator, IValidator<CreatePaymentDto> createPaymentValidator, IValidator<PaymentInvoiceDto> paymentValidator)
         {
             this.logger = logger;
             this.mapper = mapper;
@@ -26,6 +30,9 @@ namespace EcoBar.Accounting.Core.Services.Classes
             this.createValidator = createValidator;
             this.updateValidator = updateValidator;
             this.deleteValidator = deleteValidator;
+            this.closeValidator = closeValidator;
+            this.createPaymentValidator = createPaymentValidator;
+            this.paymentValidator = paymentValidator;
         }
         public async Task<GetAllInvoiceResponseDto> GetAllInvoiceAsync()
         {
@@ -173,55 +180,135 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 throw;
             }
         }
-        public async Task<BaseResponseDto<bool?>> PaymentAsync(long invoiceId)
+        public async Task<BaseResponseDto<bool?>> PaymentAsync(PaymentInvoiceDto dto)
         {
             logger.LogInformation("InvoiceService Payment Began");
             try
             {
+                var validation = await paymentValidator.ValidateAsync(dto);
                 var response = new BaseResponseDto<bool?>();
-                var result = await invoiceRepository.PaymentAsync(invoiceId);
-                logger.LogInformation("InvoiceService Payment Done");
-                if (result==PaymentResult.Done)
+                if (!validation.IsValid)
                 {
-                    response.ErrorCode = ErrorCodes.OK;
-                    response.Status = true;
-                    response.Message = "پرداخت شد";
-                }
-                else if (result == PaymentResult.DontAccount)
-                {
-                    response.ErrorCode = ErrorCodes.NotFound;
+                    response.ErrorCode = ErrorCodes.BadRequest;
                     response.Status = false;
-                    response.Message = "کاربر شماره حساب در سیستم ندارد";
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
-                else if (result == PaymentResult.DontMoney)
+                else
                 {
-                    response.ErrorCode = ErrorCodes.NotFound;
-                    response.Status = false;
-                    response.Message = "کاربر پول کافی برای خرید ندارد";
-                }
-                else if (result == PaymentResult.DontInvoice)
-                {
-                    response.ErrorCode = ErrorCodes.NotFound;
-                    response.Status = false;
-                    response.Message = "شماره فاکتور وجود ندارد";
-                }
-                else if (result == PaymentResult.DontWallet)
-                {
-                    response.ErrorCode = ErrorCodes.NotFound;
-                    response.Status = false;
-                    response.Message = "کاربر کیف پول ندارد";
-                }
-                else if (result == PaymentResult.DontInvoiceItem)
-                {
-                    response.ErrorCode = ErrorCodes.NotFound;
-                    response.Status = false;
-                    response.Message = "فاکتور هیچگونه اقلام فاکتوری ندارد";
+
+                    var result = await invoiceRepository.PaymentAsync(dto.Id);
+                    logger.LogInformation("InvoiceService Payment Done");
+                    if (result == PaymentResult.Done)
+                    {
+                        response.ErrorCode = ErrorCodes.OK;
+                        response.Status = true;
+                        response.Message = "پرداخت شد";
+                    }
+                    else if (result == PaymentResult.DontAccount)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "کاربر شماره حساب در سیستم ندارد";
+                    }
+                    else if (result == PaymentResult.DontMoney)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "کاربر پول کافی برای خرید ندارد";
+                    }
+                    else if (result == PaymentResult.DontInvoice)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "شماره فاکتور وجود ندارد";
+                    }
+                    else if (result == PaymentResult.DontWallet)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "کاربر کیف پول ندارد";
+                    }
+                    else if (result == PaymentResult.DontInvoiceItem)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "فاکتور هیچگونه اقلام فاکتوری ندارد";
+                    }
                 }
                 return response;
             }
             catch (AccountingException ex)
             {
                 logger.LogError(ex, "InvoiceService Payment Failed");
+                throw;
+            }
+        }
+        public async Task<BaseResponseDto<bool?>> CloseInvoiceAsync(CloseInvoiceDto dto)
+        {
+            logger.LogInformation("InvoiceService UpdateInvoice Began");
+            try
+            {
+                var validation = await closeValidator.ValidateAsync(dto);
+                var response = new BaseResponseDto<bool?>();
+                if (!validation.IsValid)
+                {
+                    response.ErrorCode = ErrorCodes.BadRequest;
+                    response.Status = false;
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
+                }
+                else
+                {
+                    var result = await invoiceRepository.CloseInvoice(dto.Id);
+                    if (result)
+                    {
+                        logger.LogInformation("InvoiceService UpdateInvoice Done");
+                        response.ErrorCode = ErrorCodes.OK;
+                        response.Status = true;
+                        response.Message = "فاکتور بسته شد";
+                    }
+                    else
+                    {
+                        logger.LogInformation("InvoiceService UpdateInvoice Failed");
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "فاکتور مورد نظر قبلا بسته شده است";
+                    }
+                }
+                return response;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceService UpdateInvoice Failed");
+                throw;
+            }
+        }
+        public async Task<BaseResponseDto<bool?>> DepositAsync(CreatePaymentDto dto)
+        {
+            logger.LogInformation("InvoiceService Deposit Began");
+            try
+            {
+                var validation = await createPaymentValidator.ValidateAsync(dto);
+                var response = new BaseResponseDto<bool?>();
+                if (!validation.IsValid)
+                {
+                    response.ErrorCode = ErrorCodes.BadRequest;
+                    response.Status = false;
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
+                }
+                else
+                {
+                    var result = await invoiceRepository.DepositAsync(mapper.Map<Payment>(dto));
+                    logger.LogInformation("InvoiceService Deposit Done");
+
+                    response.ErrorCode = ErrorCodes.OK;
+                    response.Status = true;
+                    response.Message = "واریز انجام شد";
+                }
+                return response;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceService Deposit Failed");
                 throw;
             }
         }
