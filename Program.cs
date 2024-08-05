@@ -28,7 +28,6 @@ builder.Services.AddDbContext<AccountingDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 
-
 #region Repository
 builder.Services.AddTransient<IAccountingFinancialYearRepository, AccountingFinancialYearRepository>();
 builder.Services.AddTransient<IAccountRepository, AccountRepository>();
@@ -40,7 +39,6 @@ builder.Services.AddTransient<IInvoiceItemRepository, InvoiceItemRepository>();
 builder.Services.AddTransient<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddTransient<IPaymentRepository, PaymentRepository>();
 builder.Services.AddTransient<IWalletRepository, WalletRepository>();
-
 #endregion Repository
 
 #region Services

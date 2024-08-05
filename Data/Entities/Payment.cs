@@ -2,9 +2,8 @@
 {
     public class Payment : BaseEntity
     {
-        public long AccountUserId { get; set; }
-        public AccountUser? AccountUser { get; set; }
-
+        public long AccountId { get; set; }
+        public required Account Account { get; set; }
         public long Price { get; set; }
     }
 }

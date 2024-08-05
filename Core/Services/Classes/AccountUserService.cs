@@ -24,7 +24,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
             try
             {
                 var response = new BaseResponseDto<bool?>();
-                var result = await accountUserRepository.AddAsync(mapper.Map<AccountUser>(dto));
+                var result = await accountUserRepository.CreateUserAsync(mapper.Map<AccountUser>(dto));
                 logger.LogInformation("AccountUserService CreateAccountUser Done");
                 return new BaseResponseDto<bool?>()
                 {

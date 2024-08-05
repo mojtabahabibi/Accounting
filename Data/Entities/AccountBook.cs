@@ -4,10 +4,8 @@
     {
         public long TransactionId { get; set; }
         public required virtual AccountTransaction AccountTransaction { get; set; }
-
         public long AccountId { get; set; }
         public required virtual Account Account { get; set; }
-
         public long Amount { get; set; }
     }
 }

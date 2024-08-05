@@ -298,11 +298,20 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 else
                 {
                     var result = await invoiceRepository.DepositAsync(mapper.Map<Payment>(dto));
-                    logger.LogInformation("InvoiceService Deposit Done");
-
-                    response.ErrorCode = ErrorCodes.OK;
-                    response.Status = true;
-                    response.Message = "واریز انجام شد";
+                    if (result)
+                    {
+                        logger.LogInformation("InvoiceService Deposit Done");
+                        response.ErrorCode = ErrorCodes.OK;
+                        response.Status = true;
+                        response.Message = "واریز انجام شد";
+                    }
+                    else
+                    {
+                        logger.LogInformation("InvoiceService Deposit Failed");
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "شماره حساب مربوط به حساب کیف پول است";
+                    }
                 }
                 return response;
             }

@@ -4,6 +4,6 @@ namespace EcoBar.Accounting.Data.Repo.Interfaces
 {
     public interface IAccountUserRepository : IBaseRepository<AccountUser>
     {
-
+        Task<AccountUser> CreateUserAsync(AccountUser model);
     }
 }

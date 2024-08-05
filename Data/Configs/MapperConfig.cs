@@ -18,7 +18,7 @@ namespace EcoBar.Accounting.Data.Configs
             CreateMap<AccountUser, CreateAccountUserDto>().ReverseMap();
             #endregion AccountUser
 
-            #region Comapny
+            #region Company
             CreateMap<Company, CreateCompanyDto>().ReverseMap();
             #endregion
 
@@ -47,11 +47,11 @@ namespace EcoBar.Accounting.Data.Configs
             #endregion
 
             #region Payment
-            CreateMap<Payment,CreatePaymentDto>().ReverseMap();
+            CreateMap<Payment, CreatePaymentDto>().ReverseMap();
             #endregion
 
             #region AccountTransaction
-            CreateMap<AccountTransaction ,AccountTransactionListDto>().ReverseMap();
+            CreateMap<AccountTransaction, AccountTransactionListDto>().ReverseMap();
             #endregion
 
             #region Wallet

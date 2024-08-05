@@ -4,7 +4,6 @@ using EcoBar.Accounting.Data.Dto;
 using EcoBar.Accounting.Data.Entities;
 using EcoBar.Accounting.Data.Enums;
 using EcoBar.Accounting.Data.Repo.Interfaces;
-using EcoBar.Accounting.Data.SeedData;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
@@ -99,7 +98,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     var transaction = new AccountTransaction()
                     {
                         InvoiceId = invoiceId,
-                        Invocie = invoice,
+                        Invoice = invoice,
                         TransactionTypeId = type.Id,
                         TransactionType = type,
                         TransactionNumber = Guid.NewGuid(),
@@ -176,62 +175,64 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 throw;
             }
         }
-        public async Task<Payment> DepositAsync(Payment payment)
+        public async Task<bool> DepositAsync(Payment payment)
         {
-            await dbContext.Payments.AddAsync(payment);
-            await dbContext.SaveChangesAsync();
-
-            var type = await dbContext.TransactionTypes.FirstOrDefaultAsync();
-            var transaction = new AccountTransaction()
+            var accountType = await dbContext.Accounts.FindAsync(payment.AccountId);
+            if (accountType != null)
             {
-                PaymentId = payment.Id,
-                Payment = payment,
-                TransactionTypeId = type.Id,
-                TransactionType = type,
-                TransactionNumber = Guid.NewGuid(),
-                Time = DateTime.Now
-            };
-            await dbContext.AccountTransactions.AddAsync(transaction);
-            await dbContext.SaveChangesAsync();
-            // حساب مشتری 
-            var account = await dbContext.Accounts.Include(i => i.AccountUser)
-                .FirstOrDefaultAsync(i => i.AccountUserId == payment.AccountUserId);
-            if (account != null)
-            {
-                var accountBook = new AccountBook()
+                if (accountType.AccountTypeId == 1)
                 {
-                    TransactionId = transaction.Id,
-                    AccountTransaction = transaction,
-                    AccountId = account.Id,
-                    Account = account,
-                    Amount = payment.Price
-                };
-                await dbContext.AccountBooks.AddAsync(accountBook);
+                    await dbContext.Payments.AddAsync(payment);
+                    await dbContext.SaveChangesAsync();
 
-                var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == account.Id);
-                if (wallet != null)
-                    wallet.Amount += payment.Price;
-            }
-            // حساب شرکت
-            var accountCompany = await dbContext.Accounts.FirstOrDefaultAsync();
-            if (accountCompany != null)
-            {
-                var accountBook = new AccountBook()
-                {
-                    TransactionId = transaction.Id,
-                    AccountTransaction = transaction,
-                    AccountId = accountCompany.Id,
-                    Account = accountCompany,
-                    Amount = -(payment.Price)
-                };
-                await dbContext.AccountBooks.AddAsync(accountBook);
+                    var type = await dbContext.TransactionTypes.FirstOrDefaultAsync(i => i.Id == 1);
+                    var transaction = new AccountTransaction()
+                    {
+                        PaymentId = payment.Id,
+                        Payment = payment,
+                        TransactionTypeId = type.Id,
+                        TransactionType = type,
+                        TransactionNumber = Guid.NewGuid(),
+                        Time = DateTime.Now
+                    };
+                    await dbContext.AccountTransactions.AddAsync(transaction);
+                    await dbContext.SaveChangesAsync();
 
-                var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == accountCompany.Id);
-                if (wallet != null)
-                    wallet.Amount -= payment.Price;
+                    var account = await dbContext.Accounts.FindAsync(payment.AccountId);
+                    if (account != null)
+                    {
+                        var accountBook = new AccountBook()
+                        {
+                            TransactionId = transaction.Id,
+                            AccountTransaction = transaction,
+                            AccountId = account.Id,
+                            Account = account,
+                            Amount = payment.Price
+                        };
+                        await dbContext.AccountBooks.AddAsync(accountBook);
+                        account.Amount += payment.Price;
+                    }
+
+                    var accountCompany = await dbContext.Accounts.FirstOrDefaultAsync(i => i.AccountTypeId == 1);
+                    if (accountCompany != null)
+                    {
+                        var accountBook = new AccountBook()
+                        {
+                            TransactionId = transaction.Id,
+                            AccountTransaction = transaction,
+                            AccountId = accountCompany.Id,
+                            Account = accountCompany,
+                            Amount = -(payment.Price)
+                        };
+                        await dbContext.AccountBooks.AddAsync(accountBook);
+                        accountCompany.Amount -= payment.Price;
+                    }
+
+                    await dbContext.SaveChangesAsync();
+                    return true;
+                }
             }
-            await dbContext.SaveChangesAsync();
-            return payment;
+            return false;
         }
     }
 }

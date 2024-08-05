@@ -10,6 +10,6 @@ namespace EcoBar.Accounting.Data.Repo.Interfaces
         Task<InvoiceListDto> GetByIdInvoiceAsync(long invoiceId);
         Task<PaymentResult> PaymentAsync(long invoiceId);
         Task<bool> CloseInvoice(long invoiceId);
-        Task<Payment> DepositAsync(Payment payment);
+        Task<bool> DepositAsync(Payment payment);
     }
 }

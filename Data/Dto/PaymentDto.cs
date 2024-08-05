@@ -2,7 +2,7 @@
 {
     public class CreatePaymentDto
     {
-        public long AccountUserId { get; set; }
+        public long AccountId { get; set; }
         public long Price { get; set; }
     }
 }

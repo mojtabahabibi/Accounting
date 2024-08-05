@@ -5,7 +5,7 @@
         public long AccountUserId { get; set; }
         public AccountUser? AccountUser { get; set; }
 
-        public string Name { get; set; }
-        public string Economicalnumber { get; set; }
+        public required string Name { get; set; }
+        public required string Economicalnumber { get; set; }
     }
 }

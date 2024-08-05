@@ -2,8 +2,8 @@
 {
     public class Item : BaseEntity
     {
-        public string Code { get; set; }
-        public string Name { get; set; }
+        public required string Code { get; set; }
+        public required string Name { get; set; }
         public long Price { get; set; }
     }
 }

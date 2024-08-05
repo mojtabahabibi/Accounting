@@ -20,22 +20,22 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             try
             {
                 var list = new List<AccountTransactionListDto>();
-                var accountTransactions = await dbContext.AccountTransactions.Include(i => i.Invocie).ThenInclude(i => i.AccountUser)
-                    .Include(i => i.Payment).ThenInclude(i => i.AccountUser).ToListAsync();
+                var accountTransactions = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
+                    .Include(i => i.Payment).ThenInclude(i => i.Account).ToListAsync();
                 foreach (var tr in accountTransactions)
                 {
                     string accountusername = "";
                     long price = 0;
-                    if (tr.Payment != null)
-                    {
-                        accountusername = tr.Payment.AccountUser.UserName;
-                        price = tr.Payment.Price;
-                    }
-                    else if (tr.Invocie != null)
-                    {
-                        accountusername = tr.Invocie.AccountUser.UserName;
-                        price = tr.Invocie.TotalPrice;
-                    }
+                    //if (tr.Payment != null)
+                    //{
+                    //    accountusername = tr.Payment.AccountUser.UserName;
+                    //    price = tr.Payment.Price;
+                    //}
+                    //else if (tr.Invocie != null)
+                    //{
+                    //    accountusername = tr.Invocie.AccountUser.UserName;
+                    //    price = tr.Invocie.TotalPrice;
+                    //}
 
                     var transaction = new AccountTransactionListDto()
                     {
@@ -63,22 +63,22 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             try
             {
                 var list = new List<AccountTransactionListDto>();
-                var accountTransactions = await dbContext.AccountTransactions.Include(i => i.Invocie).ThenInclude(i => i.AccountUser)
-                    .Include(i => i.Payment).ThenInclude(i => i.AccountUser).ToListAsync();
+                var accountTransactions = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
+                    .Include(i => i.Payment).ThenInclude(i => i.Account).ToListAsync();
                 foreach (var tr in accountTransactions)
                 {
                     string accountusername = "";
                     long price = 0;
-                    if (tr.Payment != null)
-                    {
-                        accountusername = tr.Payment.AccountUser.UserName;
-                        price = tr.Payment.Price;
-                    }
-                    else if (tr.Invocie != null)
-                    {
-                        accountusername = tr.Invocie.AccountUser.UserName;
-                        price = tr.Invocie.TotalPrice;
-                    }
+                    //if (tr.Payment != null)
+                    //{
+                    //    accountusername = tr.Payment.AccountUser.UserName;
+                    //    price = tr.Payment.Price;
+                    //}
+                    //else if (tr.Invocie != null)
+                    //{
+                    //    accountusername = tr.Invocie.AccountUser.UserName;
+                    //    price = tr.Invocie.TotalPrice;
+                    //}
                     if (accountusername.Equals(username))
                     {
                         var transaction = new AccountTransactionListDto()
@@ -108,20 +108,20 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             logger.LogInformation("AccountTransactionRepository GetAllAsync was called for ");
             try
             {
-                var tr = await dbContext.AccountTransactions.Include(i => i.Invocie).ThenInclude(i => i.AccountUser)
-                    .Include(i => i.Payment).ThenInclude(i => i.AccountUser).FirstOrDefaultAsync(i => i.TransactionNumber.Equals(number));
+                var tr = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
+                    .Include(i => i.Payment).ThenInclude(i => i.Account).FirstOrDefaultAsync(i => i.TransactionNumber.Equals(number));
                 string accountusername = "";
                 long price = 0;
-                if (tr.Payment != null)
-                {
-                    accountusername = tr.Payment.AccountUser.UserName;
-                    price = tr.Payment.Price;
-                }
-                else if (tr.Invocie != null)
-                {
-                    accountusername = tr.Invocie.AccountUser.UserName;
-                    price = tr.Invocie.TotalPrice;
-                }
+                //if (tr.Payment != null)
+                //{
+                //    accountusername = tr.Payment.AccountUser.UserName;
+                //    price = tr.Payment.Price;
+                //}
+                //else if (tr.Invocie != null)
+                //{
+                //    accountusername = tr.Invocie.AccountUser.UserName;
+                //    price = tr.Invocie.TotalPrice;
+                //}
 
                 var transaction = new AccountTransactionListDto()
                 {
