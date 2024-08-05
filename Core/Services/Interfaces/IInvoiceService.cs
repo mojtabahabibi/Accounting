@@ -1,5 +1,4 @@
 ﻿using EcoBar.Accounting.Data.Dto;
-using EcoBar.Accounting.Data.Entities;
 
 namespace EcoBar.Accounting.Core.Services.Interfaces
 {

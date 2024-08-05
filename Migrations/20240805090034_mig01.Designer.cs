@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoBar.Accounting.Migrations
 {
     [DbContext(typeof(AccountingDbContext))]
-    [Migration("20240804103908_mig04")]
-    partial class mig04
+    [Migration("20240805090034_mig01")]
+    partial class mig01
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,19 +89,8 @@ namespace EcoBar.Accounting.Migrations
                             AccountUserId = 1L,
                             Amount = 0L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 14, 9, 7, 85, DateTimeKind.Local).AddTicks(5807),
+                            CreatedDate = new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8777),
                             Title = "حساب نقدی صندوق"
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            AccountNumber = "123",
-                            AccountTypeId = 2L,
-                            AccountUserId = 1L,
-                            Amount = 0L,
-                            CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 14, 9, 7, 85, DateTimeKind.Local).AddTicks(5814),
-                            Title = "حساب کیف پول صندوق"
                         });
                 });
 
@@ -255,14 +244,14 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 14, 9, 7, 85, DateTimeKind.Local).AddTicks(5738),
+                            CreatedDate = new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8645),
                             Type = "حساب نقدی"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 14, 9, 7, 85, DateTimeKind.Local).AddTicks(5744),
+                            CreatedDate = new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8651),
                             Type = "حساب کیف پول"
                         });
                 });
@@ -318,7 +307,7 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 14, 9, 7, 85, DateTimeKind.Local).AddTicks(5438),
+                            CreatedDate = new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8425),
                             Name = "Company",
                             Password = "123456",
                             UserName = "Company"
@@ -368,7 +357,6 @@ namespace EcoBar.Accounting.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -587,6 +575,17 @@ namespace EcoBar.Accounting.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Items");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Code = "1",
+                            CreatedBy = 0L,
+                            CreatedDate = new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8888),
+                            Name = "خرید شارژ",
+                            Price = 1000L
+                        });
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Payment", b =>
@@ -675,21 +674,21 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 14, 9, 7, 85, DateTimeKind.Local).AddTicks(5948),
+                            CreatedDate = new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8840),
                             Title = "واریز به حساب"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 14, 9, 7, 85, DateTimeKind.Local).AddTicks(5953),
+                            CreatedDate = new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8844),
                             Title = "خرید از حساب"
                         },
                         new
                         {
                             Id = 3L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 14, 9, 7, 85, DateTimeKind.Local).AddTicks(5955),
+                            CreatedDate = new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8846),
                             Title = "مرجوعی"
                         });
                 });
@@ -738,17 +737,6 @@ namespace EcoBar.Accounting.Migrations
                     b.HasIndex("AccountId");
 
                     b.ToTable("Wallets");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            AccountId = 1L,
-                            Amount = 0L,
-                            CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 14, 9, 7, 85, DateTimeKind.Local).AddTicks(5867),
-                            WalletNumber = new Guid("b1e0965a-9e41-446e-9381-c3f9dd359e35")
-                        });
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Account", b =>

@@ -63,7 +63,7 @@ namespace EcoBar.Accounting.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsClose = table.Column<bool>(type: "bit", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
@@ -131,6 +131,7 @@ namespace EcoBar.Accounting.Migrations
                     AccountTypeId = table.Column<long>(type: "bigint", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<long>(type: "bigint", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<long>(type: "bigint", nullable: false),
@@ -386,38 +387,34 @@ namespace EcoBar.Accounting.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Type" },
                 values: new object[,]
                 {
-                    { 1L, 0L, new DateTime(2024, 8, 4, 13, 8, 14, 483, DateTimeKind.Local).AddTicks(9315), null, null, null, null, null, "حساب نقدی" },
-                    { 2L, 0L, new DateTime(2024, 8, 4, 13, 8, 14, 483, DateTimeKind.Local).AddTicks(9322), null, null, null, null, null, "حساب کیف پول" }
+                    { 1L, 0L, new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8645), null, null, null, null, null, "حساب نقدی" },
+                    { 2L, 0L, new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8651), null, null, null, null, null, "حساب کیف پول" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AccountUsers",
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Name", "Password", "UserName" },
-                values: new object[] { 1L, 0L, new DateTime(2024, 8, 4, 13, 8, 14, 483, DateTimeKind.Local).AddTicks(9083), null, null, null, null, null, "Company", "123456", "Company" });
+                values: new object[] { 1L, 0L, new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8425), null, null, null, null, null, "Company", "123456", "Company" });
+
+            migrationBuilder.InsertData(
+                table: "Items",
+                columns: new[] { "Id", "Code", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Name", "Price" },
+                values: new object[] { 1L, "1", 0L, new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8888), null, null, null, null, null, "خرید شارژ", 1000L });
 
             migrationBuilder.InsertData(
                 table: "TransactionTypes",
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Title" },
                 values: new object[,]
                 {
-                    { 1L, 0L, new DateTime(2024, 8, 4, 13, 8, 14, 483, DateTimeKind.Local).AddTicks(9512), null, null, null, null, null, "واریز به حساب" },
-                    { 2L, 0L, new DateTime(2024, 8, 4, 13, 8, 14, 483, DateTimeKind.Local).AddTicks(9517), null, null, null, null, null, "خرید از حساب" },
-                    { 3L, 0L, new DateTime(2024, 8, 4, 13, 8, 14, 483, DateTimeKind.Local).AddTicks(9519), null, null, null, null, null, "مرجوعی" }
+                    { 1L, 0L, new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8840), null, null, null, null, null, "واریز به حساب" },
+                    { 2L, 0L, new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8844), null, null, null, null, null, "خرید از حساب" },
+                    { 3L, 0L, new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8846), null, null, null, null, null, "مرجوعی" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Accounts",
-                columns: new[] { "Id", "AccountNumber", "AccountTypeId", "AccountUserId", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Title" },
-                values: new object[,]
-                {
-                    { 1L, "123", 1L, 1L, 0L, new DateTime(2024, 8, 4, 13, 8, 14, 483, DateTimeKind.Local).AddTicks(9375), null, null, null, null, null, "حساب نقدی صندوق" },
-                    { 2L, "123", 2L, 1L, 0L, new DateTime(2024, 8, 4, 13, 8, 14, 483, DateTimeKind.Local).AddTicks(9383), null, null, null, null, null, "حساب کیف پول صندوق" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Wallets",
-                columns: new[] { "Id", "AccountId", "Amount", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "WalletNumber" },
-                values: new object[] { 1L, 1L, 0L, 0L, new DateTime(2024, 8, 4, 13, 8, 14, 483, DateTimeKind.Local).AddTicks(9435), null, null, null, null, null, new Guid("04bdf2c3-888a-4379-947c-b91a16046e0c") });
+                columns: new[] { "Id", "AccountNumber", "AccountTypeId", "AccountUserId", "Amount", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Title" },
+                values: new object[] { 1L, "123", 1L, 1L, 0L, 0L, new DateTime(2024, 8, 5, 12, 30, 33, 805, DateTimeKind.Local).AddTicks(8777), null, null, null, null, null, "حساب نقدی صندوق" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AccountBooks_AccountId",

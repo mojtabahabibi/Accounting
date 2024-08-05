@@ -25,8 +25,8 @@ namespace EcoBar.Accounting.Data.Configs
             modelBuilder.Entity<AccountUser>().HasData(AccountUserSeed.GetAccountUser());
             modelBuilder.Entity<AccountType>().HasData(AccountTypeSeed.GetAccountTypes());
             modelBuilder.Entity<Account>().HasData(AccountSeed.GetAccountWallet());
-            modelBuilder.Entity<Wallet>().HasData(WalletSeed.GetWallet());
             modelBuilder.Entity<TransactionType>().HasData(TransactionTypeSeed.GetTransactionTypes());
+            modelBuilder.Entity<Item>().HasData(ItemSeed.GetItems());
 
             modelBuilder.Entity<Account>().HasOne(i=>i.AccountUser)
                 .WithMany().HasForeignKey(i=>i.AccountUserId).OnDelete(DeleteBehavior.NoAction);

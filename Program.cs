@@ -93,11 +93,12 @@ builder.Services.AddScoped<IValidator<CreateInvoiceDto>, CreateInvoiceValidation
 builder.Services.AddScoped<IValidator<UpdateInvoiceDto>, UpdateInvoiceValidation>();
 builder.Services.AddScoped<IValidator<DeleteInvoiceDto>, DeleteInvoiceValidation>();
 builder.Services.AddScoped<IValidator<CloseInvoiceDto>, CloseInvoiceValidation>();
-builder.Services.AddScoped<IValidator<PaymentInvoiceDto>, PaymentInvoiceValidation>();
 #endregion
 
 #region Payment
 builder.Services.AddScoped<IValidator<CreatePaymentDto>, CreatePaymentValidation>();
+builder.Services.AddScoped<IValidator<TransferDto>, TransferValidation>();
+builder.Services.AddScoped<IValidator<PaymentInvoiceDto>, PaymentInvoiceValidation>();
 #endregion
 
 #region Wallet

@@ -11,16 +11,26 @@ namespace EcoBar.Accounting.Data.SeedData
             new TransactionType()
             {
                 Id = 1,
-                Title="واریز به حساب",
+                Title="واریز به حساب نقدی",
             },
              new TransactionType()
             {
                 Id = 2,
-                Title="خرید از حساب",
+                Title="خرید از حساب نقدی",
             },
               new TransactionType()
             {
                 Id = 3,
+                Title="واریز به حساب کیف پول",
+            },
+               new TransactionType()
+            {
+                Id = 4,
+                Title="خرید از حساب کیف پول",
+            },
+              new TransactionType()
+            {
+                Id = 5,
                 Title="مرجوعی",
             }
             };

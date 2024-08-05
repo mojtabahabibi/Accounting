@@ -196,7 +196,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 else
                 {
 
-                    var result = await invoiceRepository.PaymentAsync(dto.Id);
+                    var result = await invoiceRepository.PaymentAsync(dto.InvoiceId);
                     logger.LogInformation("InvoiceService Payment Done");
                     if (result == PaymentResult.Done)
                     {

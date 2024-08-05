@@ -29,6 +29,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         Price = i.Price,
                         Off = i.Off,
                         TotalPrice = i.TotalPrice,
+                        Status = i.Status == false ? "فاکتور باز است" : "فاکتور بسته شده است",
                         Date = i.Date,
                         InvoiceItems = i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
                         {
@@ -64,6 +65,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         Price = i.Price,
                         Off = i.Off,
                         TotalPrice = i.TotalPrice,
+                        Status = i.Status == false ? "فاکتور باز است" : "فاکتور بسته شده است",
                         Date = i.Date,
                         InvoiceItems = i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
                         {

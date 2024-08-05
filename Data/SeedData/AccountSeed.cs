@@ -6,23 +6,16 @@ namespace EcoBar.Accounting.Data.SeedData
     {
         public static List<Account> GetAccountWallet()
         {
+            Random random = new Random();
             return new List<Account>()
             {
               new Account()
             {
                 Id = 1,
                 AccountUserId = 1,
-                AccountNumber = "123",
+                AccountNumber =random.Next(9999999,100000000).ToString(),
                 Title = "حساب نقدی صندوق",
                 AccountTypeId=1,
-            },
-                new Account()
-            {
-                Id = 2,
-                AccountUserId = 1,
-                AccountNumber = "123",
-                Title = "حساب کیف پول صندوق",
-                AccountTypeId=2,
             }
             };
         }

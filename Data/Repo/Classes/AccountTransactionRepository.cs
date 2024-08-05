@@ -4,7 +4,6 @@ using EcoBar.Accounting.Data.Dto;
 using EcoBar.Accounting.Data.Entities;
 using EcoBar.Accounting.Data.Repo.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using static System.TimeZoneInfo;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
@@ -21,25 +20,31 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             {
                 var list = new List<AccountTransactionListDto>();
                 var accountTransactions = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
-                    .Include(i => i.Payment).ThenInclude(i => i.Account).ToListAsync();
+                    .Include(i => i.Payment).ThenInclude(i => i.Account).Include(i => i.TransactionType).ToListAsync();
                 foreach (var tr in accountTransactions)
                 {
                     string accountusername = "";
                     long price = 0;
-                    //if (tr.Payment != null)
-                    //{
-                    //    accountusername = tr.Payment.AccountUser.UserName;
-                    //    price = tr.Payment.Price;
-                    //}
-                    //else if (tr.Invocie != null)
-                    //{
-                    //    accountusername = tr.Invocie.AccountUser.UserName;
-                    //    price = tr.Invocie.TotalPrice;
-                    //}
+                    if (tr.Payment != null)
+                    {
+                        if (tr.Payment.Account.AccountUser != null)
+                        {
+                            accountusername = tr.Payment.Account.AccountUser.UserName;
+                            price = tr.Payment.Price;
+                        }
+                    }
+                    else if (tr.Invoice != null)
+                    {
+                        if (tr.Invoice.AccountUser != null)
+                        {
+                            accountusername = tr.Invoice.AccountUser.UserName;
+                            price = tr.Invoice.TotalPrice;
+                        }
+                    }
 
                     var transaction = new AccountTransactionListDto()
                     {
-                        TransactionType = tr.Payment != null ? "واریز به حساب" : "برداشت از حساب",
+                        TransactionType = tr.TransactionType.Title,
                         AccountUserName = accountusername,
                         Price = price,
                         TransactionNumber = tr.TransactionNumber,
@@ -64,26 +69,33 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             {
                 var list = new List<AccountTransactionListDto>();
                 var accountTransactions = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
-                    .Include(i => i.Payment).ThenInclude(i => i.Account).ToListAsync();
+                    .Include(i => i.Payment).ThenInclude(i => i.Account).Include(i=>i.TransactionType).ToListAsync();
                 foreach (var tr in accountTransactions)
                 {
                     string accountusername = "";
                     long price = 0;
-                    //if (tr.Payment != null)
-                    //{
-                    //    accountusername = tr.Payment.AccountUser.UserName;
-                    //    price = tr.Payment.Price;
-                    //}
-                    //else if (tr.Invocie != null)
-                    //{
-                    //    accountusername = tr.Invocie.AccountUser.UserName;
-                    //    price = tr.Invocie.TotalPrice;
-                    //}
+                    if (tr.Payment != null)
+                    {
+                        if (tr.Payment.Account.AccountUser != null)
+                        {
+                            accountusername = tr.Payment.Account.AccountUser.UserName;
+                            price = tr.Payment.Price;
+                        }
+                    }
+                    else if (tr.Invoice != null)
+                    {
+                        if (tr.Invoice.AccountUser != null)
+                        {
+                            accountusername = tr.Invoice.AccountUser.UserName;
+                            price = tr.Invoice.TotalPrice;
+                        }
+                    }
+
                     if (accountusername.Equals(username))
                     {
                         var transaction = new AccountTransactionListDto()
                         {
-                            TransactionType = tr.Payment != null ? "واریز به حساب" : "برداشت از حساب",
+                            TransactionType = tr.TransactionType.Title,
                             AccountUserName = accountusername,
                             Price = price,
                             TransactionNumber = tr.TransactionNumber,
@@ -108,24 +120,30 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             logger.LogInformation("AccountTransactionRepository GetAllAsync was called for ");
             try
             {
-                var tr = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
-                    .Include(i => i.Payment).ThenInclude(i => i.Account).FirstOrDefaultAsync(i => i.TransactionNumber.Equals(number));
+                var tr = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i=>i.AccountUser)
+                    .Include(i => i.Payment).ThenInclude(i => i.Account).Include(i=>i.TransactionType).FirstOrDefaultAsync(i => i.TransactionNumber.Equals(number));
                 string accountusername = "";
                 long price = 0;
-                //if (tr.Payment != null)
-                //{
-                //    accountusername = tr.Payment.AccountUser.UserName;
-                //    price = tr.Payment.Price;
-                //}
-                //else if (tr.Invocie != null)
-                //{
-                //    accountusername = tr.Invocie.AccountUser.UserName;
-                //    price = tr.Invocie.TotalPrice;
-                //}
+                if (tr.Payment != null)
+                {
+                    if (tr.Payment.Account.AccountUser != null)
+                    {
+                        accountusername = tr.Payment.Account.AccountUser.UserName;
+                        price = tr.Payment.Price;
+                    }
+                }
+                else if (tr.Invoice != null)
+                {
+                    if (tr.Invoice.AccountUser != null)
+                    {
+                        accountusername = tr.Invoice.AccountUser.UserName;
+                        price = tr.Invoice.TotalPrice;
+                    }
+                }
 
                 var transaction = new AccountTransactionListDto()
                 {
-                    TransactionType = tr.Payment != null ? "واریز به حساب" : "برداشت از حساب",
+                    TransactionType = tr.TransactionType.Title,
                     AccountUserName = accountusername,
                     Price = price,
                     TransactionNumber = tr.TransactionNumber,

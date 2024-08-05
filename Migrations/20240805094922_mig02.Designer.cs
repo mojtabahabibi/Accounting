@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoBar.Accounting.Migrations
 {
     [DbContext(typeof(AccountingDbContext))]
-    [Migration("20240804101515_mig02")]
+    [Migration("20240805094922_mig02")]
     partial class mig02
     {
         /// <inheritdoc />
@@ -41,6 +41,9 @@ namespace EcoBar.Accounting.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<long>("AccountUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Amount")
                         .HasColumnType("bigint");
 
                     b.Property<long>("CreatedBy")
@@ -84,19 +87,10 @@ namespace EcoBar.Accounting.Migrations
                             AccountNumber = "123",
                             AccountTypeId = 1L,
                             AccountUserId = 1L,
+                            Amount = 0L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 13, 45, 12, 438, DateTimeKind.Local).AddTicks(8455),
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2684),
                             Title = "حساب نقدی صندوق"
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            AccountNumber = "123",
-                            AccountTypeId = 2L,
-                            AccountUserId = 1L,
-                            CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 13, 45, 12, 438, DateTimeKind.Local).AddTicks(8462),
-                            Title = "حساب کیف پول صندوق"
                         });
                 });
 
@@ -250,14 +244,14 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 13, 45, 12, 438, DateTimeKind.Local).AddTicks(8366),
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2631),
                             Type = "حساب نقدی"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 13, 45, 12, 438, DateTimeKind.Local).AddTicks(8373),
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2636),
                             Type = "حساب کیف پول"
                         });
                 });
@@ -313,7 +307,7 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 13, 45, 12, 438, DateTimeKind.Local).AddTicks(8002),
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2405),
                             Name = "Company",
                             Password = "123456",
                             UserName = "Company"
@@ -363,7 +357,6 @@ namespace EcoBar.Accounting.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -582,6 +575,17 @@ namespace EcoBar.Accounting.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Items");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Code = "1",
+                            CreatedBy = 0L,
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2796),
+                            Name = "خرید شارژ",
+                            Price = 1000L
+                        });
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Payment", b =>
@@ -619,9 +623,6 @@ namespace EcoBar.Accounting.Migrations
 
                     b.Property<long>("Price")
                         .HasColumnType("bigint");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -673,21 +674,35 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 13, 45, 12, 438, DateTimeKind.Local).AddTicks(8630),
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2735),
                             Title = "واریز به حساب"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 13, 45, 12, 438, DateTimeKind.Local).AddTicks(8636),
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2740),
                             Title = "خرید از حساب"
                         },
                         new
                         {
                             Id = 3L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 13, 45, 12, 438, DateTimeKind.Local).AddTicks(8637),
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2741),
+                            Title = "واریز به کیف پول"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            CreatedBy = 0L,
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2742),
+                            Title = "خرید از کیف پول"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            CreatedBy = 0L,
+                            CreatedDate = new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2744),
                             Title = "مرجوعی"
                         });
                 });
@@ -736,17 +751,6 @@ namespace EcoBar.Accounting.Migrations
                     b.HasIndex("AccountId");
 
                     b.ToTable("Wallets");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            AccountId = 1L,
-                            Amount = 0L,
-                            CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 4, 13, 45, 12, 438, DateTimeKind.Local).AddTicks(8531),
-                            WalletNumber = new Guid("82859d1f-5239-4042-9f11-3bcbe7688b4d")
-                        });
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Account", b =>

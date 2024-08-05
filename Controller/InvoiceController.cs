@@ -166,55 +166,55 @@ namespace EcoBar.Accounting.Controller
                 );
             }
         }
-        [HttpPost("Payment")]
-        public async Task<ActionResult<BaseResponseDto<bool?>>> Payment([FromQuery] PaymentInvoiceDto model)
-        {
-            logger.LogInformation("InvoiceController PaymentInvoice Began");
-            try
-            {
-                var result = await invoiceService.PaymentAsync(model);
-                logger.LogInformation("InvoiceController PaymentInvoice Done");
-                return result;
-            }
-            catch (AccountingException ex)
-            {
-                logger.LogError(ex, "InvoiceController PaymentInvoice Began");
-                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
-                return Ok(
-                    new BaseResponseDto<bool>()
-                    {
-                        Status = false,
-                        DataCount = 0,
-                        ErrorCode = ex.errorCode,
-                        Message = ex.Message
-                    }
-                );
-            }
-        }
-        [HttpPost("Deposit")]
-        public async Task<ActionResult<BaseResponseDto<bool?>>> Deposit(CreatePaymentDto model)
-        {
-            logger.LogInformation("InvoiceController PaymentInvoice Began");
-            try
-            {
-                var result = await invoiceService.DepositAsync(model);
-                logger.LogInformation("InvoiceController PaymentInvoice Done");
-                return result;
-            }
-            catch (AccountingException ex)
-            {
-                logger.LogError(ex, "InvoiceController PaymentInvoice Began");
-                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
-                return Ok(
-                    new BaseResponseDto<bool>()
-                    {
-                        Status = false,
-                        DataCount = 0,
-                        ErrorCode = ex.errorCode,
-                        Message = ex.Message
-                    }
-                );
-            }
-        }
+        //[HttpPost("Payment")]
+        //public async Task<ActionResult<BaseResponseDto<bool?>>> Payment([FromQuery] PaymentInvoiceDto model)
+        //{
+        //    logger.LogInformation("InvoiceController PaymentInvoice Began");
+        //    try
+        //    {
+        //        var result = await invoiceService.PaymentAsync(model);
+        //        logger.LogInformation("InvoiceController PaymentInvoice Done");
+        //        return result;
+        //    }
+        //    catch (AccountingException ex)
+        //    {
+        //        logger.LogError(ex, "InvoiceController PaymentInvoice Began");
+        //        if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+        //        return Ok(
+        //            new BaseResponseDto<bool>()
+        //            {
+        //                Status = false,
+        //                DataCount = 0,
+        //                ErrorCode = ex.errorCode,
+        //                Message = ex.Message
+        //            }
+        //        );
+        //    }
+        //}
+        // [HttpPost("Deposit")]
+        // public async Task<ActionResult<BaseResponseDto<bool?>>> Deposit(CreatePaymentDto model)
+        // {
+        //     logger.LogInformation("InvoiceController PaymentInvoice Began");
+        //     try
+        //     {
+        //         var result = await invoiceService.DepositAsync(model);
+        //         logger.LogInformation("InvoiceController PaymentInvoice Done");
+        //         return result;
+        //     }
+        //     catch (AccountingException ex)
+        //     {
+        //         logger.LogError(ex, "InvoiceController PaymentInvoice Began");
+        //         if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+        //         return Ok(
+        //             new BaseResponseDto<bool>()
+        //             {
+        //                 Status = false,
+        //                 DataCount = 0,
+        //                 ErrorCode = ex.errorCode,
+        //                 Message = ex.Message
+        //             }
+        //         );
+        //     }
+        // }
     }
 }

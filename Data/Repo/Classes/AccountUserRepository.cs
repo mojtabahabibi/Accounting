@@ -6,6 +6,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
 {
     public class AccountUserRepository : BaseRepository<AccountUser>, IAccountUserRepository
     {
+        Random random = new Random();
         public AccountUserRepository(AccountingDbContext dbContext, ILogger<BaseRepository<AccountUser>> logger) : base(dbContext, logger)
         {
         }
@@ -14,6 +15,17 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             await dbContext.AccountUsers.AddAsync(model);
             await dbContext.SaveChangesAsync();
 
+            //create AccountCash
+            var AccountCash = new Account()
+            {
+                AccountTypeId = 1,
+                AccountUserId = model.Id,
+                AccountUser = model,
+                Title = "حساب نقدی",
+                AccountNumber = random.Next(9999999,100000000).ToString()
+            };
+            await dbContext.Accounts.AddAsync(AccountCash);
+
             //create AccountWallet
             var accountWallet = new Account()
             {
@@ -21,7 +33,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 AccountUserId = model.Id,
                 AccountUser = model,
                 Title = "حساب کیف پول",
-                AccountNumber = "123456789"
+                AccountNumber = random.Next(9999999, 100000000).ToString()
             };
             await dbContext.Accounts.AddAsync(accountWallet);
             await dbContext.SaveChangesAsync();
@@ -34,17 +46,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 Amount = 0
             };
             await dbContext.Wallets.AddAsync(wallet);
-
-            //create AccountCash
-            var AccountCash = new Account()
-            {
-                AccountTypeId = 1,
-                AccountUserId = model.Id,
-                AccountUser = model,
-                Title = "حساب نقدی",
-                AccountNumber = "987654321"
-            };
-            await dbContext.Accounts.AddAsync(AccountCash);
             await dbContext.SaveChangesAsync();
 
             return model;

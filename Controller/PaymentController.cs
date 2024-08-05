@@ -19,16 +19,66 @@ namespace EcoBar.Accounting.Controller
         [HttpPost("Deposit")]
         public async Task<ActionResult<BaseResponseDto<bool?>>> Deposit(CreatePaymentDto model)
         {
-            logger.LogInformation("InvoiceController PaymentInvoice Began");
+            logger.LogInformation("PaymentController Deposit Began");
             try
             {
                 var result = await paymentService.DepositAsync(model);
-                logger.LogInformation("InvoiceController PaymentInvoice Done");
+                logger.LogInformation("PaymentController Deposit Done");
                 return result;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "InvoiceController PaymentInvoice Began");
+                logger.LogError(ex, "PaymentController Deposit Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
+        [HttpPost("Transfer")]
+        public async Task<ActionResult<BaseResponseDto<bool?>>> Transfer(TransferDto model)
+        {
+            logger.LogInformation("PaymentController Transfer Began");
+            try
+            {
+                var result = await paymentService.TransferAsync(model);
+                logger.LogInformation("PaymentController Transfer Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "PaymentController Transfer Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
+        [HttpPost("PaymentInvoice")]
+        public async Task<ActionResult<BaseResponseDto<bool?>>> PaymentInvoice(PaymentInvoiceDto model)
+        {
+            logger.LogInformation("PaymentController Transfer Began");
+            try
+            {
+                var result = await paymentService.PaymentAsync(model);
+                logger.LogInformation("PaymentController Transfer Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "PaymentController Transfer Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()
