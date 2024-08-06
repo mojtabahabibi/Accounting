@@ -19,10 +19,13 @@ namespace EcoBar.Accounting.Core.Services.Classes
         private readonly IValidator<CloseInvoiceDto> closeValidator;
         private readonly IValidator<CreatePaymentDto> createPaymentValidator;
         private readonly IValidator<PaymentInvoiceDto> paymentValidator;
+        private readonly IValidator<CancelInvoiceDto> cancelValidator;
+        private readonly IValidator<ReturnInvoiceDto> returnValidator;
         private readonly IInvoiceRepository invoiceRepository;
         public InvoiceService(ILogger<InvoiceService> logger, IMapper mapper, IInvoiceRepository invoiceRepository, IValidator<CreateInvoiceDto> createValidator
-            , IValidator<UpdateInvoiceDto> updateValidator, IValidator<CloseInvoiceDto> closeValidator
-            , IValidator<DeleteInvoiceDto> deleteValidator, IValidator<CreatePaymentDto> createPaymentValidator, IValidator<PaymentInvoiceDto> paymentValidator)
+            , IValidator<UpdateInvoiceDto> updateValidator, IValidator<CloseInvoiceDto> closeValidator, IValidator<DeleteInvoiceDto> deleteValidator
+            , IValidator<CreatePaymentDto> createPaymentValidator, IValidator<CancelInvoiceDto> cancelValidator, IValidator<PaymentInvoiceDto> paymentValidator
+            , IValidator<ReturnInvoiceDto> returnValidator)
         {
             this.logger = logger;
             this.mapper = mapper;
@@ -33,6 +36,8 @@ namespace EcoBar.Accounting.Core.Services.Classes
             this.closeValidator = closeValidator;
             this.createPaymentValidator = createPaymentValidator;
             this.paymentValidator = paymentValidator;
+            this.cancelValidator = cancelValidator;
+            this.returnValidator = returnValidator;
         }
         public async Task<GetAllInvoiceResponseDto> GetAllInvoiceAsync()
         {
@@ -311,6 +316,109 @@ namespace EcoBar.Accounting.Core.Services.Classes
                         response.ErrorCode = ErrorCodes.NotFound;
                         response.Status = false;
                         response.Message = "شماره حساب مربوط به حساب کیف پول است";
+                    }
+                }
+                return response;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceService Deposit Failed");
+                throw;
+            }
+        }
+        public async Task<BaseResponseDto<bool?>> CancelAsync(CancelInvoiceDto dto)
+        {
+            logger.LogInformation("InvoiceService CancelInvoice Began");
+            try
+            {
+                var validation = await cancelValidator.ValidateAsync(dto);
+                var response = new BaseResponseDto<bool?>();
+                if (!validation.IsValid)
+                {
+                    response.ErrorCode = ErrorCodes.BadRequest;
+                    response.Status = false;
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
+                }
+                else
+                {
+                    var result = await invoiceRepository.CancelInvoiceAsync(dto.Id);
+                    switch (result)
+                    {
+                        case CancelInvoiceResult.CanceledBefor:
+                            logger.LogInformation("InvoiceService CancelInvoice Failed");
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "فاکتور از قبل لغو شده است";
+                            return response;
+                        case CancelInvoiceResult.CloseInvoice:
+                            logger.LogInformation("InvoiceService CancelInvoice Failed");
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "فاکتور بسته است";
+                            return response;
+                        case CancelInvoiceResult.PaymentBefor:
+                            logger.LogInformation("InvoiceService CancelInvoice Failed");
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "فاکتور قبلا پرداخت شده است";
+                            return response;
+                        case CancelInvoiceResult.Returnd:
+                            logger.LogInformation("InvoiceService CancelInvoice Failed");
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "شماره فاکتور مرجوعی است";
+                            return response;
+                        case CancelInvoiceResult.UnFoundInvoice:
+                            logger.LogInformation("InvoiceService CancelInvoice Failed");
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "شماره فاکتور در سیستم وجود ندارد";
+                            return response;
+                        case CancelInvoiceResult.Success:
+                            logger.LogInformation("InvoiceService CancelInvoice Done");
+                            response.ErrorCode = ErrorCodes.OK;
+                            response.Status = true;
+                            response.Message = "فاکتور لغو شد";
+                            return response;
+                    }
+                }
+                return response;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceService CancelInvoice Failed");
+                throw;
+            }
+        }
+        public async Task<BaseResponseDto<bool?>> ReturnAsync(ReturnInvoiceDto dto)
+        {
+            logger.LogInformation("InvoiceService Deposit Began");
+            try
+            {
+                var validation = await returnValidator.ValidateAsync(dto);
+                var response = new BaseResponseDto<bool?>();
+                if (!validation.IsValid)
+                {
+                    response.ErrorCode = ErrorCodes.BadRequest;
+                    response.Status = false;
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
+                }
+                else
+                {
+                    var result = await invoiceRepository.ReturnedInvoiceAsync(dto.Id);
+                    if (result)
+                    {
+                        logger.LogInformation("InvoiceService Deposit Done");
+                        response.ErrorCode = ErrorCodes.OK;
+                        response.Status = true;
+                        response.Message = "فاکتور مرجوع داده شد";
+                    }
+                    else
+                    {
+                        logger.LogInformation("InvoiceService Deposit Failed");
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "وضعیت فاکتور باید پرداخت شده باشد";
                     }
                 }
                 return response;

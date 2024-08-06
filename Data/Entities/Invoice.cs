@@ -1,4 +1,6 @@
-﻿namespace EcoBar.Accounting.Data.Entities
+﻿using EcoBar.Accounting.Data.Enums;
+
+namespace EcoBar.Accounting.Data.Entities
 {
     public class Invoice : BaseEntity
     {
@@ -10,7 +12,7 @@
         public long Off { get; set; }
         public long TotalPrice { get; set; }
         public DateTime Date { get; set; }
-        public bool Status { get; set; }
+        public InvoiceStatus Status { get; set; }
         public List<InvoiceItem>? InvoiceItems { get; set; }
     }
 }

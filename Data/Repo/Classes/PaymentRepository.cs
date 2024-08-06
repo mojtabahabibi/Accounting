@@ -22,8 +22,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             {
                 PaymentId = payment.Id,
                 Payment = payment,
-                TransactionNumber = Guid.NewGuid(),
-                Time = DateTime.Now
+                TransactionNumber = Guid.NewGuid()
             };
             await dbContext.AccountTransactions.AddAsync(transaction);
             await dbContext.SaveChangesAsync();
@@ -71,8 +70,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             Payment = payment,
                             TransactionTypeId = type.Id,
                             TransactionType = type,
-                            TransactionNumber = Guid.NewGuid(),
-                            Time = DateTime.Now
+                            TransactionNumber = Guid.NewGuid()
                         };
                         await dbContext.AccountTransactions.AddAsync(transaction);
                         await dbContext.SaveChangesAsync();
@@ -82,7 +80,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         {
                             var accountBook = new AccountBook()
                             {
-                                TransactionId = transaction.Id,
+                                AccountTransactionId = transaction.Id,
                                 AccountTransaction = transaction,
                                 AccountId = account.Id,
                                 Account = account,
@@ -97,7 +95,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         {
                             var accountBook = new AccountBook()
                             {
-                                TransactionId = transaction.Id,
+                                AccountTransactionId = transaction.Id,
                                 AccountTransaction = transaction,
                                 AccountId = accountCompany.Id,
                                 Account = accountCompany,
@@ -137,7 +135,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 Off = 0,
                                 TotalPrice = model.Price,
                                 Date = DateTime.Now,
-                                Status = true,
+                                Status = InvoiceStatus.Open,
                             };
                             await dbContext.Invoices.AddAsync(invoice);
                             await dbContext.SaveChangesAsync();
@@ -166,8 +164,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 InvoiceId = invoice.Id,
                                 Invoice = invoice,
                                 TransactionTypeId = 3,
-                                TransactionNumber = Guid.NewGuid(),
-                                Time = DateTime.Now
+                                TransactionNumber = Guid.NewGuid()
                             };
                             await dbContext.AccountTransactions.AddAsync(transaction);
                             await dbContext.SaveChangesAsync();
@@ -175,7 +172,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             // Create AccountBook
                             var accountBook1 = new AccountBook()
                             {
-                                TransactionId = transaction.Id,
+                                AccountTransactionId = transaction.Id,
                                 AccountTransaction = transaction,
                                 AccountId = accountCash.Id,
                                 Account = accountCash,
@@ -183,7 +180,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             };
                             var accountBook2 = new AccountBook()
                             {
-                                TransactionId = transaction.Id,
+                                AccountTransactionId = transaction.Id,
                                 AccountTransaction = transaction,
                                 AccountId = accountWallet.Id,
                                 Account = accountWallet,
@@ -219,14 +216,13 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             // حساب نقدی
                             if (account.Amount > invoice.TotalPrice)
                             {
-                                invoice.Status = true;
+                                invoice.Status = InvoiceStatus.Pay;
                                 var transaction = new AccountTransaction()
                                 {
                                     InvoiceId = model.InvoiceId,
                                     Invoice = invoice,
                                     TransactionTypeId = 2,
-                                    TransactionNumber = Guid.NewGuid(),
-                                    Time = DateTime.Now,
+                                    TransactionNumber = Guid.NewGuid()
                                 };
                                 await dbContext.AccountTransactions.AddAsync(transaction);
                                 await dbContext.SaveChangesAsync();
@@ -238,7 +234,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 {
                                     var accountBook = new AccountBook()
                                     {
-                                        TransactionId = transaction.Id,
+                                        AccountTransactionId = transaction.Id,
                                         AccountTransaction = transaction,
                                         AccountId = accountUser.Id,
                                         Account = accountUser,
@@ -254,7 +250,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 {
                                     var accountBook = new AccountBook()
                                     {
-                                        TransactionId = transaction.Id,
+                                        AccountTransactionId = transaction.Id,
                                         AccountTransaction = transaction,
                                         AccountId = accountCompany.Id,
                                         Account = accountCompany,
@@ -272,21 +268,19 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         else if (account.AccountTypeId == 2)
                         {
                             // حساب کیف پول
-                            var wallets = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.AccountUserId.Equals(accountUserId));
+                            var wallets = await dbContext.Wallets.Include(i => i.Account).ThenInclude(i => i.AccountUser).FirstOrDefaultAsync(i => i.Account.AccountUserId.Equals(accountUserId));
                             long totalPrice = invoice.TotalPrice;
                             if (totalPrice != 0 && wallets != null)
                             {
-                                invoice.Status = true;
+                                invoice.Status = InvoiceStatus.Pay;
                                 if (wallets.Amount > totalPrice)
                                 {
-                                    //var type = await dbContext.TransactionTypes.FirstOrDefaultAsync(i => i.Id == 2);
                                     var transaction = new AccountTransaction()
                                     {
                                         InvoiceId = model.InvoiceId,
                                         Invoice = invoice,
                                         TransactionTypeId = 4,
-                                        TransactionNumber = Guid.NewGuid(),
-                                        Time = DateTime.Now,
+                                        TransactionNumber = Guid.NewGuid()
                                     };
                                     await dbContext.AccountTransactions.AddAsync(transaction);
                                     await dbContext.SaveChangesAsync();
@@ -298,17 +292,14 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                     {
                                         var accountBook = new AccountBook()
                                         {
-                                            TransactionId = transaction.Id,
+                                            AccountTransactionId = transaction.Id,
                                             AccountTransaction = transaction,
                                             AccountId = accountUser.Id,
                                             Account = accountUser,
                                             Amount = -(invoice.TotalPrice)
                                         };
                                         await dbContext.AccountBooks.AddAsync(accountBook);
-
-                                        var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == accountUser.Id);
-                                        if (wallet != null)
-                                            wallet.Amount -= invoice.TotalPrice;
+                                        wallets.Amount -= invoice.TotalPrice;
                                     }
                                     // حساب شرکت
                                     var accountCompany = await dbContext.Accounts.FirstOrDefaultAsync();
@@ -316,7 +307,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                     {
                                         var accountBook = new AccountBook()
                                         {
-                                            TransactionId = transaction.Id,
+                                            AccountTransactionId = transaction.Id,
                                             AccountTransaction = transaction,
                                             AccountId = accountCompany.Id,
                                             Account = accountCompany,

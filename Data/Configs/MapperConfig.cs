@@ -16,6 +16,7 @@ namespace EcoBar.Accounting.Data.Configs
 
             #region AccountUser
             CreateMap<AccountUser, CreateAccountUserDto>().ReverseMap();
+            CreateMap<AccountUser, AccountUserListDto>().ReverseMap();
             #endregion AccountUser
 
             #region Company

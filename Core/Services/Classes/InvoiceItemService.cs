@@ -3,6 +3,7 @@ using EcoBar.Accounting.Core.Services.Interfaces;
 using EcoBar.Accounting.Core.Tools;
 using EcoBar.Accounting.Data.Dto;
 using EcoBar.Accounting.Data.Entities;
+using EcoBar.Accounting.Data.Enums;
 using EcoBar.Accounting.Data.Repo.Interfaces;
 using FluentValidation;
 
@@ -81,26 +82,40 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 var response = new BaseResponseDto<bool?>();
                 if (!validation.IsValid)
                 {
-                    response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
+                    response.ErrorCode = ErrorCodes.BadRequest;
                     response.Status = false;
                     response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {
                     var invoiceStatus = await invoiceItemRepository.InvoiceStatus(dto.InvoiceId);
-                    if (invoiceStatus == false)
+                    switch (invoiceStatus)
                     {
-                        var result = await invoiceItemRepository.CreateInvoiceItemAsync(mapper.Map<InvoiceItem>(dto));
-                        logger.LogInformation("InvoiceItemService CreateInvoiceItem Done");
-                        response.ErrorCode = Data.Enums.ErrorCodes.OK;
-                        response.Status = true;
-                        response.Message = "ایجاد شد";
-                    }
-                    else
-                    {
-                        response.ErrorCode = Data.Enums.ErrorCodes.NotFound;
-                        response.Status = false;
-                        response.Message = "فاکتور مورد نظر بسته شده است";
+                        case InvoiceStatus.Open:
+                            var result = await invoiceItemRepository.CreateInvoiceItemAsync(mapper.Map<InvoiceItem>(dto));
+                            logger.LogInformation("InvoiceItemService CreateInvoiceItem Done");
+                            response.ErrorCode = ErrorCodes.OK;
+                            response.Status = true;
+                            response.Message = "ایجاد شد";
+                            return response;
+
+                        case InvoiceStatus.Close:
+                            response.ErrorCode = Data.Enums.ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "فاکتور مورد نظر بسته شده است";
+                            return response;
+
+                        case InvoiceStatus.Cancel:
+                            response.ErrorCode = Data.Enums.ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "فاکتور مورد نظر کنسل شده است";
+                            return response;
+
+                        case InvoiceStatus.Returen:
+                            response.ErrorCode = Data.Enums.ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "فاکتور مورد نظر مرجوع شده است";
+                            return response;
                     }
                 }
                 return response;

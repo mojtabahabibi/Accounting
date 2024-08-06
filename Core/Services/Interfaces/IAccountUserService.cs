@@ -5,5 +5,6 @@ namespace EcoBar.Accounting.Core.Services.Interfaces
     public interface IAccountUserService
     {
         Task<BaseResponseDto<bool?>> CreateAccountUserAsync(CreateAccountUserDto dto);
+        Task<AccountUserListResponseDto> GetAllAccountUser();
     }
 }

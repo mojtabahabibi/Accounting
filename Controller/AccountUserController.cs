@@ -17,6 +17,31 @@ namespace EcoBar.Accounting.Controller
             this.logger = logger;
             this.accountUserService = accountUserService;
         }
+        [HttpGet("GetAll")]
+        public async Task<ActionResult<AccountUserListResponseDto>> GetAll()
+        {
+            logger.LogInformation("AccountUserController GetAllAccountUser Began");
+            try
+            {
+                var result = await accountUserService.GetAllAccountUser();
+                logger.LogInformation("AccountUserController GetAllAccountUser Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "AccountUserController GetAllAccountUser Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
         [HttpPost("Create")]
         public async Task<ActionResult<BaseResponseDto<bool?>>> Create(CreateAccountUserDto model)
         {

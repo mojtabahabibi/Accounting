@@ -23,10 +23,14 @@
     {
         public long Id { get; set; }
     }
-    // public class PaymentInvoiceDto
-    // {
-    //     public long Id { get; set; }
-    // }
+    public class CancelInvoiceDto
+    {
+        public long Id { get; set; }
+    }
+    public class ReturnInvoiceDto
+    {
+        public long Id { get; set; }
+    }
     public class InvoiceListDto
     {
         public long AccountUserId { get; set; }

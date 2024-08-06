@@ -48,7 +48,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         AccountUserName = accountusername,
                         Price = price,
                         TransactionNumber = tr.TransactionNumber,
-                        Time = tr.Time,
+                        Time = tr.CreatedDate,
                     };
 
                     list.Add(transaction);
@@ -99,7 +99,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             AccountUserName = accountusername,
                             Price = price,
                             TransactionNumber = tr.TransactionNumber,
-                            Time = tr.Time,
+                            Time = tr.CreatedDate,
                         };
 
                         list.Add(transaction);
@@ -147,7 +147,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     AccountUserName = accountusername,
                     Price = price,
                     TransactionNumber = tr.TransactionNumber,
-                    Time = tr.Time,
+                    Time = tr.CreatedDate,
                 };
 
                 logger.LogInformation("AccountTransactionRepository GetAllAsync was Done for ");

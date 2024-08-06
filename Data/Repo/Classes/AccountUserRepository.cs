@@ -1,6 +1,7 @@
 ﻿using EcoBar.Accounting.Data.Configs;
 using EcoBar.Accounting.Data.Entities;
 using EcoBar.Accounting.Data.Repo.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
@@ -15,6 +16,20 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             await dbContext.AccountUsers.AddAsync(model);
             await dbContext.SaveChangesAsync();
 
+            var accountNumberList = await dbContext.Accounts.Select(i => new { AccountNumber = i.AccountNumber }).ToListAsync();
+
+            string accountNumberCash = random.Next(99999999, 1000000000).ToString();
+            string accountNumberWallet = random.Next(99999999, 1000000000).ToString();
+
+            while (accountNumberList.Any(i => i.AccountNumber.Equals(accountNumberCash)))
+            {
+                accountNumberCash = random.Next(99999999, 1000000000).ToString();
+            }
+            while (accountNumberList.Any(i => i.AccountNumber.Equals(accountNumberWallet)))
+            {
+                accountNumberWallet = random.Next(99999999, 1000000000).ToString();
+            }
+
             //create AccountCash
             var AccountCash = new Account()
             {
@@ -22,7 +37,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 AccountUserId = model.Id,
                 AccountUser = model,
                 Title = "حساب نقدی",
-                AccountNumber = random.Next(9999999,100000000).ToString()
+                AccountNumber = accountNumberCash
             };
             await dbContext.Accounts.AddAsync(AccountCash);
 
@@ -33,7 +48,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 AccountUserId = model.Id,
                 AccountUser = model,
                 Title = "حساب کیف پول",
-                AccountNumber = random.Next(9999999, 100000000).ToString()
+                AccountNumber = accountNumberWallet
             };
             await dbContext.Accounts.AddAsync(accountWallet);
             await dbContext.SaveChangesAsync();

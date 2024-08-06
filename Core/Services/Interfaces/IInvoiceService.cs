@@ -12,5 +12,7 @@ namespace EcoBar.Accounting.Core.Services.Interfaces
         Task<BaseResponseDto<bool?>> PaymentAsync(PaymentInvoiceDto dto);
         Task<BaseResponseDto<bool?>> CloseInvoiceAsync(CloseInvoiceDto dto);
         Task<BaseResponseDto<bool?>> DepositAsync(CreatePaymentDto dto);
+        Task<BaseResponseDto<bool?>> CancelAsync(CancelInvoiceDto dto);
+        Task<BaseResponseDto<bool?>> ReturnAsync(ReturnInvoiceDto dto);
     }
 }

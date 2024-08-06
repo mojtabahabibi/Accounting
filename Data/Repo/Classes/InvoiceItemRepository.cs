@@ -56,17 +56,14 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 throw new AccountingException(ex.Message.ToString(), false, ErrorCodes.NotFound);
             }
         }
-        public async Task<bool> InvoiceStatus(long invoiceId)
+        public async Task<InvoiceStatus> InvoiceStatus(long invoiceId)
         {
             logger.LogInformation("InvoiceItemRepository InvoiceStatus was called for ");
             try
             {
                 var result = await dbContext.Invoices.FindAsync(invoiceId);
                 logger.LogInformation("InvoiceItemRepository InvoiceStatus was Done for ");
-                if (result != null)
-                    return result.Status;
-                else
-                    return false;
+                return result.Status;
             }
             catch (AccountingException ex)
             {

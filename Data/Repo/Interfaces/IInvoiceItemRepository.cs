@@ -1,4 +1,5 @@
 ﻿using EcoBar.Accounting.Data.Entities;
+using EcoBar.Accounting.Data.Enums;
 
 namespace EcoBar.Accounting.Data.Repo.Interfaces
 {
@@ -6,6 +7,6 @@ namespace EcoBar.Accounting.Data.Repo.Interfaces
     {
         Task<InvoiceItem> CreateInvoiceItemAsync(InvoiceItem entity);
         Task<bool> UpdateInvoiceItemAsync(InvoiceItem entity);
-        Task<bool> InvoiceStatus(long invoiceId);
+        Task<InvoiceStatus> InvoiceStatus(long invoiceId);
     }
 }

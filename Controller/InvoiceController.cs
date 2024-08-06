@@ -166,6 +166,31 @@ namespace EcoBar.Accounting.Controller
                 );
             }
         }
+        [HttpPost("CancelInvoice")]
+        public async Task<ActionResult<BaseResponseDto<bool?>>> CancelInvoice([FromQuery] CancelInvoiceDto model)
+        {
+            logger.LogInformation("InvoiceController CancelInvoice Began");
+            try
+            {
+                var result = await invoiceService.CancelAsync(model);
+                logger.LogInformation("InvoiceController CancelInvoice Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceController CancelInvoice Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
         //[HttpPost("Payment")]
         //public async Task<ActionResult<BaseResponseDto<bool?>>> Payment([FromQuery] PaymentInvoiceDto model)
         //{

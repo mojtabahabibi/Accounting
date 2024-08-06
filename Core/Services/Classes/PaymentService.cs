@@ -112,7 +112,6 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-
                     var result = await paymentRepository.PaymentAsync(dto);
                     logger.LogInformation("PaymentService Payment Done");
                     if (result == PaymentResult.Done)

@@ -18,6 +18,29 @@ namespace EcoBar.Accounting.Core.Services.Classes
             this.mapper = mapper;
             this.accountUserRepository = accountUserRepository;
         }
+        public async Task<AccountUserListResponseDto> GetAllAccountUser()
+        {
+            logger.LogInformation("AccountUserService GetAllAccountUser Began");
+            try
+            {
+                var result = await accountUserRepository.GetAllAsync();
+                var dto = mapper.Map<List<AccountUserListDto>>(result);
+                logger.LogInformation("AccountUserService GetAllAccountUser Failed");
+                return new AccountUserListResponseDto()
+                {
+                    Data = dto,
+                    DataCount = result.Count(),
+                    ErrorCode = Data.Enums.ErrorCodes.OK,
+                    Status = true,
+                    Message = "دریافت شد"
+                };
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "AccountUserService GetAllAccountUser Failed");
+                throw;
+            }
+        }
         public async Task<BaseResponseDto<bool?>> CreateAccountUserAsync(CreateAccountUserDto dto)
         {
             logger.LogInformation("AccountUserService CreateAccountUser Began");

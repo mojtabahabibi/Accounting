@@ -9,6 +9,5 @@
         public long TransactionTypeId { get; set; }
         public TransactionType? TransactionType { get; set; }
         public Guid TransactionNumber { get; set; }
-        public DateTime Time { get; set; }
     }
 }

@@ -6,6 +6,7 @@ namespace EcoBar.Accounting.Data.Dto
         public long AccountUserId { get; set; }
         public string? Title { get; set; }
         public string? AccountNumber { get; set; }
+        public long Amount { get; set; }
     }
     public class BaseAccountIdDto
     {

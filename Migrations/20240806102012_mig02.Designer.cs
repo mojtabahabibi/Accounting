@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoBar.Accounting.Migrations
 {
     [DbContext(typeof(AccountingDbContext))]
-    [Migration("20240805095259_mig03")]
-    partial class mig03
+    [Migration("20240806102012_mig02")]
+    partial class mig02
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -84,12 +84,12 @@ namespace EcoBar.Accounting.Migrations
                         new
                         {
                             Id = 1L,
-                            AccountNumber = "123",
+                            AccountNumber = "69387194",
                             AccountTypeId = 1L,
                             AccountUserId = 1L,
                             Amount = 0L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8711),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3142),
                             Title = "حساب نقدی صندوق"
                         });
                 });
@@ -132,9 +132,6 @@ namespace EcoBar.Accounting.Migrations
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<long>("TransactionId")
-                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -244,14 +241,14 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8650),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3008),
                             Type = "حساب نقدی"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8657),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3013),
                             Type = "حساب کیف پول"
                         });
                 });
@@ -307,7 +304,7 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8427),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(2705),
                             Name = "Company",
                             Password = "123456",
                             UserName = "Company"
@@ -457,8 +454,8 @@ namespace EcoBar.Accounting.Migrations
                     b.Property<string>("SerialNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -582,7 +579,7 @@ namespace EcoBar.Accounting.Migrations
                             Id = 1L,
                             Code = "1",
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8831),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3362),
                             Name = "خرید شارژ",
                             Price = 1000L
                         });
@@ -674,35 +671,35 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8768),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3291),
                             Title = "واریز به حساب نقدی"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8773),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3297),
                             Title = "خرید از حساب نقدی"
                         },
                         new
                         {
                             Id = 3L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8774),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3298),
                             Title = "واریز به حساب کیف پول"
                         },
                         new
                         {
                             Id = 4L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8776),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3300),
                             Title = "خرید از حساب کیف پول"
                         },
                         new
                         {
                             Id = 5L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8777),
+                            CreatedDate = new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3301),
                             Title = "مرجوعی"
                         });
                 });

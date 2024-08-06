@@ -6,154 +6,165 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EcoBar.Accounting.Migrations
 {
     /// <inheritdoc />
-    public partial class mig03 : Migration
+    public partial class mig02 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "TransactionId",
+                table: "AccountBooks");
+
             migrationBuilder.UpdateData(
                 table: "AccountType",
                 keyColumn: "Id",
                 keyValue: 1L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8650));
+                value: new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3008));
 
             migrationBuilder.UpdateData(
                 table: "AccountType",
                 keyColumn: "Id",
                 keyValue: 2L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8657));
+                value: new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3013));
 
             migrationBuilder.UpdateData(
                 table: "AccountUsers",
                 keyColumn: "Id",
                 keyValue: 1L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8427));
+                value: new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(2705));
 
             migrationBuilder.UpdateData(
                 table: "Accounts",
                 keyColumn: "Id",
                 keyValue: 1L,
-                column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8711));
+                columns: new[] { "AccountNumber", "CreatedDate" },
+                values: new object[] { "69387194", new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3142) });
 
             migrationBuilder.UpdateData(
                 table: "Items",
                 keyColumn: "Id",
                 keyValue: 1L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8831));
+                value: new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3362));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 1L,
-                columns: new[] { "CreatedDate", "Title" },
-                values: new object[] { new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8768), "واریز به حساب نقدی" });
+                column: "CreatedDate",
+                value: new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3291));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 2L,
-                columns: new[] { "CreatedDate", "Title" },
-                values: new object[] { new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8773), "خرید از حساب نقدی" });
+                column: "CreatedDate",
+                value: new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3297));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 3L,
-                columns: new[] { "CreatedDate", "Title" },
-                values: new object[] { new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8774), "واریز به حساب کیف پول" });
+                column: "CreatedDate",
+                value: new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3298));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 4L,
-                columns: new[] { "CreatedDate", "Title" },
-                values: new object[] { new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8776), "خرید از حساب کیف پول" });
+                column: "CreatedDate",
+                value: new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3300));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 5L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 22, 58, 637, DateTimeKind.Local).AddTicks(8777));
+                value: new DateTime(2024, 8, 6, 13, 50, 12, 118, DateTimeKind.Local).AddTicks(3301));
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<long>(
+                name: "TransactionId",
+                table: "AccountBooks",
+                type: "bigint",
+                nullable: false,
+                defaultValue: 0L);
+
             migrationBuilder.UpdateData(
                 table: "AccountType",
                 keyColumn: "Id",
                 keyValue: 1L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2631));
+                value: new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(2140));
 
             migrationBuilder.UpdateData(
                 table: "AccountType",
                 keyColumn: "Id",
                 keyValue: 2L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2636));
+                value: new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(2148));
 
             migrationBuilder.UpdateData(
                 table: "AccountUsers",
                 keyColumn: "Id",
                 keyValue: 1L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2405));
+                value: new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(1881));
 
             migrationBuilder.UpdateData(
                 table: "Accounts",
                 keyColumn: "Id",
                 keyValue: 1L,
-                column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2684));
+                columns: new[] { "AccountNumber", "CreatedDate" },
+                values: new object[] { "71128647", new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(2258) });
 
             migrationBuilder.UpdateData(
                 table: "Items",
                 keyColumn: "Id",
                 keyValue: 1L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2796));
+                value: new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(2476));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 1L,
-                columns: new[] { "CreatedDate", "Title" },
-                values: new object[] { new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2735), "واریز به حساب" });
+                column: "CreatedDate",
+                value: new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(2404));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 2L,
-                columns: new[] { "CreatedDate", "Title" },
-                values: new object[] { new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2740), "خرید از حساب" });
+                column: "CreatedDate",
+                value: new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(2410));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 3L,
-                columns: new[] { "CreatedDate", "Title" },
-                values: new object[] { new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2741), "واریز به کیف پول" });
+                column: "CreatedDate",
+                value: new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(2412));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 4L,
-                columns: new[] { "CreatedDate", "Title" },
-                values: new object[] { new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2742), "خرید از کیف پول" });
+                column: "CreatedDate",
+                value: new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(2413));
 
             migrationBuilder.UpdateData(
                 table: "TransactionTypes",
                 keyColumn: "Id",
                 keyValue: 5L,
                 column: "CreatedDate",
-                value: new DateTime(2024, 8, 5, 13, 19, 19, 762, DateTimeKind.Local).AddTicks(2744));
+                value: new DateTime(2024, 8, 6, 13, 19, 43, 561, DateTimeKind.Local).AddTicks(2415));
         }
     }
 }
