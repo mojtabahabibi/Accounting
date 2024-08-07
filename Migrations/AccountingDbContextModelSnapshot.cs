@@ -81,12 +81,12 @@ namespace EcoBar.Accounting.Migrations
                         new
                         {
                             Id = 1L,
-                            AccountNumber = "17409140",
+                            AccountNumber = "83420537",
                             AccountTypeId = 1L,
                             AccountUserId = 1L,
                             Amount = 0L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(1809),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(7889),
                             Title = "حساب نقدی صندوق"
                         });
                 });
@@ -235,14 +235,14 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(1705),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(7791),
                             Type = "حساب نقدی"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(1709),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(7796),
                             Type = "حساب کیف پول"
                         });
                 });
@@ -298,7 +298,7 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(1442),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(7523),
                             Name = "Company",
                             Password = "123456",
                             UserName = "Company"
@@ -573,7 +573,7 @@ namespace EcoBar.Accounting.Migrations
                             Id = 1L,
                             Code = "1",
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(2000),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(8078),
                             Name = "خرید شارژ",
                             Price = 1000L
                         });
@@ -665,35 +665,35 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(1937),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(8016),
                             Title = "واریز به حساب نقدی"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(1943),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(8020),
                             Title = "خرید از حساب نقدی"
                         },
                         new
                         {
                             Id = 3L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(1944),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(8021),
                             Title = "واریز به حساب کیف پول"
                         },
                         new
                         {
                             Id = 4L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(1946),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(8023),
                             Title = "خرید از حساب کیف پول"
                         },
                         new
                         {
                             Id = 5L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 6, 14, 0, 27, 154, DateTimeKind.Local).AddTicks(1947),
+                            CreatedDate = new DateTime(2024, 8, 6, 14, 54, 55, 816, DateTimeKind.Local).AddTicks(8024),
                             Title = "مرجوعی"
                         });
                 });
