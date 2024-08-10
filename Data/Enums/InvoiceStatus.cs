@@ -7,5 +7,6 @@
         Cancel = 2,
         Returen = 3,
         Pay = 4,
+        error = 5,
     }
 }

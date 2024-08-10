@@ -4,6 +4,8 @@
     {
         public required string Code { get; set; }
         public required string Name { get; set; }
-        public long Price { get; set; }
+        public required long Price { get; set; }
+
+        public ICollection<InvoiceItem>? InvoiceItems { get; set; }
     }
 }

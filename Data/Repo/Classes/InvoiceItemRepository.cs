@@ -25,7 +25,9 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     invoice.Price = invoice.Price + (entity.Price * entity.Count);
                     invoice.Off = invoice.Off + entity.Off;
                     invoice.TotalPrice = invoice.Price - invoice.Off;
+                    dbContext.Invoices.Attach(invoice);
                 }
+
                 await dbContext.SaveChangesAsync();
                 logger.LogInformation("InvoiceItemRepository CreateInvoiceItemAsync was Done for ");
                 return entity;
@@ -63,7 +65,9 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             {
                 var result = await dbContext.Invoices.FindAsync(invoiceId);
                 logger.LogInformation("InvoiceItemRepository InvoiceStatus was Done for ");
-                return result.Status;
+                if (result != null)
+                    return result.Status;
+                return Enums.InvoiceStatus.error;
             }
             catch (AccountingException ex)
             {

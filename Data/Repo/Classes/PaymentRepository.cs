@@ -20,7 +20,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
 
             var transaction = new AccountTransaction()
             {
-                PaymentId = payment.Id,
                 Payment = payment,
                 TransactionNumber = Guid.NewGuid()
             };
@@ -30,13 +29,12 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             var account = await dbContext.Accounts.Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.AccountUserId == payment.Account.AccountUserId);
             if (account != null)
             {
-                var exist = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == account.Id);
+                var exist = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.Id == account.Id);
                 if (exist == null)
                 {
                     var wallet = new Wallet()
                     {
                         Account = account,
-                        AccountId = account.Id,
                         Amount = payment.Price,
                         WalletNumber = Guid.NewGuid()
                     };
@@ -58,6 +56,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             {
                 if (accountType.AccountTypeId == 1)
                 {
+                    payment.InvoicePayTypeId = 1;
                     await dbContext.Payments.AddAsync(payment);
                     await dbContext.SaveChangesAsync();
 
@@ -66,7 +65,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     {
                         var transaction = new AccountTransaction()
                         {
-                            PaymentId = payment.Id,
                             Payment = payment,
                             TransactionTypeId = type.Id,
                             TransactionType = type,
@@ -152,7 +150,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 Price = model.Price
                             };
                             await dbContext.InvoiceItems.AddAsync(invoiceItem);
-                            var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId.Equals(accountWallet.Id));
+                            var wallet = await dbContext.Wallets.Include(i=>i.Account).FirstOrDefaultAsync(i => i.Account.Id.Equals(accountWallet.Id));
                             if (wallet != null)
                                 wallet.Amount = model.Price;
                             accountCash.Amount -= model.Price;
@@ -161,7 +159,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             // Create Transaction
                             var transaction = new AccountTransaction()
                             {
-                                InvoiceId = invoice.Id,
                                 Invoice = invoice,
                                 TransactionTypeId = 3,
                                 TransactionNumber = Guid.NewGuid()
@@ -201,7 +198,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
         }
         public async Task<PaymentResult> PaymentAsync(PaymentInvoiceDto model)
         {
-            var invoice = await dbContext.Invoices.Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.Id.Equals(model.InvoiceId));
+            var invoice = await dbContext.Invoices.Include(i => i.InvoiceItems).ThenInclude(i => i.Item).Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.Id.Equals(model.InvoiceId));
             if (invoice != null)
             {
                 if (invoice.AccountUser != null)
@@ -213,57 +210,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     {
                         if (account.AccountTypeId == 1)
                         {
-                            // حساب نقدی
-                            if (account.Amount > invoice.TotalPrice)
-                            {
-                                invoice.Status = InvoiceStatus.Pay;
-                                var transaction = new AccountTransaction()
-                                {
-                                    InvoiceId = model.InvoiceId,
-                                    Invoice = invoice,
-                                    TransactionTypeId = 2,
-                                    TransactionNumber = Guid.NewGuid()
-                                };
-                                await dbContext.AccountTransactions.AddAsync(transaction);
-                                await dbContext.SaveChangesAsync();
-
-                                // حساب مشتری 
-                                var accountUser = await dbContext.Accounts.Include(i => i.AccountUser)
-                                    .FirstOrDefaultAsync(i => i.AccountUserId == invoice.AccountUserId);
-                                if (accountUser != null)
-                                {
-                                    var accountBook = new AccountBook()
-                                    {
-                                        AccountTransactionId = transaction.Id,
-                                        AccountTransaction = transaction,
-                                        AccountId = accountUser.Id,
-                                        Account = accountUser,
-                                        Amount = -(invoice.TotalPrice)
-                                    };
-                                    await dbContext.AccountBooks.AddAsync(accountBook);
-
-                                    account.Amount -= invoice.TotalPrice;
-                                }
-                                // حساب شرکت
-                                var accountCompany = await dbContext.Accounts.FirstOrDefaultAsync();
-                                if (accountCompany != null)
-                                {
-                                    var accountBook = new AccountBook()
-                                    {
-                                        AccountTransactionId = transaction.Id,
-                                        AccountTransaction = transaction,
-                                        AccountId = accountCompany.Id,
-                                        Account = accountCompany,
-                                        Amount = invoice.TotalPrice
-                                    };
-                                    await dbContext.AccountBooks.AddAsync(accountBook);
-
-                                    accountCompany.Amount += invoice.TotalPrice;
-                                }
-                                await dbContext.SaveChangesAsync();
-                                return PaymentResult.Done;
-                            }
-                            return PaymentResult.DontMoney;
+                            return PaymentResult.PayWithWallet;
                         }
                         else if (account.AccountTypeId == 2)
                         {
@@ -277,7 +224,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 {
                                     var transaction = new AccountTransaction()
                                     {
-                                        InvoiceId = model.InvoiceId,
                                         Invoice = invoice,
                                         TransactionTypeId = 4,
                                         TransactionNumber = Guid.NewGuid()
@@ -324,10 +270,11 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             }
                         }
                     }
+                    return PaymentResult.DontInvoiceItem;
                 }
                 return PaymentResult.DontInvoiceItem;
             }
-            return PaymentResult.DontInvoiceItem;
+            return PaymentResult.InnerExeption;
         }
     }
 }

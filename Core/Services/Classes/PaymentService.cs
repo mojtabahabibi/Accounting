@@ -4,7 +4,6 @@ using EcoBar.Accounting.Core.Tools;
 using EcoBar.Accounting.Data.Dto;
 using EcoBar.Accounting.Data.Entities;
 using EcoBar.Accounting.Data.Enums;
-using EcoBar.Accounting.Data.Repo.Classes;
 using EcoBar.Accounting.Data.Repo.Interfaces;
 using FluentValidation;
 
@@ -149,6 +148,12 @@ namespace EcoBar.Accounting.Core.Services.Classes
                         response.ErrorCode = ErrorCodes.NotFound;
                         response.Status = false;
                         response.Message = "فاکتور هیچگونه اقلام فاکتوری ندارد";
+                    }
+                    else if (result == PaymentResult.PayWithWallet)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "با حساب کیف پول خرید کنید";
                     }
                 }
                 return response;

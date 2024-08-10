@@ -13,5 +13,7 @@ namespace EcoBar.Accounting.Data.Repo.Interfaces
         Task<bool> DepositAsync(Payment payment);
         Task<CancelInvoiceResult> CancelInvoiceAsync(long invoiceId);
         Task<bool> ReturnedInvoiceAsync(long invoiceId);
+        Task<bool> BuyChargeAsync(BuyChargeDto model);
+        Task<PaymentResult> PaymentChargeAsync(PaymentChargeDto model);
     }
 }

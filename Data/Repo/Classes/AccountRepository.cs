@@ -17,7 +17,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             var wallet = new Wallet()
             {
                 Account = account,
-                AccountId = account.Id,
                 WalletNumber = Guid.NewGuid(),
                 Amount = 0
             };

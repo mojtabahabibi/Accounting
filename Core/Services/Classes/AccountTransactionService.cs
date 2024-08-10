@@ -24,12 +24,12 @@ namespace EcoBar.Accounting.Core.Services.Classes
             this.numberValidator = numberValidator;
             this.accountTransactionRepository = accountTransactionRepository;
         }
-        public async Task<AccountTranasctionGetAllResponseDto> GetAllAccountTransactionAsync()
+        public AccountTranasctionGetAllResponseDto GetAllAccountTransactionAsync()
         {
             logger.LogInformation("AccountTransactionService GetAllAccountTranasction Began");
             try
             {
-                var result = await accountTransactionRepository.GetAllAccountTransactionAsync();
+                var result = accountTransactionRepository.GetAllAccountTransactionAsync();
                 logger.LogInformation("AccountTransactionService GetAllAccountTranasction Failed");
                 return new AccountTranasctionGetAllResponseDto()
                 {
@@ -62,7 +62,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await accountTransactionRepository.GetByUserNameAsync(username);
+                    var result = accountTransactionRepository.GetByUserNameAsync(username);
                     logger.LogInformation("AccountTransactionService GetByUsername Failed");
 
                     response.Data = result;

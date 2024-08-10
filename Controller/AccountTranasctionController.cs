@@ -17,12 +17,12 @@ namespace EcoBar.Accounting.Controller
             this.accountTransactionService = accountTransactionService;
         }
         [HttpGet("GetAll")]
-        public async Task<ActionResult<AccountTranasctionGetAllResponseDto>> GetAll()
+        public ActionResult<AccountTranasctionGetAllResponseDto> GetAll()
         {
             logger.LogInformation("AccountTranasctionController GetAllAccountTransaction Began");
             try
             {
-                var result = await accountTransactionService.GetAllAccountTransactionAsync();
+                var result =  accountTransactionService.GetAllAccountTransactionAsync();
                 logger.LogInformation("AccountTranasctionController GetAllAccountTransaction Done");
                 return result;
             }

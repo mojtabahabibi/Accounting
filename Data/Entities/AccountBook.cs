@@ -3,9 +3,11 @@
     public class AccountBook : BaseEntity
     {
         public long AccountTransactionId { get; set; }
-        public required virtual AccountTransaction AccountTransaction { get; set; }
+        public required AccountTransaction AccountTransaction { get; set; }
+
         public long AccountId { get; set; }
-        public required virtual Account Account { get; set; }
+        public required Account Account { get; set; }
+
         public long Amount { get; set; }
     }
 }

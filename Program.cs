@@ -95,6 +95,8 @@ builder.Services.AddScoped<IValidator<DeleteInvoiceDto>, DeleteInvoiceValidation
 builder.Services.AddScoped<IValidator<CloseInvoiceDto>, CloseInvoiceValidation>();
 builder.Services.AddScoped<IValidator<CancelInvoiceDto>, CancelInvoiceValidation>();
 builder.Services.AddScoped<IValidator<ReturnInvoiceDto>, ReturnInvoiceValidation>();
+builder.Services.AddScoped<IValidator<BuyChargeDto>, BuyChargeValidation>();
+builder.Services.AddScoped<IValidator<PaymentChargeDto>, PaymentChargeValidation>();
 #endregion
 
 #region Payment

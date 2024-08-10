@@ -10,6 +10,8 @@ namespace EcoBar.Accounting.Core.Validation.Payment
         {
             RuleFor(i => i.AccountId).Must(id => context.Accounts.Any(i => i.Id.Equals(id)))
                 .WithMessage("شماره حساب در سیستم وجود ندارد");
+            RuleFor(i => i.AccountId).Must(id => context.Accounts.Any(i => i.Id.Equals(id) && i.AccountTypeId == 1))
+                .WithMessage("شماره حساب وارد شده از نوع حساب نقدی نمی باشد");
         }
     }
 }

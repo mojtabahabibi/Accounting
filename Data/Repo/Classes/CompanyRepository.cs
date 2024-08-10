@@ -20,7 +20,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 {
                     UserName = "Comapny",
                     Password = entity.Economicalnumber,
-                    Name = entity.Name
                 };
                 await dbContext.AccountUsers.AddAsync(user);
                 await dbContext.SaveChangesAsync();

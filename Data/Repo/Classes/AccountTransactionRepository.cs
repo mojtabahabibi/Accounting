@@ -13,14 +13,15 @@ namespace EcoBar.Accounting.Data.Repo.Classes
         {
 
         }
-        public async Task<List<AccountTransactionListDto>> GetAllAccountTransactionAsync()
+        public List<AccountTransactionListDto> GetAllAccountTransactionAsync()
         {
             logger.LogInformation("AccountTransactionRepository GetAllAsync was called for ");
             try
             {
                 var list = new List<AccountTransactionListDto>();
-                var accountTransactions = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
-                    .Include(i => i.Payment).ThenInclude(i => i.Account).Include(i => i.TransactionType).ToListAsync();
+                var accountTransactions = dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
+                                                                       .Include(i => i.Payment).ThenInclude(i => i.Account)
+                                                                       .Include(i => i.TransactionType);
                 foreach (var tr in accountTransactions)
                 {
                     string accountusername = "";
@@ -62,14 +63,15 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 throw;
             }
         }
-        public async Task<List<AccountTransactionListDto>> GetByUserNameAsync(string username)
+        public List<AccountTransactionListDto> GetByUserNameAsync(string username)
         {
             logger.LogInformation("AccountTransactionRepository GetAllAsync was called for ");
             try
             {
                 var list = new List<AccountTransactionListDto>();
-                var accountTransactions = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
-                    .Include(i => i.Payment).ThenInclude(i => i.Account).Include(i=>i.TransactionType).ToListAsync();
+                var accountTransactions = dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
+                                                                       .Include(i => i.Payment).ThenInclude(i => i.Account)
+                                                                       .Include(i => i.TransactionType);
                 foreach (var tr in accountTransactions)
                 {
                     string accountusername = "";
@@ -120,8 +122,10 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             logger.LogInformation("AccountTransactionRepository GetAllAsync was called for ");
             try
             {
-                var tr = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i=>i.AccountUser)
-                    .Include(i => i.Payment).ThenInclude(i => i.Account).Include(i=>i.TransactionType).FirstOrDefaultAsync(i => i.TransactionNumber.Equals(number));
+                var tr = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser)
+                                                            .Include(i => i.Payment).ThenInclude(i => i.Account)
+                                                            .Include(i => i.TransactionType)
+                                                            .FirstOrDefaultAsync(i => i.TransactionNumber.Equals(number));
                 string accountusername = "";
                 long price = 0;
                 if (tr.Payment != null)

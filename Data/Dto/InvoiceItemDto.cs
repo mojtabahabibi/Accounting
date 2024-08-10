@@ -4,7 +4,7 @@
     public class BaseInvoiceItemDto
     {
         public long ItemId { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public int Count { get; set; }
         public long Off { get; set; }
         public long Price { get; set; }
@@ -33,7 +33,7 @@
     {
         public long Id { get; set; }
         public long ItemId { get; set; }
-        public string ItemName { get; set; }
+        public string? ItemName { get; set; }
         public int Count { get; set; }
         public long Off { get; set; }
         public long Price { get; set; }

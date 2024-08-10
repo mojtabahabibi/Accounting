@@ -14,7 +14,7 @@ namespace EcoBar.Accounting.Data.Dto
     }
     public class UpdateAccountDto : BaseAccountDto
     {
-        public long Id { get; set; }
+        
     }
     public class AccountCreateGetResponseDto : BaseResponseDto<List<BaseAccountDto>>
     {

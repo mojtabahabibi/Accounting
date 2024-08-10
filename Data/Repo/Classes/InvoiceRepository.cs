@@ -32,7 +32,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         Status = i.Status == InvoiceStatus.Open ? "فاکتور باز است" : i.Status == InvoiceStatus.Close ? "فاکتور بسته شده است" :
                         i.Status == InvoiceStatus.Cancel ? "فاکتور کنسل شده است" : i.Status == InvoiceStatus.Pay ? "فاکتور پرداخت شده است" : "فاکتور لغو شده است",
                         Date = i.Date,
-                        InvoiceItems = i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
+                        InvoiceItems = i.InvoiceItems != null ? i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
                         {
                             Id = j.Id,
                             ItemId = j.ItemId,
@@ -40,8 +40,8 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             Count = j.Count,
                             Off = j.Off,
                             Price = j.Price,
-                        }).ToList()
-                    }).ToListAsync();
+                        }).ToList() : null
+                    }).AsNoTracking().ToListAsync();
                 logger.LogInformation("InvoiceRepository GetAllAsync was Done for ");
                 return entity;
             }
@@ -69,7 +69,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         Status = i.Status == InvoiceStatus.Open ? "فاکتور باز است" : i.Status == InvoiceStatus.Close ? "فاکتور بسته شده است" :
                         i.Status == InvoiceStatus.Cancel ? "فاکتور کنسل شده است" : i.Status == InvoiceStatus.Pay ? "فاکتور پرداخت شده است" : "فاکتور لغو شده است",
                         Date = i.Date,
-                        InvoiceItems = i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
+                        InvoiceItems = i.InvoiceItems != null ? i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
                         {
                             Id = j.Id,
                             ItemId = j.ItemId,
@@ -77,8 +77,8 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             Count = j.Count,
                             Off = j.Off,
                             Price = j.Price
-                        }).ToList()
-                    }).FirstOrDefaultAsync();
+                        }).ToList() : null
+                    }).AsNoTracking().FirstOrDefaultAsync();
                 logger.LogInformation("InvoiceRepository GetByIdAsync was Done for ");
                 return entity;
             }
@@ -101,7 +101,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     var type = await dbContext.TransactionTypes.FirstOrDefaultAsync(i => i.Id == 2);
                     var transaction = new AccountTransaction()
                     {
-                        InvoiceId = invoiceId,
                         Invoice = invoice,
                         TransactionTypeId = type.Id,
                         TransactionType = type,
@@ -125,7 +124,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         };
                         await dbContext.AccountBooks.AddAsync(accountBook);
 
-                        var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == accountUser.Id);
+                        var wallet = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.Id == accountUser.Id);
                         if (wallet != null)
                             wallet.Amount -= invoice.TotalPrice;
                     }
@@ -143,7 +142,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         };
                         await dbContext.AccountBooks.AddAsync(accountBook);
 
-                        var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId == accountCompany.Id);
+                        var wallet = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.Id == accountCompany.Id);
                         if (wallet != null)
                             wallet.Amount += invoice.TotalPrice;
                     }
@@ -193,7 +192,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     var type = await dbContext.TransactionTypes.FirstOrDefaultAsync(i => i.Id == 1);
                     var transaction = new AccountTransaction()
                     {
-                        PaymentId = payment.Id,
                         Payment = payment,
                         TransactionTypeId = type.Id,
                         TransactionType = type,
@@ -268,7 +266,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             {
                 if (invoice.Status == InvoiceStatus.Pay)
                 {
-                    var transaction = await dbContext.AccountTransactions.FirstOrDefaultAsync(i => i.InvoiceId.Equals(invoiceId));
+                    var transaction = await dbContext.AccountTransactions.Include(i => i.Invoice).FirstOrDefaultAsync(i => i.Invoice.Id.Equals(invoiceId));
                     if (transaction != null)
                     {
                         long totalPrice = invoice.TotalPrice;
@@ -281,7 +279,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             {
                                 var new_transaction = new AccountTransaction()
                                 {
-                                    InvoiceId = invoiceId,
                                     Invoice = invoice,
                                     TransactionTypeId = 5,
                                     TransactionNumber = Guid.NewGuid()
@@ -322,7 +319,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
 
                                         return true;
                                     case 4:
-                                        var wallet = await dbContext.Wallets.FirstOrDefaultAsync(i => i.AccountId.Equals(accountUser.Id));
+                                        var wallet = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.Id.Equals(accountUser.Id));
                                         if (wallet != null)
                                         {
                                             wallet.Amount += totalPrice;
@@ -337,6 +334,133 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 }
             }
             return false;
+        }
+        public async Task<bool> BuyChargeAsync(BuyChargeDto model)
+        {
+            logger.LogInformation("InvoiceRepository BuyChargeAsync was called for ");
+            try
+            {
+                Random random = new Random();
+                string serialNumber = random.Next(99999, 1000000).ToString();
+
+                var invoice = new Invoice()
+                {
+                    AccountUserId = model.AccountUserId,
+                    Title = "خرید شارژ",
+                    SerialNumber = serialNumber,
+                    Price = model.Price,
+                    Off = 0,
+                    TotalPrice = model.Price,
+                    Date = DateTime.Now,
+                };
+                await dbContext.Invoices.AddAsync(invoice);
+                await dbContext.SaveChangesAsync();
+
+                var item = await dbContext.Items.FirstOrDefaultAsync();
+                if (item != null)
+                {
+                    var invoiceItem = new InvoiceItem()
+                    {
+                        Invoice = invoice,
+                        InvoiceId = invoice.Id,
+                        Item = item,
+                        ItemId = item.Id,
+                        Name = "خرید شارژ",
+                        Count = 1,
+                        Off = 0,
+                        Price = model.Price,
+                    };
+                    await dbContext.InvoiceItems.AddAsync(invoiceItem);
+                    await dbContext.SaveChangesAsync();
+
+                    return true;
+                }
+                return false;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceRepository BuyChargeAsync was Failed for ");
+                throw;
+            }
+        }
+        public async Task<PaymentResult> PaymentChargeAsync(PaymentChargeDto model)
+        {
+            logger.LogInformation("InvoiceRepository BuyChargeAsync was called for ");
+            try
+            {
+                var account = await dbContext.Accounts.Include(i => i.AccountUser)
+                      .FirstOrDefaultAsync(i => i.AccountUserId.Equals(model.AccountUserId) && i.AccountTypeId == 1);
+                if (account != null)
+                {
+                    var invoice = await dbContext.Invoices.Include(i => i.InvoiceItems).ThenInclude(i => i.Item)
+                        .FirstOrDefaultAsync(i => i.AccountUserId.Equals(account.AccountUserId) && i.Status == 0);
+                    if (invoice != null)
+                    {
+                        if (account.Amount > invoice.TotalPrice)
+                        {
+                            var type = await dbContext.TransactionTypes.FirstOrDefaultAsync(i => i.Id == 3);
+                            var transaction = new AccountTransaction()
+                            {
+                                Invoice = invoice,
+                                TransactionTypeId = type.Id,
+                                TransactionType = type,
+                                TransactionNumber = Guid.NewGuid()
+                            };
+                            await dbContext.AccountTransactions.AddAsync(transaction);
+                            await dbContext.SaveChangesAsync();
+
+                            var accountUser = await dbContext.Accounts.Include(i => i.AccountUser)
+                                           .FirstOrDefaultAsync(i => i.AccountUserId == invoice.AccountUserId && i.AccountTypeId == 2);
+                            if (accountUser != null)
+                            {
+                                var accountBook = new AccountBook()
+                                {
+                                    AccountTransactionId = transaction.Id,
+                                    AccountTransaction = transaction,
+                                    AccountId = account.Id,
+                                    Account = account,
+                                    Amount = -(invoice.TotalPrice)
+                                };
+                                await dbContext.AccountBooks.AddAsync(accountBook);
+
+                                var wallet = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.Id == accountUser.Id);
+                                if (wallet != null)
+                                {
+                                    wallet.Amount += invoice.TotalPrice;
+                                    accountUser.Amount += invoice.TotalPrice;
+                                    account.Amount -= invoice.TotalPrice;
+                                }
+                            }
+                            // حساب شرکت
+                            var accountCompany = await dbContext.Accounts.FirstOrDefaultAsync();
+                            if (accountCompany != null)
+                            {
+                                var accountBook = new AccountBook()
+                                {
+                                    AccountTransactionId = transaction.Id,
+                                    AccountTransaction = transaction,
+                                    AccountId = accountCompany.Id,
+                                    Account = accountCompany,
+                                    Amount = invoice.TotalPrice
+                                };
+                                await dbContext.AccountBooks.AddAsync(accountBook);
+                            }
+                            invoice.Status = InvoiceStatus.Pay;
+
+                            await dbContext.SaveChangesAsync();
+                            return PaymentResult.Done;
+                        }
+                        return PaymentResult.DontMoney;
+                    }
+                    return PaymentResult.DontInvoice;
+                }
+                return PaymentResult.DontAccount;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceRepository BuyChargeAsync was Failed for ");
+                throw;
+            }
         }
     }
 }

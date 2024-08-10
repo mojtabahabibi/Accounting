@@ -11,7 +11,6 @@ namespace EcoBar.Accounting.Data.SeedData
                 Id = 1,
                 UserName = "Company",
                 Password = "123456",
-                Name = "Company"
             };
         }
     }

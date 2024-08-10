@@ -14,7 +14,7 @@ namespace EcoBar.Accounting.Core.Validation.Account
             RuleFor(i => i.AccountUserId).Must(AccountUserId => context.AccountUsers.Any(i => i.Id.Equals(AccountUserId)))
                 .WithMessage("نام کاربری وارد شده اشتباه است");
             RuleFor(i => i.Title).NotNull().WithMessage("عنوان حساب را وارد کنید");
-            RuleFor(i => i.AccountNumber).Must(IsAccountNumberUnique).WithMessage("شماره حساب نمی تواند تکراری باشد");
+            //RuleFor(i => i.AccountNumber).Must(IsAccountNumberUnique).WithMessage("شماره حساب نمی تواند تکراری باشد");
         }
         public bool IsAccountNumberUnique(BaseAccountDto editedPlayer, string newValue)
         {

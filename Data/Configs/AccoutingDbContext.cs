@@ -1,3 +1,4 @@
+using EcoBar.Accounting.Data.Configs.FluentConfig;
 using EcoBar.Accounting.Data.Entities;
 using EcoBar.Accounting.Data.SeedData;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace EcoBar.Accounting.Data.Configs
         public virtual DbSet<Item> Items { get; set; }
         public DbSet<InvoiceItem> InvoiceItems { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<InvoicePayType> InvoicePayTypes { get; set; }
         public DbSet<AccountTransaction> AccountTransactions { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<Payment> Payments { get; set; }
@@ -22,18 +24,18 @@ namespace EcoBar.Accounting.Data.Configs
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AccountUser>().HasData(AccountUserSeed.GetAccountUser());
-            modelBuilder.Entity<AccountType>().HasData(AccountTypeSeed.GetAccountTypes());
-            modelBuilder.Entity<Account>().HasData(AccountSeed.GetAccountWallet());
-            modelBuilder.Entity<TransactionType>().HasData(TransactionTypeSeed.GetTransactionTypes());
-            modelBuilder.Entity<Item>().HasData(ItemSeed.GetItems());
-
-            modelBuilder.Entity<Account>().HasOne(i=>i.AccountUser)
-                .WithMany().HasForeignKey(i=>i.AccountUserId).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Account>().HasOne(i => i.AccountType)
-               .WithMany().HasForeignKey(i => i.AccountTypeId).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Wallet>().HasOne(i => i.Account)
-               .WithMany().HasForeignKey(i => i.AccountId).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.ApplyConfiguration(new AccountConfig());
+            modelBuilder.ApplyConfiguration(new AccountBookConfig());
+            modelBuilder.ApplyConfiguration(new AccountTransactionConfig());
+            modelBuilder.ApplyConfiguration(new AccountTypeConfig());
+            modelBuilder.ApplyConfiguration(new AccountUserConfig());
+            modelBuilder.ApplyConfiguration(new InvoiceConfig());
+            modelBuilder.ApplyConfiguration(new InvoiceItemConfig());
+            modelBuilder.ApplyConfiguration(new InvoicePayTypeConfig());
+            modelBuilder.ApplyConfiguration(new ItemConfig());
+            modelBuilder.ApplyConfiguration(new PaymentConfig());
+            modelBuilder.ApplyConfiguration(new TransactionTypeConfig());
+            modelBuilder.ApplyConfiguration(new WalletConfig());
 
             base.OnModelCreating(modelBuilder);
         }

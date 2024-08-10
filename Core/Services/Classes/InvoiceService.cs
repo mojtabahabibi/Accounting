@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EcoBar.Accounting.Core.Services.Interfaces;
 using EcoBar.Accounting.Core.Tools;
+using EcoBar.Accounting.Core.Validation.Invoice;
 using EcoBar.Accounting.Data.Dto;
 using EcoBar.Accounting.Data.Entities;
 using EcoBar.Accounting.Data.Enums;
@@ -21,11 +22,13 @@ namespace EcoBar.Accounting.Core.Services.Classes
         private readonly IValidator<PaymentInvoiceDto> paymentValidator;
         private readonly IValidator<CancelInvoiceDto> cancelValidator;
         private readonly IValidator<ReturnInvoiceDto> returnValidator;
+        private readonly IValidator<BuyChargeDto> chargeValidator;
+        private readonly IValidator<PaymentChargeDto> paymentChargeValidator;
         private readonly IInvoiceRepository invoiceRepository;
         public InvoiceService(ILogger<InvoiceService> logger, IMapper mapper, IInvoiceRepository invoiceRepository, IValidator<CreateInvoiceDto> createValidator
             , IValidator<UpdateInvoiceDto> updateValidator, IValidator<CloseInvoiceDto> closeValidator, IValidator<DeleteInvoiceDto> deleteValidator
             , IValidator<CreatePaymentDto> createPaymentValidator, IValidator<CancelInvoiceDto> cancelValidator, IValidator<PaymentInvoiceDto> paymentValidator
-            , IValidator<ReturnInvoiceDto> returnValidator)
+            , IValidator<ReturnInvoiceDto> returnValidator, IValidator<BuyChargeDto> chargeValidator, IValidator<PaymentChargeDto> paymentChargeValidator)
         {
             this.logger = logger;
             this.mapper = mapper;
@@ -38,6 +41,8 @@ namespace EcoBar.Accounting.Core.Services.Classes
             this.paymentValidator = paymentValidator;
             this.cancelValidator = cancelValidator;
             this.returnValidator = returnValidator;
+            this.chargeValidator = chargeValidator;
+            this.paymentChargeValidator = paymentChargeValidator;
         }
         public async Task<GetAllInvoiceResponseDto> GetAllInvoiceAsync()
         {
@@ -426,6 +431,99 @@ namespace EcoBar.Accounting.Core.Services.Classes
             catch (AccountingException ex)
             {
                 logger.LogError(ex, "InvoiceService Deposit Failed");
+                throw;
+            }
+        }
+        public async Task<BaseResponseDto<bool?>> BuyChargeAsync(BuyChargeDto dto)
+        {
+            logger.LogInformation("InvoiceService BuyCharge Began");
+            try
+            {
+                var validation = await chargeValidator.ValidateAsync(dto);
+                var response = new BaseResponseDto<bool?>();
+                if (!validation.IsValid)
+                {
+                    response.ErrorCode = ErrorCodes.BadRequest;
+                    response.Status = false;
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
+                }
+                else
+                {
+                    var result = await invoiceRepository.BuyChargeAsync(dto);
+                    logger.LogInformation("InvoiceService BuyCharge Done");
+
+                    response.ErrorCode = Data.Enums.ErrorCodes.OK;
+                    response.Status = true;
+                    response.Message = "فاکتور خرید شارژ ایجاد شد";
+                }
+                return response;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceService BuyCharge Failed");
+                throw;
+            }
+        }
+        public async Task<BaseResponseDto<bool?>> PaymentChargeAsync(PaymentChargeDto dto)
+        {
+            logger.LogInformation("InvoiceService Payment Began");
+            try
+            {
+                var validation = await paymentChargeValidator.ValidateAsync(dto);
+                var response = new BaseResponseDto<bool?>();
+                if (!validation.IsValid)
+                {
+                    response.ErrorCode = ErrorCodes.BadRequest;
+                    response.Status = false;
+                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
+                }
+                else
+                {
+
+                    var result = await invoiceRepository.PaymentChargeAsync(dto);
+                    logger.LogInformation("InvoiceService Payment Done");
+                    if (result == PaymentResult.Done)
+                    {
+                        response.ErrorCode = ErrorCodes.OK;
+                        response.Status = true;
+                        response.Message = "فاکتور پرداخت شد";
+                    }
+                    else if (result == PaymentResult.DontAccount)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "کاربر شماره حساب در سیستم ندارد";
+                    }
+                    else if (result == PaymentResult.DontMoney)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "کاربر پول کافی برای خرید شارژ ندارد";
+                    }
+                    else if (result == PaymentResult.DontInvoice)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "کاربر فاکتور خرید شارژی برای پرداخت ندارد";
+                    }
+                    else if (result == PaymentResult.DontWallet)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "کاربر کیف پول ندارد";
+                    }
+                    else if (result == PaymentResult.DontInvoiceItem)
+                    {
+                        response.ErrorCode = ErrorCodes.NotFound;
+                        response.Status = false;
+                        response.Message = "فاکتور هیچگونه اقلام فاکتوری ندارد";
+                    }
+                }
+                return response;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceService Payment Failed");
                 throw;
             }
         }

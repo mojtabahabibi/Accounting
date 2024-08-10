@@ -31,6 +31,15 @@
     {
         public long Id { get; set; }
     }
+    public class BuyChargeDto
+    {
+        public long AccountUserId { get; set; }
+        public long Price { get; set; }
+    }
+    public class PaymentChargeDto
+    {
+        public long AccountUserId { get; set; }
+    }
     public class InvoiceListDto
     {
         public long AccountUserId { get; set; }
