@@ -30,11 +30,6 @@ namespace EcoBar.Accounting.Data.Configs
             CreateMap<AccountingFinancialYear, UpdateFinancialYearDto>().ReverseMap();
             #endregion FinancialYear
 
-            #region Item
-            CreateMap<Item, BaseItemDto>().ReverseMap();
-            CreateMap<Item, ItemListDto>().ReverseMap();
-            #endregion
-
             #region InvoiceItem
             CreateMap<InvoiceItem, BaseInvoiceItemDto>().ReverseMap();
             CreateMap<InvoiceItem, UpdateInvoiceItemDto>().ReverseMap();
@@ -53,10 +48,6 @@ namespace EcoBar.Accounting.Data.Configs
 
             #region AccountTransaction
             CreateMap<AccountTransaction, AccountTransactionListDto>().ReverseMap();
-            #endregion
-
-            #region Wallet
-            CreateMap<Wallet, WalletListDto>().ReverseMap();
             #endregion
         }
 

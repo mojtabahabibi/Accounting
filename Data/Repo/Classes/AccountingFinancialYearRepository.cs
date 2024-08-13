@@ -15,9 +15,9 @@ namespace EcoBar.Accounting.Data.Repo.Classes
         public async Task<FinancialYearActiveResult> SetActive(BaseFinancialYearIdDto dto)
         {
             var financial = await dbContext.FinancialYears.FindAsync(dto.Id);
-            if (financial.DeletedDate == null)
+            if (financial != null)
             {
-                if (financial != null)
+                if (financial.DeletedDate == null)
                 {
                     if (!financial.IsClose)
                     {
@@ -27,14 +27,12 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         await dbContext.SaveChangesAsync();
                         return FinancialYearActiveResult.Done;
                     }
-                    else
-                        return FinancialYearActiveResult.IsCloseTrue;
+                    return FinancialYearActiveResult.IsCloseTrue;
                 }
-                else
-                    return FinancialYearActiveResult.NotFoundedFinancialYear;
-            }
-            else
                 return FinancialYearActiveResult.FinancialYearDelete;
+            }
+            return FinancialYearActiveResult.NotFoundedFinancialYear;
+
         }
         public async Task<bool> SetClose(BaseFinancialYearIdDto dto)
         {

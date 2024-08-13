@@ -1,5 +1,4 @@
-﻿using EcoBar.Accounting.Core.Services.Classes;
-using EcoBar.Accounting.Core.Services.Interfaces;
+﻿using EcoBar.Accounting.Core.Services.Interfaces;
 using EcoBar.Accounting.Core.Tools;
 using EcoBar.Accounting.Data.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +9,9 @@ namespace EcoBar.Accounting.Controller
     [ApiController]
     public class InvoiceItemController : ControllerBase
     {
-        private readonly ILogger<AccountingFinancialYearController> logger;
+        private readonly ILogger<InvoiceItemController> logger;
         private readonly IInvoiceItemService invoiceItemService;
-        public InvoiceItemController(ILogger<AccountingFinancialYearController> logger, IInvoiceItemService invoiceItemService)
+        public InvoiceItemController(ILogger<InvoiceItemController> logger, IInvoiceItemService invoiceItemService)
         {
             this.logger = logger;
             this.invoiceItemService = invoiceItemService;

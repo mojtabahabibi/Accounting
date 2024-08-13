@@ -41,31 +41,6 @@ namespace EcoBar.Accounting.Controller
                 );
             }
         }
-        [HttpPost("Transfer")]
-        public async Task<ActionResult<BaseResponseDto<bool?>>> Transfer(TransferDto model)
-        {
-            logger.LogInformation("PaymentController Transfer Began");
-            try
-            {
-                var result = await paymentService.TransferAsync(model);
-                logger.LogInformation("PaymentController Transfer Done");
-                return result;
-            }
-            catch (AccountingException ex)
-            {
-                logger.LogError(ex, "PaymentController Transfer Began");
-                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
-                return Ok(
-                    new BaseResponseDto<bool>()
-                    {
-                        Status = false,
-                        DataCount = 0,
-                        ErrorCode = ex.errorCode,
-                        Message = ex.Message
-                    }
-                );
-            }
-        }
         [HttpPost("PaymentInvoice")]
         public async Task<ActionResult<BaseResponseDto<bool?>>> PaymentInvoice(PaymentInvoiceDto model)
         {

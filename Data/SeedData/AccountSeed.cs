@@ -15,7 +15,7 @@ namespace EcoBar.Accounting.Data.SeedData
                 AccountUserId = 1,
                 AccountTypeId=1,
                 Title = "حساب نقدی صندوق",
-                AccountNumber =random.Next(9999999,100000000).ToString(),
+                AccountNumber ="00000000",
                 Amount=0,
             }
             };

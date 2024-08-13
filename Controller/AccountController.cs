@@ -67,7 +67,6 @@ namespace EcoBar.Accounting.Controller
                 );
             }
         }
-
         [HttpPost("Create")]
         public async Task<ActionResult<BaseResponseDto<bool?>>> Create(BaseAccountDto model)
         {

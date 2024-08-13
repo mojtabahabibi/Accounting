@@ -7,9 +7,6 @@ namespace EcoBar.Accounting.Data.Entities
         public long AccountUserId { get; set; }
         public AccountUser? AccountUser { get; set; }
 
-        public long? AccountTransactionId { get; set; }
-        public AccountTransaction? AccountTransaction { get; set; }
-
         public string? Title { get; set; }
         public string? SerialNumber { get; set; }
         public long Price { get; set; }
@@ -18,6 +15,7 @@ namespace EcoBar.Accounting.Data.Entities
         public DateTime Date { get; set; }
         public InvoiceStatus Status { get; set; }
 
+        public ICollection<AccountTransaction>? AccountTransactions { get; set; }
         public ICollection<InvoiceItem>? InvoiceItems { get; set; }
     }
 }

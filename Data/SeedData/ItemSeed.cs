@@ -1,19 +1,17 @@
-using EcoBar.Accounting.Data.Entities;
+﻿using EcoBar.Accounting.Data.Entities;
 
 namespace EcoBar.Accounting.Data.SeedData
 {
     public class ItemSeed
     {
-        public static List<Item> GetItems()
+        public static Item GetItem()
         {
-            return new List<Item>()
+            return new Item()
             {
-                new Item() {
-                    Id=1,
-                    Name="خرید شارژ",
-                    Code="1",
-                    Price=1000,
-                    },
+                Id = 1,
+                Code = "1",
+                Name = "خرید شارژ",
+                Price = 10000
             };
         }
     }

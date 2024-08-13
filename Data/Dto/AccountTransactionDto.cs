@@ -6,21 +6,30 @@
     }
     public class AccountTransactionNumberDto
     {
-        public required Guid TransactionNumber { get; set; }
+        public required string TransactionNumber { get; set; }
     }
     public class AccountTransactionListDto
     {
-        public required  string TransactionType { get; set; }
-        public required  string AccountUserName { get; set; }
-        public required  long Price { get; set; }
-        public required  Guid TransactionNumber { get; set; }
-        public required  DateTime Time { get; set; }
+        public long? AccountId { get; set; }
+        public string? TransactionType { get; set; }
+        public string? AccountNumber { get; set; }
+        public string? UserName { get; set; }
+        public long Price { get; set; }
+        public string? TrackingNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
+        public string? TransactionNumber { get; set; }
+        public DateTime Time { get; set; }
+        public string? Description { get; set; }
     }
     public class AccountTranasctionGetAllResponseDto : BaseResponseDto<List<AccountTransactionListDto>>
     {
 
     }
-    public class AccountTranasctionGetByUsernameResponseDto : BaseResponseDto<AccountTransactionListDto>
+    public class AccountTranasctionGetByAccountIdResponseDto : BaseResponseDto<List<AccountTransactionListDto>>
+    {
+
+    }
+    public class AccountTranasctionGetByUsernameResponseDto : BaseResponseDto<List<AccountTransactionListDto>>
     {
 
     }

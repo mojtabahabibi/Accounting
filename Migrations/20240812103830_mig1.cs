@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EcoBar.Accounting.Migrations
 {
     /// <inheritdoc />
-    public partial class mig01 : Migration
+    public partial class mig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -106,7 +106,7 @@ namespace EcoBar.Accounting.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
+                    Price = table.Column<long>(type: "bigint", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<long>(type: "bigint", nullable: false),
@@ -141,12 +141,15 @@ namespace EcoBar.Accounting.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Wallets",
+                name: "Accounts",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    WalletNumber = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AccountUserId = table.Column<long>(type: "bigint", nullable: false),
+                    AccountTypeId = table.Column<long>(type: "bigint", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Amount = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -158,7 +161,17 @@ namespace EcoBar.Accounting.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Wallets", x => x.Id);
+                    table.PrimaryKey("PK_Accounts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Accounts_AccountType_AccountTypeId",
+                        column: x => x.AccountTypeId,
+                        principalTable: "AccountType",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Accounts_AccountUsers_AccountUserId",
+                        column: x => x.AccountUserId,
+                        principalTable: "AccountUsers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -190,79 +203,12 @@ namespace EcoBar.Accounting.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AccountTransactions",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TransactionTypeId = table.Column<long>(type: "bigint", nullable: false),
-                    TransactionNumber = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<long>(type: "bigint", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AccountTransactions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AccountTransactions_TransactionTypes_TransactionTypeId",
-                        column: x => x.TransactionTypeId,
-                        principalTable: "TransactionTypes",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Accounts",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountUserId = table.Column<long>(type: "bigint", nullable: false),
-                    AccountTypeId = table.Column<long>(type: "bigint", nullable: false),
-                    WalletId = table.Column<long>(type: "bigint", nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Amount = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<long>(type: "bigint", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Accounts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Accounts_AccountType_AccountTypeId",
-                        column: x => x.AccountTypeId,
-                        principalTable: "AccountType",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Accounts_AccountUsers_AccountUserId",
-                        column: x => x.AccountUserId,
-                        principalTable: "AccountUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Accounts_Wallets_WalletId",
-                        column: x => x.WalletId,
-                        principalTable: "Wallets",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Invoices",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AccountUserId = table.Column<long>(type: "bigint", nullable: false),
-                    AccountTransactionId = table.Column<long>(type: "bigint", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SerialNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
@@ -282,46 +228,9 @@ namespace EcoBar.Accounting.Migrations
                 {
                     table.PrimaryKey("PK_Invoices", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Invoices_AccountTransactions_AccountTransactionId",
-                        column: x => x.AccountTransactionId,
-                        principalTable: "AccountTransactions",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Invoices_AccountUsers_AccountUserId",
                         column: x => x.AccountUserId,
                         principalTable: "AccountUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AccountBooks",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountTransactionId = table.Column<long>(type: "bigint", nullable: false),
-                    AccountId = table.Column<long>(type: "bigint", nullable: false),
-                    Amount = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedBy = table.Column<long>(type: "bigint", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedBy = table.Column<long>(type: "bigint", nullable: true),
-                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AccountBooks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AccountBooks_AccountTransactions_AccountTransactionId",
-                        column: x => x.AccountTransactionId,
-                        principalTable: "AccountTransactions",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AccountBooks_Accounts_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "Accounts",
                         principalColumn: "Id");
                 });
 
@@ -332,8 +241,8 @@ namespace EcoBar.Accounting.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AccountId = table.Column<long>(type: "bigint", nullable: false),
-                    AccountTransactionId = table.Column<long>(type: "bigint", nullable: true),
                     InvoicePayTypeId = table.Column<long>(type: "bigint", nullable: false),
+                    TransactionId = table.Column<long>(type: "bigint", nullable: false),
                     Price = table.Column<long>(type: "bigint", nullable: false, defaultValue: 0L),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -347,11 +256,6 @@ namespace EcoBar.Accounting.Migrations
                 {
                     table.PrimaryKey("PK_Payments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Payments_AccountTransactions_AccountTransactionId",
-                        column: x => x.AccountTransactionId,
-                        principalTable: "AccountTransactions",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Payments_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
@@ -360,8 +264,7 @@ namespace EcoBar.Accounting.Migrations
                         name: "FK_Payments_InvoicePayTypes_InvoicePayTypeId",
                         column: x => x.InvoicePayTypeId,
                         principalTable: "InvoicePayTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -396,6 +299,49 @@ namespace EcoBar.Accounting.Migrations
                         name: "FK_InvoiceItems_Items_ItemId",
                         column: x => x.ItemId,
                         principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccountTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InvoiceId = table.Column<long>(type: "bigint", nullable: true),
+                    PaymentId = table.Column<long>(type: "bigint", nullable: true),
+                    TransactionTypeId = table.Column<long>(type: "bigint", nullable: false),
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AccountUsername = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TrackingNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InvoiceNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TransactionNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<long>(type: "bigint", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<long>(type: "bigint", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AccountTransactions_Invoices_InvoiceId",
+                        column: x => x.InvoiceId,
+                        principalTable: "Invoices",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AccountTransactions_Payments_PaymentId",
+                        column: x => x.PaymentId,
+                        principalTable: "Payments",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AccountTransactions_TransactionTypes_TransactionTypeId",
+                        column: x => x.TransactionTypeId,
+                        principalTable: "TransactionTypes",
                         principalColumn: "Id");
                 });
 
@@ -404,55 +350,47 @@ namespace EcoBar.Accounting.Migrations
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Type" },
                 values: new object[,]
                 {
-                    { 1L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 459, DateTimeKind.Local).AddTicks(565), null, null, null, null, null, "حساب نقدی" },
-                    { 2L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 459, DateTimeKind.Local).AddTicks(574), null, null, null, null, null, "حساب کیف پول" }
+                    { 1L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 252, DateTimeKind.Local).AddTicks(2863), null, null, null, null, null, "حساب نقدی" },
+                    { 2L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 252, DateTimeKind.Local).AddTicks(2880), null, null, null, null, null, "حساب کیف پول" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AccountUsers",
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Password", "UserName" },
-                values: new object[] { 1L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 459, DateTimeKind.Local).AddTicks(1009), null, null, null, null, null, "123456", "Company" });
+                values: new object[] { 1L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 252, DateTimeKind.Local).AddTicks(3317), null, null, null, null, null, "123456", "Company" });
 
             migrationBuilder.InsertData(
                 table: "InvoicePayTypes",
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Type" },
                 values: new object[,]
                 {
-                    { 1L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 460, DateTimeKind.Local).AddTicks(7412), null, null, null, null, null, "نقدی" },
-                    { 2L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 460, DateTimeKind.Local).AddTicks(7420), null, null, null, null, null, "کیف پول" }
+                    { 1L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 253, DateTimeKind.Local).AddTicks(5222), null, null, null, null, null, "نقدی" },
+                    { 2L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 253, DateTimeKind.Local).AddTicks(5235), null, null, null, null, null, "کیف پول" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Items",
                 columns: new[] { "Id", "Code", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Name", "Price" },
-                values: new object[] { 1L, "1", 0L, new DateTime(2024, 8, 9, 22, 55, 54, 460, DateTimeKind.Local).AddTicks(7910), null, null, null, null, null, "خرید شارژ", 1000L });
+                values: new object[] { 1L, "1", 0L, new DateTime(2024, 8, 12, 14, 8, 26, 253, DateTimeKind.Local).AddTicks(5703), null, null, null, null, null, "خرید شارژ", 10000L });
 
             migrationBuilder.InsertData(
                 table: "TransactionTypes",
                 columns: new[] { "Id", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Title" },
                 values: new object[,]
                 {
-                    { 1L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 461, DateTimeKind.Local).AddTicks(5630), null, null, null, null, null, "واریز به حساب نقدی" },
-                    { 2L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 461, DateTimeKind.Local).AddTicks(5640), null, null, null, null, null, "خرید از حساب نقدی" },
-                    { 3L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 461, DateTimeKind.Local).AddTicks(5641), null, null, null, null, null, "واریز به حساب کیف پول" },
-                    { 4L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 461, DateTimeKind.Local).AddTicks(5642), null, null, null, null, null, "خرید از حساب کیف پول" },
-                    { 5L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 461, DateTimeKind.Local).AddTicks(5644), null, null, null, null, null, "مرجوعی" }
+                    { 1L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1819), null, null, null, null, null, "واریز به حساب نقدی" },
+                    { 2L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1832), null, null, null, null, null, "خرید از حساب نقدی" },
+                    { 3L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1834), null, null, null, null, null, "واریز به حساب کیف پول" },
+                    { 4L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1835), null, null, null, null, null, "خرید از حساب کیف پول" },
+                    { 5L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1836), null, null, null, null, null, "واریز به حساب صندوق" },
+                    { 6L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1841), null, null, null, null, null, "خرید از حساب صندوق" },
+                    { 7L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1843), null, null, null, null, null, "مرجوعی" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Accounts",
-                columns: new[] { "Id", "AccountNumber", "AccountTypeId", "AccountUserId", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Title", "WalletId" },
-                values: new object[] { 1L, "79971757", 1L, 1L, 0L, new DateTime(2024, 8, 9, 22, 55, 54, 457, DateTimeKind.Local).AddTicks(1548), null, null, null, null, null, "حساب نقدی صندوق", null });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AccountBooks_AccountId",
-                table: "AccountBooks",
-                column: "AccountId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AccountBooks_AccountTransactionId",
-                table: "AccountBooks",
-                column: "AccountTransactionId");
+                columns: new[] { "Id", "AccountNumber", "AccountTypeId", "AccountUserId", "CreatedBy", "CreatedDate", "DeletedBy", "DeletedDate", "Description", "ModifiedBy", "ModifiedDate", "Title" },
+                values: new object[] { 1L, "00000000", 1L, 1L, 0L, new DateTime(2024, 8, 12, 14, 8, 26, 250, DateTimeKind.Local).AddTicks(5684), null, null, null, null, null, "حساب نقدی صندوق" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Accounts_AccountTypeId",
@@ -465,11 +403,14 @@ namespace EcoBar.Accounting.Migrations
                 column: "AccountUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Accounts_WalletId",
-                table: "Accounts",
-                column: "WalletId",
-                unique: true,
-                filter: "[WalletId] IS NOT NULL");
+                name: "IX_AccountTransactions_InvoiceId",
+                table: "AccountTransactions",
+                column: "InvoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccountTransactions_PaymentId",
+                table: "AccountTransactions",
+                column: "PaymentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AccountTransactions_TransactionTypeId",
@@ -479,7 +420,8 @@ namespace EcoBar.Accounting.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Companies_AccountUserId",
                 table: "Companies",
-                column: "AccountUserId");
+                column: "AccountUserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_InvoiceItems_InvoiceId",
@@ -492,13 +434,6 @@ namespace EcoBar.Accounting.Migrations
                 column: "ItemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Invoices_AccountTransactionId",
-                table: "Invoices",
-                column: "AccountTransactionId",
-                unique: true,
-                filter: "[AccountTransactionId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Invoices_AccountUserId",
                 table: "Invoices",
                 column: "AccountUserId");
@@ -507,13 +442,6 @@ namespace EcoBar.Accounting.Migrations
                 name: "IX_Payments_AccountId",
                 table: "Payments",
                 column: "AccountId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Payments_AccountTransactionId",
-                table: "Payments",
-                column: "AccountTransactionId",
-                unique: true,
-                filter: "[AccountTransactionId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_InvoicePayTypeId",
@@ -525,7 +453,7 @@ namespace EcoBar.Accounting.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AccountBooks");
+                name: "AccountTransactions");
 
             migrationBuilder.DropTable(
                 name: "Companies");
@@ -540,6 +468,9 @@ namespace EcoBar.Accounting.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
+                name: "TransactionTypes");
+
+            migrationBuilder.DropTable(
                 name: "Invoices");
 
             migrationBuilder.DropTable(
@@ -552,19 +483,10 @@ namespace EcoBar.Accounting.Migrations
                 name: "InvoicePayTypes");
 
             migrationBuilder.DropTable(
-                name: "AccountTransactions");
-
-            migrationBuilder.DropTable(
                 name: "AccountType");
 
             migrationBuilder.DropTable(
                 name: "AccountUsers");
-
-            migrationBuilder.DropTable(
-                name: "Wallets");
-
-            migrationBuilder.DropTable(
-                name: "TransactionTypes");
         }
     }
 }

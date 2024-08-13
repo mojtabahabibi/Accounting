@@ -17,18 +17,43 @@ namespace EcoBar.Accounting.Controller
             this.accountTransactionService = accountTransactionService;
         }
         [HttpGet("GetAll")]
-        public ActionResult<AccountTranasctionGetAllResponseDto> GetAll()
+        public async Task<ActionResult<AccountTranasctionGetAllResponseDto>> GetAll()
         {
             logger.LogInformation("AccountTranasctionController GetAllAccountTransaction Began");
             try
             {
-                var result =  accountTransactionService.GetAllAccountTransactionAsync();
+                var result =await  accountTransactionService.GetAllAccountTransactionAsync();
                 logger.LogInformation("AccountTranasctionController GetAllAccountTransaction Done");
                 return result;
             }
             catch (AccountingException ex)
             {
                 logger.LogError(ex, "AccountTranasctionController GetAllAccountTransaction Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
+        [HttpGet("GetByAccountId")]
+        public async Task<ActionResult<AccountTranasctionGetByAccountIdResponseDto>> GetByAccountId([FromQuery] long accountid)
+        {
+            logger.LogInformation("AccountTranasctionController GetByAccountId Began");
+            try
+            {
+                var result = await accountTransactionService.GetbyAccountIdTransactionAsync(accountid);
+                logger.LogInformation("AccountTranasctionController GetByAccountId Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "AccountTranasctionController GetByAccountId Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()

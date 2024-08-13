@@ -39,6 +39,7 @@
     public class PaymentChargeDto
     {
         public long AccountUserId { get; set; }
+        public long InvoiceId { get; set; }
     }
     public class InvoiceListDto
     {

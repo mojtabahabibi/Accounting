@@ -5,8 +5,9 @@ namespace EcoBar.Accounting.Data.Repo.Interfaces
 {
     public interface IAccountTransactionRepository : IBaseRepository<AccountTransaction>
     {
-        List<AccountTransactionListDto> GetAllAccountTransactionAsync();
-        List<AccountTransactionListDto> GetByUserNameAsync(string username);
-        Task<AccountTransactionListDto> GetByTransactionNumberAsync(Guid number);
+        Task<List<AccountTransactionListDto>> GetAllAccountTransactionAsync();
+        Task<List<AccountTransactionListDto>> GetByAccountIdTransactionAsync(long accountid);
+        Task<List<AccountTransactionListDto>> GetByUserNameAsync(string username);
+        Task<List<AccountTransactionListDto>> GetByTransactionNumberAsync(string number);
     }
 }

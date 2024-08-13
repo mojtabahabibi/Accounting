@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using EcoBar.Accounting.Core.Services.Interfaces;
 using EcoBar.Accounting.Core.Tools;
-using EcoBar.Accounting.Core.Validation.Invoice;
 using EcoBar.Accounting.Data.Dto;
 using EcoBar.Accounting.Data.Entities;
 using EcoBar.Accounting.Data.Enums;
@@ -169,16 +168,16 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 var response = new BaseResponseDto<bool?>();
                 if (!validation.IsValid)
                 {
-                    response.ErrorCode = Data.Enums.ErrorCodes.BadRequest;
+                    response.ErrorCode = ErrorCodes.BadRequest;
                     response.Status = false;
                     response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
                 }
                 else
                 {
-                    var result = await invoiceRepository.DeleteAsync(dto.Id);
+                    var result = await invoiceRepository.DeleteInvoiceAsync(dto.Id);
                     logger.LogInformation("InvoiceService DeleteInvoice Done");
 
-                    response.ErrorCode = Data.Enums.ErrorCodes.OK;
+                    response.ErrorCode = ErrorCodes.OK;
                     response.Status = true;
                     response.Message = "حذف شد";
                 }
@@ -379,11 +378,17 @@ namespace EcoBar.Accounting.Core.Services.Classes
                             response.Status = false;
                             response.Message = "شماره فاکتور در سیستم وجود ندارد";
                             return response;
+                        case CancelInvoiceResult.Deleted:
+                            logger.LogInformation("InvoiceService CancelInvoice Failed");
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "فاکتور از سیستم حذف شده است";
+                            return response;
                         case CancelInvoiceResult.Success:
                             logger.LogInformation("InvoiceService CancelInvoice Done");
                             response.ErrorCode = ErrorCodes.OK;
                             response.Status = true;
-                            response.Message = "فاکتور لغو شد";
+                            response.Message = "فاکتور کنسل شد";
                             return response;
                     }
                 }
@@ -416,7 +421,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                         logger.LogInformation("InvoiceService Deposit Done");
                         response.ErrorCode = ErrorCodes.OK;
                         response.Status = true;
-                        response.Message = "فاکتور مرجوع داده شد";
+                        response.Message = "فاکتور مرجوع شد";
                     }
                     else
                     {

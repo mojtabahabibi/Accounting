@@ -7,6 +7,7 @@
         PaymentBefor = 2,
         Returnd = 3,
         UnFoundInvoice = 4,
-        Success = 5
+        Success = 5,
+        Deleted=6,
     }
 }

@@ -53,15 +53,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             await dbContext.Accounts.AddAsync(accountWallet);
             await dbContext.SaveChangesAsync();
 
-            var wallet = new Wallet()
-            {
-                Account = accountWallet,
-                WalletNumber = Guid.NewGuid(),
-                Amount = 0
-            };
-            await dbContext.Wallets.AddAsync(wallet);
-            await dbContext.SaveChangesAsync();
-
             return model;
         }
     }

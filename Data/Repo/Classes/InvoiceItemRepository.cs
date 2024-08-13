@@ -67,7 +67,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 logger.LogInformation("InvoiceItemRepository InvoiceStatus was Done for ");
                 if (result != null)
                     return result.Status;
-                return Enums.InvoiceStatus.error;
+                return Enums.InvoiceStatus.Error;
             }
             catch (AccountingException ex)
             {

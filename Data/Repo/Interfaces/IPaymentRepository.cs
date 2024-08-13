@@ -8,7 +8,6 @@ namespace EcoBar.Accounting.Data.Repo.Interfaces
     {
         Task<bool> DepositAsync(Payment payment);
         Task<Payment> CreatePaymentAsync(Payment payment);
-        Task<TransferResult> TransferAsync(TransferDto model);
         Task<PaymentResult> PaymentAsync(PaymentInvoiceDto model);
     }
 }

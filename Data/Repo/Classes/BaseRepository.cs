@@ -11,7 +11,6 @@ namespace EcoBar.Accounting.Data.Repo.Classes
     {
         protected readonly AccountingDbContext dbContext;
         protected readonly ILogger<BaseRepository<T>> logger;
-
         public BaseRepository(AccountingDbContext dbContext, ILogger<BaseRepository<T>> logger)
         {
             this.dbContext = dbContext;

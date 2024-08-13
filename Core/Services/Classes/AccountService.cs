@@ -87,7 +87,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await accountRepo.CreateAsync(mapper.Map<Account>(dto));
+                    var result = await accountRepo.AddAsync(mapper.Map<Account>(dto));
                     logger.LogInformation("AccountantService GetAllAccounts Done");
 
                     response.ErrorCode = Data.Enums.ErrorCodes.OK;

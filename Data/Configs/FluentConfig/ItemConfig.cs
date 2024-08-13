@@ -9,10 +9,7 @@ namespace EcoBar.Accounting.Data.Configs.FluentConfig
     {
         public void Configure(EntityTypeBuilder<Item> builder)
         {
-            builder.HasData(ItemSeed.GetItems());
-            builder.Property(i => i.Name).IsRequired();
-            builder.Property(i => i.Code).IsRequired();
-            builder.Property(i => i.Price).HasDefaultValue(0).IsRequired();
+            builder.HasData(ItemSeed.GetItem());
         }
     }
 }

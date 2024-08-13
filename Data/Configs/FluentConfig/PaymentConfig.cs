@@ -9,8 +9,8 @@ namespace EcoBar.Accounting.Data.Configs.FluentConfig
         public void Configure(EntityTypeBuilder<Payment> builder)
         {
             builder.Property(i => i.Price).HasDefaultValue(0).IsRequired();
-            builder.HasOne(i => i.AccountTransaction).WithOne(i => i.Payment).HasForeignKey<Payment>(i => i.AccountTransactionId).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(i => i.Account).WithMany(i => i.Payments).HasForeignKey(i => i.AccountId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(i=>i.InvoicePayType).WithMany(i=>i.Payments).HasForeignKey(i=>i.InvoicePayTypeId).OnDelete(DeleteBehavior.NoAction);  
         }
     }
 }
