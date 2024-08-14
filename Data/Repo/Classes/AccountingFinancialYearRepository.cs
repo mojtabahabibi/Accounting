@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class AccountingFinancialYearRepository : BaseRepository<AccountingFinancialYear>, IAccountingFinancialYearRepository
+    public class FinancialYearRepository : BaseRepository<FinancialYear>, IFinancialYearRepository
     {
-        public AccountingFinancialYearRepository(AccountingDbContext dbContext, ILogger<BaseRepository<AccountingFinancialYear>> logger) : base(dbContext, logger)
+        public FinancialYearRepository(AccountingDbContext dbContext, ILogger<BaseRepository<FinancialYear>> logger) : base(dbContext, logger)
         {
         }
         public async Task<FinancialYearActiveResult> SetActive(BaseFinancialYearIdDto dto)

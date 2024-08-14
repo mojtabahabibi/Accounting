@@ -1,6 +1,5 @@
 ﻿namespace EcoBar.Accounting.Data.Dto
 {
-    #region BaseDto
     public class BaseInvoiceItemDto
     {
         public long ItemId { get; set; }
@@ -14,9 +13,6 @@
     {
         public long Id { get; set; }
     }
-    #endregion
-
-    #region CrudDto
     public class UpdateInvoiceItemDto
     {
         public long Id { get; set; }
@@ -38,9 +34,6 @@
         public long Off { get; set; }
         public long Price { get; set; }
     }
-    #endregion
-
-    #region ResponseDto
     public class InvioceItemGetAllResponseDto : BaseResponseDto<List<BaseInvoiceItemDto>>
     {
 
@@ -49,5 +42,4 @@
     {
 
     }
-    #endregion
 }

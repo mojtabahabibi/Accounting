@@ -8,7 +8,7 @@ namespace EcoBar.Accounting.Core.Validation.Account
     {
         public AccountUpdateValidation(AccountingDbContext context)
         {
-            RuleFor(i => i.AccountUserId).Must(AccountUserId => context.AccountUsers.Any(i=>i.Id.Equals(AccountUserId)))
+            RuleFor(i => i.UserId).Must(UserId => context.Users.Any(i=>i.Id.Equals(UserId)))
                 .WithMessage("نام کاربری وارد شده اشتباه است");
             RuleFor(i => i.Title).NotNull().WithMessage("عنوان حساب نمی تواند خالی باشد");
             RuleFor(i => i.AccountNumber).NotNull().WithMessage("شماره حساب نمی تواند خالی باشد");

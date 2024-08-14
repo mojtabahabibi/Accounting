@@ -7,30 +7,30 @@ using FluentValidation;
 
 namespace EcoBar.Accounting.Core.Services.Classes
 {
-    public class AccountTransactionService : IAccountTransactionService
+    public class TransactionsService : ITransactionsService
     {
-        private readonly ILogger<AccountTransactionService> logger;
+        private readonly ILogger<TransactionsService> logger;
         private readonly IMapper mapper;
-        private readonly IValidator<AccountTransactionUserNameDto> usernameValidator;
-        private readonly IValidator<AccountTransactionNumberDto> numberValidator;
-        private readonly IAccountTransactionRepository accountTransactionRepository;
-        public AccountTransactionService(ILogger<AccountTransactionService> logger, IMapper mapper
-            , IValidator<AccountTransactionUserNameDto> usernameValidator, IValidator<AccountTransactionNumberDto> numberValidator,
-            IAccountTransactionRepository accountTransactionRepository)
+        private readonly IValidator<TransactionsUserNameDto> usernameValidator;
+        private readonly IValidator<TransactionsNumberDto> numberValidator;
+        private readonly ITransactionsRepository TransactionsRepository;
+        public TransactionsService(ILogger<TransactionsService> logger, IMapper mapper
+            , IValidator<TransactionsUserNameDto> usernameValidator, IValidator<TransactionsNumberDto> numberValidator,
+            ITransactionsRepository TransactionsRepository)
         {
             this.logger = logger;
             this.mapper = mapper;
             this.usernameValidator = usernameValidator;
             this.numberValidator = numberValidator;
-            this.accountTransactionRepository = accountTransactionRepository;
+            this.TransactionsRepository = TransactionsRepository;
         }
-        public async Task< AccountTranasctionGetAllResponseDto> GetAllAccountTransactionAsync()
+        public async Task< AccountTranasctionGetAllResponseDto> GetAllTransactionsAsync()
         {
-            logger.LogInformation("AccountTransactionService GetAllAccountTranasction Began");
+            logger.LogInformation("TransactionsService GetAllAccountTranasction Began");
             try
             {
-                var result =await accountTransactionRepository.GetAllAccountTransactionAsync();
-                logger.LogInformation("AccountTransactionService GetAllAccountTranasction Failed");
+                var result =await TransactionsRepository.GetAllTransactionsAsync();
+                logger.LogInformation("TransactionsService GetAllAccountTranasction Failed");
                 return new AccountTranasctionGetAllResponseDto()
                 {
                     Data = result,
@@ -42,17 +42,17 @@ namespace EcoBar.Accounting.Core.Services.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTransactionService GetAllAccountTranasction Failed");
+                logger.LogError(ex, "TransactionsService GetAllAccountTranasction Failed");
                 throw;
             }
         }
         public async Task<AccountTranasctionGetByAccountIdResponseDto> GetbyAccountIdTransactionAsync(long accountid)
         {
-            logger.LogInformation("AccountTransactionService GetbyAccountIdTransaction Began");
+            logger.LogInformation("TransactionsService GetbyAccountIdTransaction Began");
             try
             {
-                var result = await accountTransactionRepository.GetByAccountIdTransactionAsync(accountid);
-                logger.LogInformation("AccountTransactionService GetbyAccountIdTransaction Failed");
+                var result = await TransactionsRepository.GetByAccountIdTransactionAsync(accountid);
+                logger.LogInformation("TransactionsService GetbyAccountIdTransaction Failed");
                 return new AccountTranasctionGetByAccountIdResponseDto()
                 {
                     Data = result,
@@ -64,16 +64,16 @@ namespace EcoBar.Accounting.Core.Services.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTransactionService GetbyAccountIdTransaction Failed");
+                logger.LogError(ex, "TransactionsService GetbyAccountIdTransaction Failed");
                 throw;
             }
         }
         public async Task<AccountTranasctionGetAllResponseDto> GetByUsernameAsync(string username)
         {
-            logger.LogInformation("AccountTransactionService GetByUsername Began");
+            logger.LogInformation("TransactionsService GetByUsername Began");
             try
             {
-                var dto = new AccountTransactionUserNameDto() { AccountUserName = username };
+                var dto = new TransactionsUserNameDto() { UserName = username };
                 var validation = await usernameValidator.ValidateAsync(dto);
                 var response = new AccountTranasctionGetAllResponseDto();
                 if (!validation.IsValid)
@@ -84,8 +84,8 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result =await accountTransactionRepository.GetByUserNameAsync(username);
-                    logger.LogInformation("AccountTransactionService GetByUsername Failed");
+                    var result =await TransactionsRepository.GetByUserNameAsync(username);
+                    logger.LogInformation("TransactionsService GetByUsername Failed");
 
                     response.Data = result;
                     response.DataCount = result.Count();
@@ -97,16 +97,16 @@ namespace EcoBar.Accounting.Core.Services.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTransactionService GetByUsername Failed");
+                logger.LogError(ex, "TransactionsService GetByUsername Failed");
                 throw;
             }
         }
         public async Task<AccountTranasctionGetByUsernameResponseDto> GetByTransactionNumberAsync(string number)
         {
-            logger.LogInformation("AccountTransactionService GetByTransactionNumber Began");
+            logger.LogInformation("TransactionsService GetByTransactionNumber Began");
             try
             {
-                var dto = new AccountTransactionNumberDto() { TransactionNumber = number };
+                var dto = new TransactionsNumberDto() { TransactionNumber = number };
                 var validation = await numberValidator.ValidateAsync(dto);
                 var response = new AccountTranasctionGetByUsernameResponseDto();
                 if (!validation.IsValid)
@@ -117,8 +117,8 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await accountTransactionRepository.GetByTransactionNumberAsync(number);
-                    logger.LogInformation("AccountTransactionService GetByTransactionNumber Failed");
+                    var result = await TransactionsRepository.GetByTransactionNumberAsync(number);
+                    logger.LogInformation("TransactionsService GetByTransactionNumber Failed");
                     response.Data = result;
                     response.DataCount = 1;
                     response.ErrorCode = Data.Enums.ErrorCodes.OK;
@@ -129,7 +129,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTransactionService GetByTransactionNumber Failed");
+                logger.LogError(ex, "TransactionsService GetByTransactionNumber Failed");
                 throw;
             }
         }

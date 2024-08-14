@@ -1,5 +1,4 @@
-﻿using EcoBar.Accounting.Core.Services.Classes;
-using EcoBar.Accounting.Core.Services.Interfaces;
+﻿using EcoBar.Accounting.Core.Services.Interfaces;
 using EcoBar.Accounting.Core.Tools;
 using EcoBar.Accounting.Data.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -8,28 +7,28 @@ namespace EcoBar.Accounting.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountUserController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly ILogger<AccountUserController> logger;
-        private readonly IAccountUserService accountUserService;
-        public AccountUserController(ILogger<AccountUserController> logger, IAccountUserService accountUserService)
+        private readonly ILogger<UserController> logger;
+        private readonly IUserService UserService;
+        public UserController(ILogger<UserController> logger, IUserService UserService)
         {
             this.logger = logger;
-            this.accountUserService = accountUserService;
+            this.UserService = UserService;
         }
         [HttpGet("GetAll")]
-        public async Task<ActionResult<AccountUserListResponseDto>> GetAll()
+        public async Task<ActionResult<UserListResponseDto>> GetAll()
         {
-            logger.LogInformation("AccountUserController GetAllAccountUser Began");
+            logger.LogInformation("UserController GetAllUser Began");
             try
             {
-                var result = await accountUserService.GetAllAccountUser();
-                logger.LogInformation("AccountUserController GetAllAccountUser Done");
+                var result = await UserService.GetAllUser();
+                logger.LogInformation("UserController GetAllUser Done");
                 return result;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountUserController GetAllAccountUser Began");
+                logger.LogError(ex, "UserController GetAllUser Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()
@@ -43,18 +42,18 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpPost("Create")]
-        public async Task<ActionResult<BaseResponseDto<bool?>>> Create(CreateAccountUserDto model)
+        public async Task<ActionResult<BaseResponseDto<bool?>>> Create(CreateUserDto model)
         {
-            logger.LogInformation("AccountUserController CreateAccountUser Began");
+            logger.LogInformation("UserController CreateUser Began");
             try
             {
-                var result = await accountUserService.CreateAccountUserAsync(model);
-                logger.LogInformation("AccountUserController CreateAccountUser Done");
+                var result = await UserService.CreateUserAsync(model);
+                logger.LogInformation("UserController CreateUser Done");
                 return result;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountUserController CreateAccountUser Began");
+                logger.LogError(ex, "UserController CreateUser Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()

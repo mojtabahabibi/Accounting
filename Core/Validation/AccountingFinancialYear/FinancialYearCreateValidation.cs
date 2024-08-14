@@ -1,7 +1,7 @@
 ﻿using EcoBar.Accounting.Data.Dto;
 using FluentValidation;
 
-namespace EcoBar.Accounting.Core.Validation.AccountingFinancialYear
+namespace EcoBar.Accounting.Core.Validation.FinancialYear
 {
     public class FinancialYearCreateValidation : AbstractValidator<CreateFinancialYearDto>
     {

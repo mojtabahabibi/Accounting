@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnectionString");
-string envConnectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
+string? connectionString = builder.Configuration.GetConnectionString("DefaultConnectionString");
+string? envConnectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
 if (!string.IsNullOrEmpty(envConnectionString))
 {
     connectionString = envConnectionString;
@@ -16,15 +16,10 @@ builder.Services.AddDbContext<AccountingDbContext>(options =>
 builder.Services.RegisterServices();
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
-
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -36,13 +31,10 @@ using (var scope = app.Services.CreateScope())
         context.Database.Migrate();
 
         var seedService = scope.ServiceProvider.GetRequiredService<AccountingDbContext>();
-        //await seedService.SeedAsync();
         logger.LogInformation(" migrating the database Done.");
     }
     catch (Exception ex)
     {
-        // Handle exception
-
         logger.LogError(ex, "An error occurred while migrating the database.");
     }
 }
@@ -50,12 +42,12 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors(x => x
-     .AllowAnyMethod()
-     .AllowAnyHeader()
-     .AllowCredentials()
-      .WithOrigins("http://localhost")
-      .SetIsOriginAllowed(origin => true));
+app.UseCors(x => x.AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials()
+                  .WithOrigins("http://localhost")
+                  .SetIsOriginAllowed(origin => true));
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

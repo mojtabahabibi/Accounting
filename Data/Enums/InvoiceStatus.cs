@@ -8,6 +8,7 @@
         Returen = 3,
         Pay = 4,
         Delete = 5,
-        Error = 6
+        Error = 6,
+        Pending=7,
     }
 }

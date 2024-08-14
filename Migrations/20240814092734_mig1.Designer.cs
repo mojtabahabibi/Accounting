@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EcoBar.Accounting.Migrations
 {
     [DbContext(typeof(AccountingDbContext))]
-    [Migration("20240812103830_mig1")]
+    [Migration("20240814092734_mig1")]
     partial class mig1
     {
         /// <inheritdoc />
@@ -39,9 +39,6 @@ namespace EcoBar.Accounting.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("AccountTypeId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("AccountUserId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("Amount")
@@ -75,11 +72,14 @@ namespace EcoBar.Accounting.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AccountTypeId");
 
-                    b.HasIndex("AccountUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Accounts");
 
@@ -89,78 +89,12 @@ namespace EcoBar.Accounting.Migrations
                             Id = 1L,
                             AccountNumber = "00000000",
                             AccountTypeId = 1L,
-                            AccountUserId = 1L,
                             Amount = 0L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 250, DateTimeKind.Local).AddTicks(5684),
-                            Title = "حساب نقدی صندوق"
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 110, DateTimeKind.Local).AddTicks(1112),
+                            Title = "حساب نقدی صندوق",
+                            UserId = 1L
                         });
-                });
-
-            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.AccountTransaction", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AccountNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AccountUsername")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DeletedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<long?>("InvoiceId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("InvoiceNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("ModifiedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("PaymentId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("TrackingNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TransactionNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("TransactionTypeId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InvoiceId");
-
-                    b.HasIndex("PaymentId");
-
-                    b.HasIndex("TransactionTypeId");
-
-                    b.ToTable("AccountTransactions");
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.AccountType", b =>
@@ -199,26 +133,26 @@ namespace EcoBar.Accounting.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccountType");
+                    b.ToTable("AccountTypes");
 
                     b.HasData(
                         new
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 252, DateTimeKind.Local).AddTicks(2863),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 110, DateTimeKind.Local).AddTicks(9658),
                             Type = "حساب نقدی"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 252, DateTimeKind.Local).AddTicks(2880),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 110, DateTimeKind.Local).AddTicks(9675),
                             Type = "حساب کیف پول"
                         });
                 });
 
-            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.AccountUser", b =>
+            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Company", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -242,36 +176,32 @@ namespace EcoBar.Accounting.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("Economicalnumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<long?>("ModifiedBy")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccountUsers");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 252, DateTimeKind.Local).AddTicks(3317),
-                            Password = "123456",
-                            UserName = "Company"
-                        });
+                    b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.AccountingFinancialYear", b =>
+            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.FinancialYear", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -321,55 +251,6 @@ namespace EcoBar.Accounting.Migrations
                     b.ToTable("FinancialYears");
                 });
 
-            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Company", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("AccountUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("CreatedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("DeletedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Economicalnumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long?>("ModifiedBy")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountUserId")
-                        .IsUnique();
-
-                    b.ToTable("Companies");
-                });
-
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Invoice", b =>
                 {
                     b.Property<long>("Id")
@@ -377,9 +258,6 @@ namespace EcoBar.Accounting.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("AccountUserId")
-                        .HasColumnType("bigint");
 
                     b.Property<long>("CreatedBy")
                         .HasColumnType("bigint");
@@ -430,9 +308,12 @@ namespace EcoBar.Accounting.Migrations
                         .HasColumnType("bigint")
                         .HasDefaultValue(0L);
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Invoices");
                 });
@@ -544,16 +425,59 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 253, DateTimeKind.Local).AddTicks(5222),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 112, DateTimeKind.Local).AddTicks(554),
                             Type = "نقدی"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 253, DateTimeKind.Local).AddTicks(5235),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 112, DateTimeKind.Local).AddTicks(566),
                             Type = "کیف پول"
                         });
+                });
+
+            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.InvoiceX", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long>("InvoiceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("ModifiedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("InvoiceXes");
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Item", b =>
@@ -607,7 +531,7 @@ namespace EcoBar.Accounting.Migrations
                             Id = 1L,
                             Code = "1",
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 253, DateTimeKind.Local).AddTicks(5703),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 112, DateTimeKind.Local).AddTicks(3334),
                             Name = "خرید شارژ",
                             Price = 10000L
                         });
@@ -709,50 +633,175 @@ namespace EcoBar.Accounting.Migrations
                         {
                             Id = 1L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1819),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 113, DateTimeKind.Local).AddTicks(6943),
                             Title = "واریز به حساب نقدی"
                         },
                         new
                         {
                             Id = 2L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1832),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 113, DateTimeKind.Local).AddTicks(6954),
                             Title = "خرید از حساب نقدی"
                         },
                         new
                         {
                             Id = 3L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1834),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 113, DateTimeKind.Local).AddTicks(6957),
                             Title = "واریز به حساب کیف پول"
                         },
                         new
                         {
                             Id = 4L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1835),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 113, DateTimeKind.Local).AddTicks(6958),
                             Title = "خرید از حساب کیف پول"
                         },
                         new
                         {
                             Id = 5L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1836),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 113, DateTimeKind.Local).AddTicks(6959),
                             Title = "واریز به حساب صندوق"
                         },
                         new
                         {
                             Id = 6L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1841),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 113, DateTimeKind.Local).AddTicks(6964),
                             Title = "خرید از حساب صندوق"
                         },
                         new
                         {
                             Id = 7L,
                             CreatedBy = 0L,
-                            CreatedDate = new DateTime(2024, 8, 12, 14, 8, 26, 254, DateTimeKind.Local).AddTicks(1843),
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 113, DateTimeKind.Local).AddTicks(7018),
                             Title = "مرجوعی"
+                        });
+                });
+
+            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Transactions", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AccountNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long?>("InvoiceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("InvoiceNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("ModifiedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("PaymentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("RefrenceId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("TrackingNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TransactionNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("TransactionTypeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("TransactionTypeId");
+
+                    b.ToTable("Transactionss");
+                });
+
+            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.User", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CreatedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("DeletedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<long?>("ModifiedBy")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            CreatedBy = 0L,
+                            CreatedDate = new DateTime(2024, 8, 14, 12, 57, 32, 113, DateTimeKind.Local).AddTicks(7463),
+                            Password = "123456",
+                            UserName = "Company"
                         });
                 });
 
@@ -764,62 +813,37 @@ namespace EcoBar.Accounting.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("EcoBar.Accounting.Data.Entities.AccountUser", "AccountUser")
+                    b.HasOne("EcoBar.Accounting.Data.Entities.User", "User")
                         .WithMany("Accounts")
-                        .HasForeignKey("AccountUserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("AccountType");
 
-                    b.Navigation("AccountUser");
-                });
-
-            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.AccountTransaction", b =>
-                {
-                    b.HasOne("EcoBar.Accounting.Data.Entities.Invoice", "Invoice")
-                        .WithMany("AccountTransactions")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("EcoBar.Accounting.Data.Entities.Payment", "Payment")
-                        .WithMany("AccountTransactions")
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("EcoBar.Accounting.Data.Entities.TransactionType", "TransactionType")
-                        .WithMany("AccountTransactions")
-                        .HasForeignKey("TransactionTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Invoice");
-
-                    b.Navigation("Payment");
-
-                    b.Navigation("TransactionType");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Company", b =>
                 {
-                    b.HasOne("EcoBar.Accounting.Data.Entities.AccountUser", "AccountUser")
+                    b.HasOne("EcoBar.Accounting.Data.Entities.User", "User")
                         .WithOne("Company")
-                        .HasForeignKey("EcoBar.Accounting.Data.Entities.Company", "AccountUserId")
+                        .HasForeignKey("EcoBar.Accounting.Data.Entities.Company", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("AccountUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Invoice", b =>
                 {
-                    b.HasOne("EcoBar.Accounting.Data.Entities.AccountUser", "AccountUser")
+                    b.HasOne("EcoBar.Accounting.Data.Entities.User", "User")
                         .WithMany("Invoices")
-                        .HasForeignKey("AccountUserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("AccountUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.InvoiceItem", b =>
@@ -841,6 +865,17 @@ namespace EcoBar.Accounting.Migrations
                     b.Navigation("Item");
                 });
 
+            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.InvoiceX", b =>
+                {
+                    b.HasOne("EcoBar.Accounting.Data.Entities.Invoice", "Invoice")
+                        .WithMany("InvoiceXes")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Payment", b =>
                 {
                     b.HasOne("EcoBar.Accounting.Data.Entities.Account", "Account")
@@ -860,6 +895,31 @@ namespace EcoBar.Accounting.Migrations
                     b.Navigation("InvoicePayType");
                 });
 
+            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Transactions", b =>
+                {
+                    b.HasOne("EcoBar.Accounting.Data.Entities.Invoice", "Invoice")
+                        .WithMany("Transactionss")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("EcoBar.Accounting.Data.Entities.Payment", "Payment")
+                        .WithMany("Transactionss")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("EcoBar.Accounting.Data.Entities.TransactionType", "TransactionType")
+                        .WithMany("Transactionss")
+                        .HasForeignKey("TransactionTypeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Payment");
+
+                    b.Navigation("TransactionType");
+                });
+
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Account", b =>
                 {
                     b.Navigation("Payments");
@@ -870,20 +930,13 @@ namespace EcoBar.Accounting.Migrations
                     b.Navigation("Accounts");
                 });
 
-            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.AccountUser", b =>
-                {
-                    b.Navigation("Accounts");
-
-                    b.Navigation("Company");
-
-                    b.Navigation("Invoices");
-                });
-
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Invoice", b =>
                 {
-                    b.Navigation("AccountTransactions");
-
                     b.Navigation("InvoiceItems");
+
+                    b.Navigation("InvoiceXes");
+
+                    b.Navigation("Transactionss");
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.InvoicePayType", b =>
@@ -893,12 +946,21 @@ namespace EcoBar.Accounting.Migrations
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.Payment", b =>
                 {
-                    b.Navigation("AccountTransactions");
+                    b.Navigation("Transactionss");
                 });
 
             modelBuilder.Entity("EcoBar.Accounting.Data.Entities.TransactionType", b =>
                 {
-                    b.Navigation("AccountTransactions");
+                    b.Navigation("Transactionss");
+                });
+
+            modelBuilder.Entity("EcoBar.Accounting.Data.Entities.User", b =>
+                {
+                    b.Navigation("Accounts");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Invoices");
                 });
 #pragma warning restore 612, 618
         }

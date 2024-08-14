@@ -7,26 +7,26 @@ using EcoBar.Accounting.Data.Repo.Interfaces;
 
 namespace EcoBar.Accounting.Core.Services.Classes
 {
-    public class AccountUserService : IAccountUserService
+    public class UserService : IUserService
     {
-        private readonly ILogger<AccountUserService> logger;
+        private readonly ILogger<UserService> logger;
         private readonly IMapper mapper;
-        private readonly IAccountUserRepository accountUserRepository;
-        public AccountUserService(ILogger<AccountUserService> logger, IMapper mapper, IAccountUserRepository accountUserRepository)
+        private readonly IUserRepository UserRepository;
+        public UserService(ILogger<UserService> logger, IMapper mapper, IUserRepository UserRepository)
         {
             this.logger = logger;
             this.mapper = mapper;
-            this.accountUserRepository = accountUserRepository;
+            this.UserRepository = UserRepository;
         }
-        public async Task<AccountUserListResponseDto> GetAllAccountUser()
+        public async Task<UserListResponseDto> GetAllUser()
         {
-            logger.LogInformation("AccountUserService GetAllAccountUser Began");
+            logger.LogInformation("UserService GetAllUser Began");
             try
             {
-                var result = await accountUserRepository.GetAllAsync();
-                var dto = mapper.Map<List<AccountUserListDto>>(result);
-                logger.LogInformation("AccountUserService GetAllAccountUser Failed");
-                return new AccountUserListResponseDto()
+                var result = await UserRepository.GetAllAsync();
+                var dto = mapper.Map<List<UserListDto>>(result);
+                logger.LogInformation("UserService GetAllUser Failed");
+                return new UserListResponseDto()
                 {
                     Data = dto,
                     DataCount = result.Count(),
@@ -37,18 +37,18 @@ namespace EcoBar.Accounting.Core.Services.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountUserService GetAllAccountUser Failed");
+                logger.LogError(ex, "UserService GetAllUser Failed");
                 throw;
             }
         }
-        public async Task<BaseResponseDto<bool?>> CreateAccountUserAsync(CreateAccountUserDto dto)
+        public async Task<BaseResponseDto<bool?>> CreateUserAsync(CreateUserDto dto)
         {
-            logger.LogInformation("AccountUserService CreateAccountUser Began");
+            logger.LogInformation("UserService CreateUser Began");
             try
             {
                 var response = new BaseResponseDto<bool?>();
-                var result = await accountUserRepository.CreateUserAsync(mapper.Map<AccountUser>(dto));
-                logger.LogInformation("AccountUserService CreateAccountUser Done");
+                var result = await UserRepository.CreateUserAsync(mapper.Map<User>(dto));
+                logger.LogInformation("UserService CreateUser Done");
                 return new BaseResponseDto<bool?>()
                 {
                     ErrorCode = Data.Enums.ErrorCodes.OK,
@@ -58,7 +58,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountUserService CreateAccountUser Failed");
+                logger.LogError(ex, "UserService CreateUser Failed");
                 throw;
             }
         }

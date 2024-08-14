@@ -10,7 +10,7 @@ namespace EcoBar.Accounting.Data.Configs.FluentConfig
         {
             builder.Property(i => i.Name).IsRequired();
             builder.Property(i => i.Economicalnumber).IsRequired().IsUnicode();
-            builder.HasOne(i => i.AccountUser).WithOne(i => i.Company).HasForeignKey<Company>(i => i.AccountUserId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(i => i.User).WithOne(i => i.Company).HasForeignKey<Company>(i => i.UserId).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

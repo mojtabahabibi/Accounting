@@ -2,8 +2,8 @@
 {
     public class Company : BaseEntity
     {
-        public long AccountUserId { get; set; }
-        public AccountUser? AccountUser { get; set; }
+        public long UserId { get; set; }
+        public User? User { get; set; }
 
         public required string Name { get; set; }
         public required string Economicalnumber { get; set; }

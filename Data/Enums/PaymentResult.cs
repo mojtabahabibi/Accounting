@@ -9,7 +9,8 @@
         DontInvoiceItem = 4,
         InnerExeption = 5,
         PayWithWallet = 6,
-        StatusInvoice=7,
-        Done = 8
+        StatusInvoice = 7,
+        MostPrice = 8,
+        Done = 9
     }
 }

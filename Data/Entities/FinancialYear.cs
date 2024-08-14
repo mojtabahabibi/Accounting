@@ -1,6 +1,6 @@
 namespace EcoBar.Accounting.Data.Entities
 {
-    public class AccountingFinancialYear :BaseEntity
+    public class FinancialYear :BaseEntity
     {
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }

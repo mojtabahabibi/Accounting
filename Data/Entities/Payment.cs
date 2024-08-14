@@ -11,6 +11,6 @@
         public long TransactionId { get; set; }
         public long Price { get; set; }
 
-        public ICollection<AccountTransaction>? AccountTransactions { get; set; }
+        public ICollection<Transactions>? Transactionss { get; set; }
     }
 }

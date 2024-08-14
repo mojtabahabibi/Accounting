@@ -10,7 +10,7 @@ namespace EcoBar.Accounting.Core.Validation.Invoice
         {
             RuleFor(i => i.Id).Must(id => context.Invoices.Any(i => i.Id.Equals(id)))
                 .WithMessage("شماره فاکتور اشتباه است");
-            RuleFor(i => i.AccountUserId).Must(accountUserid => context.AccountUsers.Any(i => i.Id.Equals(accountUserid)))
+            RuleFor(i => i.UserId).Must(Userid => context.Users.Any(i => i.Id.Equals(Userid)))
                 .WithMessage("شماره کاربر در سیستم وجود ندارد");
         }
     }

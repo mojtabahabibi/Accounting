@@ -14,20 +14,20 @@ namespace EcoBar.Accounting.Data.Configs
             CreateMap<Account, BaseAccountIdDto>().ReverseMap();
             #endregion Account
 
-            #region AccountUser
-            CreateMap<AccountUser, CreateAccountUserDto>().ReverseMap();
-            CreateMap<AccountUser, AccountUserListDto>().ReverseMap();
-            #endregion AccountUser
+            #region User
+            CreateMap<User, CreateUserDto>().ReverseMap();
+            CreateMap<User, UserListDto>().ReverseMap();
+            #endregion User
 
             #region Company
             CreateMap<Company, CreateCompanyDto>().ReverseMap();
             #endregion
 
             #region FinancialYear
-            CreateMap<AccountingFinancialYear, GetAllFinancialYearDto>().ReverseMap();
-            CreateMap<AccountingFinancialYear, GetByIdFinancialYearDto>().ReverseMap();
-            CreateMap<AccountingFinancialYear, CreateFinancialYearDto>().ReverseMap();
-            CreateMap<AccountingFinancialYear, UpdateFinancialYearDto>().ReverseMap();
+            CreateMap<FinancialYear, GetAllFinancialYearDto>().ReverseMap();
+            CreateMap<FinancialYear, GetByIdFinancialYearDto>().ReverseMap();
+            CreateMap<FinancialYear, CreateFinancialYearDto>().ReverseMap();
+            CreateMap<FinancialYear, UpdateFinancialYearDto>().ReverseMap();
             #endregion FinancialYear
 
             #region InvoiceItem
@@ -38,7 +38,6 @@ namespace EcoBar.Accounting.Data.Configs
             #region Invoice
             CreateMap<Invoice, CreateInvoiceDto>().ReverseMap();
             CreateMap<Invoice, UpdateInvoiceDto>().ReverseMap();
-            CreateMap<Invoice, DeleteInvoiceDto>().ReverseMap();
             CreateMap<Invoice, InvoiceListDto>().ReverseMap();
             #endregion
 
@@ -46,8 +45,8 @@ namespace EcoBar.Accounting.Data.Configs
             CreateMap<Payment, CreatePaymentDto>().ReverseMap();
             #endregion
 
-            #region AccountTransaction
-            CreateMap<AccountTransaction, AccountTransactionListDto>().ReverseMap();
+            #region Transactions
+            CreateMap<Transactions, TransactionsListDto>().ReverseMap();
             #endregion
         }
 

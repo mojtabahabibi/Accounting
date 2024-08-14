@@ -8,9 +8,9 @@ namespace EcoBar.Accounting.Core.Validation.Invoice
     {
         public CreateInvoiceValidation(AccountingDbContext context)
         {
-            RuleFor(i => i.AccountUserId).Must(id => context.AccountUsers.Any(i => i.Id.Equals(id)))
+            RuleFor(i => i.UserId).Must(id => context.Users.Any(i => i.Id.Equals(id)))
                 .WithMessage("شماره کاربر در سیستم وجود ندارد ");
-            RuleFor(i => i.AccountUserId).Must(id => context.AccountUsers.Any(i => i.Id.Equals(id) && i.DeletedDate == null))
+            RuleFor(i => i.UserId).Must(id => context.Users.Any(i => i.Id.Equals(id) && i.DeletedDate == null))
                .WithMessage("شماره کاربر در سیستم حذف شده است ");
         }
     }

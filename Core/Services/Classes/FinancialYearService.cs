@@ -16,23 +16,23 @@ namespace EcoBar.Accounting.Core.Services.Classes
         private readonly IValidator<UpdateFinancialYearDto> updateValidator;
         private readonly IValidator<BaseFinancialYearIdDto> validator;
         private readonly IMapper mapper;
-        private readonly IAccountingFinancialYearRepository accountingFinancialYearRepo;
+        private readonly IFinancialYearRepository FinancialYearRepo;
         public FinancialYearService(ILogger<FinancialYearService> logger, IValidator<CreateFinancialYearDto> createValidator, IValidator<UpdateFinancialYearDto> updateValidator,
-            IValidator<BaseFinancialYearIdDto> validator, IMapper mapper, IAccountingFinancialYearRepository accountingFinancialYearRepo)
+            IValidator<BaseFinancialYearIdDto> validator, IMapper mapper, IFinancialYearRepository FinancialYearRepo)
         {
             this.logger = logger;
             this.createValidator = createValidator;
             this.updateValidator = updateValidator;
             this.validator = validator;
             this.mapper = mapper;
-            this.accountingFinancialYearRepo = accountingFinancialYearRepo;
+            this.FinancialYearRepo = FinancialYearRepo;
         }
         public async Task<GetAllFinancialYearResponseDto> GetAllFinancialYearAsync()
         {
             logger.LogInformation("FinancialYearService GetAllFinancialYear Began");
             try
             {
-                var acc = await accountingFinancialYearRepo.GetAllAsync();
+                var acc = await FinancialYearRepo.GetAllAsync();
                 logger.LogInformation("FinancialYearService GetAllFinancialYear Done");
                 List<GetAllFinancialYearDto> data = mapper.Map<List<GetAllFinancialYearDto>>(acc);
                 return new GetAllFinancialYearResponseDto()
@@ -55,7 +55,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
             logger.LogInformation("FinancialYearService GetAllFinancialYear Began");
             try
             {
-                var result = await accountingFinancialYearRepo.GetByIdAsync(dto.Id);
+                var result = await FinancialYearRepo.GetByIdAsync(dto.Id);
                 logger.LogInformation("FinancialYearService GetAllFinancialYear Done");
                 GetByIdFinancialYearDto data = mapper.Map<GetByIdFinancialYearDto>(result);
                 return new GetByIdFinancialYearResponseDto()
@@ -87,7 +87,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var acc = await accountingFinancialYearRepo.AddAsync(mapper.Map<AccountingFinancialYear>(dto));
+                    var acc = await FinancialYearRepo.AddAsync(mapper.Map<FinancialYear>(dto));
                     logger.LogInformation("FinancialYearService CreateFinancialYear Done");
 
                     response.ErrorCode =ErrorCodes.OK;
@@ -117,7 +117,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await accountingFinancialYearRepo.UpdateAsync(mapper.Map<AccountingFinancialYear>(dto));
+                    var result = await FinancialYearRepo.UpdateAsync(mapper.Map<FinancialYear>(dto));
                     logger.LogInformation("FinancialYearService UpdateFinancialYear Done");
 
                     response.ErrorCode = ErrorCodes.OK;
@@ -148,7 +148,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await accountingFinancialYearRepo.SetActive(dto);
+                    var result = await FinancialYearRepo.SetActive(dto);
                     if (result == FinancialYearActiveResult.Done)
                     {
                         logger.LogInformation("FinancialYearService SetActiveFinancialYear Done");
@@ -205,7 +205,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await accountingFinancialYearRepo.SetClose(dto);
+                    var result = await FinancialYearRepo.SetClose(dto);
                     if (result)
                     {
                         logger.LogInformation("FinancialYearService SetCloseFinancialYear Done");
@@ -246,7 +246,7 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 }
                 else
                 {
-                    var result = await accountingFinancialYearRepo.DeleteAsync(dto.Id);
+                    var result = await FinancialYearRepo.DeleteAsync(dto.Id);
                     logger.LogInformation("FinancialYearService UpdateFinancialYear Done");
 
                     response.ErrorCode = ErrorCodes.OK;

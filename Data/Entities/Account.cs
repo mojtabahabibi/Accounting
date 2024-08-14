@@ -2,8 +2,8 @@ namespace EcoBar.Accounting.Data.Entities
 {
     public class Account : BaseEntity
     {
-        public long AccountUserId { get; set; }
-        public AccountUser? AccountUser { get; set; }
+        public long UserId { get; set; }
+        public User? User { get; set; }
 
         public long AccountTypeId { get; set; }
         public AccountType? AccountType { get; set; }

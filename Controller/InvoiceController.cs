@@ -42,7 +42,7 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpGet("GetById")]
-        public async Task<ActionResult<GetByIdInvoiceResponseDto>> GetById([FromQuery] DeleteInvoiceDto dto)
+        public async Task<ActionResult<GetByIdInvoiceResponseDto>> GetById([FromQuery] InvoiceIdDto dto)
         {
             logger.LogInformation("InvoiceController GetByIdInvoice Began");
             try
@@ -117,7 +117,7 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpDelete("Delete")]
-        public async Task<ActionResult<BaseResponseDto<bool?>>> Delete(DeleteInvoiceDto model)
+        public async Task<ActionResult<BaseResponseDto<bool?>>> Delete(InvoiceIdDto model)
         {
             logger.LogInformation("InvoiceController DeleteInvoice Began");
             try
@@ -142,7 +142,7 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpPost("CloseInvoice")]
-        public async Task<ActionResult<BaseResponseDto<bool?>>> CloseInvoice([FromQuery] CloseInvoiceDto model)
+        public async Task<ActionResult<BaseResponseDto<bool?>>> CloseInvoice([FromQuery] InvoiceIdDto model)
         {
             logger.LogInformation("InvoiceController CloseInvoice Began");
             try
@@ -167,7 +167,7 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpPost("CancelInvoice")]
-        public async Task<ActionResult<BaseResponseDto<bool?>>> CancelInvoice([FromQuery] CancelInvoiceDto model)
+        public async Task<ActionResult<BaseResponseDto<bool?>>> CancelInvoice([FromQuery] InvoiceIdDto model)
         {
             logger.LogInformation("InvoiceController CancelInvoice Began");
             try
@@ -192,7 +192,7 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpPost("ReturnInvoice")]
-        public async Task<ActionResult<BaseResponseDto<bool?>>> ReturnInvoice([FromQuery] ReturnInvoiceDto model)
+        public async Task<ActionResult<BaseResponseDto<bool?>>> ReturnInvoice([FromQuery] InvoiceIdDto model)
         {
             logger.LogInformation("InvoiceController CancelInvoice Began");
             try
@@ -204,6 +204,31 @@ namespace EcoBar.Accounting.Controller
             catch (AccountingException ex)
             {
                 logger.LogError(ex, "InvoiceController CancelInvoice Began");
+                if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
+                return Ok(
+                    new BaseResponseDto<bool>()
+                    {
+                        Status = false,
+                        DataCount = 0,
+                        ErrorCode = ex.errorCode,
+                        Message = ex.Message
+                    }
+                );
+            }
+        }
+        [HttpPost("History")]
+        public async Task<ActionResult<InvoiceStatusListResponseDto>> History([FromQuery] InvoiceIdDto model)
+        {
+            logger.LogInformation("InvoiceController History Began");
+            try
+            {
+                var result = await invoiceService.InvoiceStatusListAsync(model);
+                logger.LogInformation("InvoiceController History Done");
+                return result;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceController History Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()

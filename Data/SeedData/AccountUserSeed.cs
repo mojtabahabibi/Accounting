@@ -2,11 +2,11 @@
 
 namespace EcoBar.Accounting.Data.SeedData
 {
-    public class AccountUserSeed
+    public class UserSeed
     {
-        public static AccountUser GetAccountUser()
+        public static User GetUser()
         {
-            return new AccountUser()
+            return new User()
             {
                 Id = 1,
                 UserName = "Company",

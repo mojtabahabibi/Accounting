@@ -2,9 +2,9 @@
 
 namespace EcoBar.Accounting.Core.Services.Interfaces
 {
-    public interface IAccountUserService
+    public interface IUserService
     {
-        Task<BaseResponseDto<bool?>> CreateAccountUserAsync(CreateAccountUserDto dto);
-        Task<AccountUserListResponseDto> GetAllAccountUser();
+        Task<BaseResponseDto<bool?>> CreateUserAsync(CreateUserDto dto);
+        Task<UserListResponseDto> GetAllUser();
     }
 }

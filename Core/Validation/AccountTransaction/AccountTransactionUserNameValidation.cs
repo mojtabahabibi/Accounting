@@ -2,13 +2,13 @@
 using EcoBar.Accounting.Data.Dto;
 using FluentValidation;
 
-namespace EcoBar.Accounting.Core.Validation.AccountTransaction
+namespace EcoBar.Accounting.Core.Validation.Transactions
 {
-    public class AccountTransactionUserNameValidation : AbstractValidator<AccountTransactionUserNameDto>
+    public class TransactionsUserNameValidation : AbstractValidator<TransactionsUserNameDto>
     {
-        public AccountTransactionUserNameValidation(AccountingDbContext context)
+        public TransactionsUserNameValidation(AccountingDbContext context)
         {
-            RuleFor(i=>i.AccountUserName).Must(username=>context.AccountUsers.Any(i=>i.UserName==username))
+            RuleFor(i=>i.UserName).Must(username=>context.Users.Any(i=>i.UserName==username))
                 .WithMessage("شماره کاربری مورد نظر هیچگونه تراکنشی ندارد");
         }
     }

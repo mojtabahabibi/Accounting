@@ -2,7 +2,7 @@
 {
     public class CreateCompanyDto
     {
-        public string Name { get; set; }
-        public string Economicalnumber { get; set; }
+        public required string Name { get; set; }
+        public required string Economicalnumber { get; set; }
     }
 }

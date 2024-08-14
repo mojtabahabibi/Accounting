@@ -7,27 +7,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class AccountTransactionRepository : BaseRepository<AccountTransaction>, IAccountTransactionRepository
+    public class TransactionsRepository : BaseRepository<Transactions>, ITransactionsRepository
     {
-        public AccountTransactionRepository(AccountingDbContext dbContext, ILogger<BaseRepository<AccountTransaction>> logger) : base(dbContext, logger)
+        public TransactionsRepository(AccountingDbContext dbContext, ILogger<BaseRepository<Transactions>> logger) : base(dbContext, logger)
         {
 
         }
-        public async Task<List<AccountTransactionListDto>> GetAllAccountTransactionAsync()
+        public async Task<List<TransactionsListDto>> GetAllTransactionsAsync()
         {
-            logger.LogInformation("AccountTransactionRepository GetAllAsync was called for ");
+            logger.LogInformation("TransactionsRepository GetAllAsync was called for ");
             try
             {
-                return await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser).ThenInclude(i=>i.Accounts)
-                                                          .Include(i => i.Payment).ThenInclude(i => i.Account).ThenInclude(i => i.AccountUser)
+                return await dbContext.Transactionss.Include(i => i.Invoice).ThenInclude(i => i.User).ThenInclude(i => i.Accounts)
+                                                          .Include(i => i.Payment).ThenInclude(i => i.Account).ThenInclude(i => i.User)
                                                           .Include(i => i.TransactionType)
-                                                          .Select(i => new AccountTransactionListDto()
+                                                          .Select(i => new TransactionsListDto()
                                                           {
-                                                              AccountId = i.Payment != null ? i.PaymentId : i.Invoice.AccountUser.Accounts.FirstOrDefault().Id,
+                                                              AccountId = i.Payment != null ? i.Payment.AccountId : i.Invoice.User.Accounts.FirstOrDefault().Id,
+                                                              TransactionId = i.Id,
+                                                              RefrenceId = i.RefrenceId,
                                                               TransactionType = i.TransactionType != null ? i.TransactionType.Title : "",
                                                               AccountNumber = i.AccountNumber,
-                                                              UserName = i.Payment != null ? i.Payment.Account.AccountUser.UserName : i.Invoice.AccountUser.UserName,
-                                                              Price = i.Payment != null ? i.Payment.Price : i.Invoice.TotalPrice,
+                                                              UserName = i.Payment != null ? i.Payment.Account.User.UserName : i.Invoice.User.UserName,
+                                                              Price = i.Price,
                                                               TrackingNumber = i.Payment != null ? i.TrackingNumber : "",
                                                               InvoiceNumber = i.Invoice != null ? i.InvoiceNumber : "",
                                                               TransactionNumber = i.TransactionNumber,
@@ -37,25 +39,27 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTransactionRepository GetAllAsync was Failed for ");
+                logger.LogError(ex, "TransactionsRepository GetAllAsync was Failed for ");
                 throw;
             }
         }
-        public async Task<List<AccountTransactionListDto>> GetByAccountIdTransactionAsync(long accountid)
+        public async Task<List<TransactionsListDto>> GetByAccountIdTransactionAsync(long accountid)
         {
-            logger.LogInformation("AccountTransactionRepository GetAllAsync was called for ");
+            logger.LogInformation("TransactionsRepository GetAllAsync was called for ");
             try
             {
-                var result = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser).ThenInclude(i => i.Accounts)
-                                                                .Include(i => i.Payment).ThenInclude(i => i.Account).ThenInclude(i => i.AccountUser)
+                var result = await dbContext.Transactionss.Include(i => i.Invoice).ThenInclude(i => i.User).ThenInclude(i => i.Accounts)
+                                                                .Include(i => i.Payment).ThenInclude(i => i.Account).ThenInclude(i => i.User)
                                                                 .Include(i => i.TransactionType)
-                                                                .Select(i => new AccountTransactionListDto()
+                                                                .Select(i => new TransactionsListDto()
                                                                 {
-                                                                    AccountId = i.Payment != null ? i.PaymentId : i.Invoice.AccountUser.Accounts.FirstOrDefault().Id,
+                                                                    AccountId = i.Payment != null ? i.PaymentId : i.Invoice.User.Accounts.FirstOrDefault().Id,
+                                                                    TransactionId = i.Id,
+                                                                    RefrenceId = i.RefrenceId,
                                                                     TransactionType = i.TransactionType != null ? i.TransactionType.Title : "",
                                                                     AccountNumber = i.AccountNumber,
-                                                                    UserName = i.Payment != null ? i.Payment.Account.AccountUser.UserName : i.Invoice.AccountUser.UserName,
-                                                                    Price = i.Payment != null ? i.Payment.Price : i.Invoice.TotalPrice,
+                                                                    UserName = i.Payment != null ? i.Payment.Account.User.UserName : i.Invoice.User.UserName,
+                                                                    Price = i.Price,
                                                                     TrackingNumber = i.Payment != null ? i.TrackingNumber : "",
                                                                     InvoiceNumber = i.Invoice != null ? i.InvoiceNumber : "",
                                                                     TransactionNumber = i.TransactionNumber,
@@ -67,25 +71,27 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTransactionRepository GetAllAsync was Failed for ");
+                logger.LogError(ex, "TransactionsRepository GetAllAsync was Failed for ");
                 throw;
             }
         }
-        public async Task<List<AccountTransactionListDto>> GetByUserNameAsync(string username)
+        public async Task<List<TransactionsListDto>> GetByUserNameAsync(string username)
         {
-            logger.LogInformation("AccountTransactionRepository GetAllAsync was called for ");
+            logger.LogInformation("TransactionsRepository GetAllAsync was called for ");
             try
             {
-                var result = await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser).ThenInclude(i=>i.Accounts)
-                                                                .Include(i => i.Payment).ThenInclude(i => i.Account).ThenInclude(i => i.AccountUser)
+                var result = await dbContext.Transactionss.Include(i => i.Invoice).ThenInclude(i => i.User).ThenInclude(i => i.Accounts)
+                                                                .Include(i => i.Payment).ThenInclude(i => i.Account).ThenInclude(i => i.User)
                                                                 .Include(i => i.TransactionType)
-                                                                .Select(i => new AccountTransactionListDto()
+                                                                .Select(i => new TransactionsListDto()
                                                                 {
-                                                                    AccountId = i.Payment != null ? i.PaymentId : i.Invoice.AccountUser.Accounts.FirstOrDefault().Id,
+                                                                    AccountId = i.Payment != null ? i.PaymentId : i.Invoice.User.Accounts.FirstOrDefault().Id,
+                                                                    TransactionId = i.Id,
+                                                                    RefrenceId = i.RefrenceId,
                                                                     TransactionType = i.TransactionType != null ? i.TransactionType.Title : "",
                                                                     AccountNumber = i.AccountNumber,
-                                                                    UserName = i.Payment != null ? i.Payment.Account.AccountUser.UserName : i.Invoice.AccountUser.UserName,
-                                                                    Price = i.Payment != null ? i.Payment.Price : i.Invoice.TotalPrice,
+                                                                    UserName = i.Payment != null ? i.Payment.Account.User.UserName : i.Invoice.User.UserName,
+                                                                    Price = i.Price,
                                                                     TrackingNumber = i.Payment != null ? i.TrackingNumber : "",
                                                                     InvoiceNumber = i.Invoice != null ? i.InvoiceNumber : "",
                                                                     TransactionNumber = i.TransactionNumber,
@@ -96,26 +102,28 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTransactionRepository GetAllAsync was Failed for ");
+                logger.LogError(ex, "TransactionsRepository GetAllAsync was Failed for ");
                 throw;
             }
         }
-        public async Task<List<AccountTransactionListDto>> GetByTransactionNumberAsync(string number)
+        public async Task<List<TransactionsListDto>> GetByTransactionNumberAsync(string number)
         {
-            logger.LogInformation("AccountTransactionRepository GetAllAsync was called for ");
+            logger.LogInformation("TransactionsRepository GetAllAsync was called for ");
             try
             {
-                return await dbContext.AccountTransactions.Include(i => i.Invoice).ThenInclude(i => i.AccountUser).ThenInclude(i=>i.Accounts)
-                                                          .Include(i => i.Payment).ThenInclude(i => i.Account).ThenInclude(i => i.AccountUser)
+                return await dbContext.Transactionss.Include(i => i.Invoice).ThenInclude(i => i.User).ThenInclude(i => i.Accounts)
+                                                          .Include(i => i.Payment).ThenInclude(i => i.Account).ThenInclude(i => i.User)
                                                           .Include(i => i.TransactionType)
                                                           .Where(i => i.TransactionNumber.Equals(number))
-                                                          .Select(i => new AccountTransactionListDto()
+                                                          .Select(i => new TransactionsListDto()
                                                           {
-                                                              AccountId = i.Payment != null ? i.PaymentId : i.Invoice.AccountUser.Accounts.FirstOrDefault().Id,
+                                                              AccountId = i.Payment != null ? i.PaymentId : i.Invoice.User.Accounts.FirstOrDefault().Id,
+                                                              TransactionId = i.Id,
+                                                              RefrenceId = i.RefrenceId,
                                                               TransactionType = i.TransactionType != null ? i.TransactionType.Title : "",
                                                               AccountNumber = i.AccountNumber,
-                                                              UserName = i.Payment != null ? i.Payment.Account.AccountUser.UserName : i.Invoice.AccountUser.UserName,
-                                                              Price = i.Payment != null ? i.Payment.Price : i.Invoice.TotalPrice,
+                                                              UserName = i.Payment != null ? i.Payment.Account.User.UserName : i.Invoice.User.UserName,
+                                                              Price = i.Price,
                                                               TrackingNumber = i.Payment != null ? i.Payment.Id.ToString() : "",
                                                               InvoiceNumber = i.Invoice != null ? i.InvoiceNumber : "",
                                                               TransactionNumber = i.TransactionNumber,
@@ -125,7 +133,25 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTransactionRepository GetAllAsync was Failed for ");
+                logger.LogError(ex, "TransactionsRepository GetAllAsync was Failed for ");
+                throw;
+            }
+        }
+        public async Task UpdateRefrenceId(Transactions transaction1, Transactions transaction2)
+        {
+            logger.LogInformation("TransactionsRepository UpdateRefrenceId was called");
+            try
+            {
+                await dbContext.SaveChangesAsync();
+                transaction1.RefrenceId = transaction2.Id;
+                transaction2.RefrenceId = transaction1.Id;
+                dbContext.Attach(transaction1);
+                dbContext.Attach(transaction2);
+                logger.LogInformation("TransactionsRepository UpdateRefrenceId was Done");
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "TransactionsRepository UpdateRefrenceId was Failed");
                 throw;
             }
         }

@@ -1,6 +1,6 @@
 ﻿namespace EcoBar.Accounting.Data.Entities
 {
-    public class AccountUser : BaseEntity
+    public class User : BaseEntity
     {
         public required string UserName { get; set; }
         public required string Password { get; set; }

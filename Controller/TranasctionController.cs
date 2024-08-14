@@ -7,28 +7,28 @@ namespace EcoBar.Accounting.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountTranasctionController : ControllerBase
+    public class TranasctionController : ControllerBase
     {
-        private readonly ILogger<AccountTranasctionController> logger;
-        private readonly IAccountTransactionService accountTransactionService;
-        public AccountTranasctionController(ILogger<AccountTranasctionController> logger, IAccountTransactionService accountTransactionService)
+        private readonly ILogger<TranasctionController> logger;
+        private readonly ITransactionsService TransactionsService;
+        public TranasctionController(ILogger<TranasctionController> logger, ITransactionsService TransactionsService)
         {
             this.logger = logger;
-            this.accountTransactionService = accountTransactionService;
+            this.TransactionsService = TransactionsService;
         }
         [HttpGet("GetAll")]
         public async Task<ActionResult<AccountTranasctionGetAllResponseDto>> GetAll()
         {
-            logger.LogInformation("AccountTranasctionController GetAllAccountTransaction Began");
+            logger.LogInformation("TranasctionController GetAllTransactions Began");
             try
             {
-                var result =await  accountTransactionService.GetAllAccountTransactionAsync();
-                logger.LogInformation("AccountTranasctionController GetAllAccountTransaction Done");
+                var result =await  TransactionsService.GetAllTransactionsAsync();
+                logger.LogInformation("TranasctionController GetAllTransactions Done");
                 return result;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTranasctionController GetAllAccountTransaction Began");
+                logger.LogError(ex, "TranasctionController GetAllTransactions Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()
@@ -44,16 +44,16 @@ namespace EcoBar.Accounting.Controller
         [HttpGet("GetByAccountId")]
         public async Task<ActionResult<AccountTranasctionGetByAccountIdResponseDto>> GetByAccountId([FromQuery] long accountid)
         {
-            logger.LogInformation("AccountTranasctionController GetByAccountId Began");
+            logger.LogInformation("TranasctionController GetByAccountId Began");
             try
             {
-                var result = await accountTransactionService.GetbyAccountIdTransactionAsync(accountid);
-                logger.LogInformation("AccountTranasctionController GetByAccountId Done");
+                var result = await TransactionsService.GetbyAccountIdTransactionAsync(accountid);
+                logger.LogInformation("TranasctionController GetByAccountId Done");
                 return result;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTranasctionController GetByAccountId Began");
+                logger.LogError(ex, "TranasctionController GetByAccountId Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()
@@ -67,18 +67,18 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpGet("GetByUsername")]
-        public async Task<ActionResult<AccountTranasctionGetAllResponseDto>> GetByUsername([FromQuery]AccountTransactionUserNameDto dto)
+        public async Task<ActionResult<AccountTranasctionGetAllResponseDto>> GetByUsername([FromQuery]TransactionsUserNameDto dto)
         {
-            logger.LogInformation("AccountTranasctionController GetByUsername Began");
+            logger.LogInformation("TranasctionController GetByUsername Began");
             try
             {
-                var result = await accountTransactionService.GetByUsernameAsync(dto.AccountUserName);
-                logger.LogInformation("AccountTranasctionController GetByUsername Done");
+                var result = await TransactionsService.GetByUsernameAsync(dto.UserName);
+                logger.LogInformation("TranasctionController GetByUsername Done");
                 return result;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTranasctionController GetByUsername Began");
+                logger.LogError(ex, "TranasctionController GetByUsername Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()
@@ -92,18 +92,18 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpGet("GetByTransactionNumber")]
-        public async Task<ActionResult<AccountTranasctionGetByUsernameResponseDto>> GetByTransactionNumber([FromQuery]AccountTransactionNumberDto dto)
+        public async Task<ActionResult<AccountTranasctionGetByUsernameResponseDto>> GetByTransactionNumber([FromQuery]TransactionsNumberDto dto)
         {
-            logger.LogInformation("AccountTranasctionController GetByTransactionNumber Began");
+            logger.LogInformation("TranasctionController GetByTransactionNumber Began");
             try
             {
-                var result = await accountTransactionService.GetByTransactionNumberAsync(dto.TransactionNumber);
-                logger.LogInformation("AccountTranasctionController GetByTransactionNumber Done");
+                var result = await TransactionsService.GetByTransactionNumberAsync(dto.TransactionNumber);
+                logger.LogInformation("TranasctionController GetByTransactionNumber Done");
                 return result;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "AccountTranasctionController GetByTransactionNumber Began");
+                logger.LogError(ex, "TranasctionController GetByTransactionNumber Began");
                 if (ex.IsSystemError) return StatusCode((int)ex.errorCode, ex.Message);
                 return Ok(
                     new BaseResponseDto<bool>()

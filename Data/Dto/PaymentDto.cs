@@ -10,5 +10,6 @@
     {
         public long InvoiceId { get; set; }
         public long AccountId { get; set; }
+        public long Price { get; set; }
     }
 }

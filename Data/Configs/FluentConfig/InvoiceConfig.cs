@@ -11,7 +11,7 @@ namespace EcoBar.Accounting.Data.Configs.FluentConfig
             builder.Property(i => i.Price).HasDefaultValue(0).IsRequired();
             builder.Property(i => i.Off).HasDefaultValue(0).IsRequired();
             builder.Property(i => i.TotalPrice).HasDefaultValue(0).IsRequired();
-            builder.HasOne(i => i.AccountUser).WithMany(i => i.Invoices).HasForeignKey(i => i.AccountUserId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(i => i.User).WithMany(i => i.Invoices).HasForeignKey(i => i.UserId).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

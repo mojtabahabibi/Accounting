@@ -4,6 +4,6 @@
     {
         public required string Title { get; set; }
 
-        public ICollection<AccountTransaction>? AccountTransactions { get; set; }
+        public ICollection<Transactions>? Transactionss { get; set; }
     }
 }

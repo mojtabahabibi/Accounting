@@ -10,10 +10,10 @@ namespace EcoBar.Accounting.Data.Repo.Classes
 {
     public class InvoiceRepository : BaseRepository<Invoice>, IInvoiceRepository
     {
-
-        public InvoiceRepository(AccountingDbContext dbContext, ILogger<BaseRepository<Invoice>> logger) : base(dbContext, logger)
+        private readonly ITransactionsRepository transactionRepository;
+        public InvoiceRepository(AccountingDbContext dbContext, ILogger<BaseRepository<Invoice>> logger, ITransactionsRepository transactionRepository) : base(dbContext, logger)
         {
-
+            this.transactionRepository = transactionRepository;
         }
         public async Task<List<InvoiceListDto>> GetAllInvoiceAsync()
         {
@@ -23,7 +23,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 var entity = await dbContext.Invoices.Include(i => i.InvoiceItems).ThenInclude(i => i.Item).Where(i => i.DeletedDate == null)
                     .Select(i => new InvoiceListDto
                     {
-                        AccountUserId = i.AccountUserId,
+                        UserId = i.UserId,
                         InvoiceId = i.Id,
                         Title = i.Title,
                         SerialNumber = i.SerialNumber,
@@ -31,7 +31,8 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         Off = i.Off,
                         TotalPrice = i.TotalPrice,
                         Status = i.Status == InvoiceStatus.Open ? "فاکتور باز است" : i.Status == InvoiceStatus.Close ? "فاکتور بسته شده است" :
-                        i.Status == InvoiceStatus.Cancel ? "فاکتور کنسل شده است" : i.Status == InvoiceStatus.Pay ? "فاکتور پرداخت شده است" : i.Status == InvoiceStatus.Delete ? "فاکتور حذف شده است" : "فاکتور لغو شده است",
+                                 i.Status == InvoiceStatus.Cancel ? "فاکتور کنسل شده است" : i.Status == InvoiceStatus.Pay ? "فاکتور پرداخت شده است" :
+                                 i.Status == InvoiceStatus.Delete ? "فاکتور حذف شده است" : i.Status == InvoiceStatus.Pending ? "فاکتور درحال پرداخت است" : "فاکتور لغو شده است",
                         Date = i.Date,
                         InvoiceItems = i.InvoiceItems != null ? i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
                         {
@@ -60,7 +61,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 var entity = await dbContext.Invoices.Include(i => i.InvoiceItems).ThenInclude(i => i.Item).Where(i => i.DeletedDate == null && i.Id.Equals(invoiceId))
                     .Select(i => new InvoiceListDto
                     {
-                        AccountUserId = i.AccountUserId,
+                        UserId = i.UserId,
                         InvoiceId = i.Id,
                         Title = i.Title,
                         SerialNumber = i.SerialNumber,
@@ -68,7 +69,8 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         Off = i.Off,
                         TotalPrice = i.TotalPrice,
                         Status = i.Status == InvoiceStatus.Open ? "فاکتور باز است" : i.Status == InvoiceStatus.Close ? "فاکتور بسته شده است" :
-                        i.Status == InvoiceStatus.Cancel ? "فاکتور کنسل شده است" : i.Status == InvoiceStatus.Pay ? "فاکتور پرداخت شده است" : i.Status == InvoiceStatus.Delete ? "فاکتور حذف شده است" : "فاکتور لغو شده است",
+                                 i.Status == InvoiceStatus.Cancel ? "فاکتور کنسل شده است" : i.Status == InvoiceStatus.Pay ? "فاکتور پرداخت شده است" :
+                                 i.Status == InvoiceStatus.Delete ? "فاکتور حذف شده است" : i.Status == InvoiceStatus.Pending ? "فاکتور درحال پرداخت است" : "فاکتور لغو شده است",
                         Date = i.Date,
                         InvoiceItems = i.InvoiceItems != null ? i.InvoiceItems.Where(i => i.DeletedDate == null).Select(j => new InvoiceItemDetailsResponseDto
                         {
@@ -89,89 +91,46 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 throw;
             }
         }
-        public async Task<bool> DeleteInvoiceAsync(long id)
+        public async Task<bool> DeleteInvoiceAsync(long invoiceId)
         {
-            logger.LogInformation("InvoiceRepository DeleteAsync was called for ");
+            logger.LogInformation("InvoiceRepository DeleteAsync was called");
             try
             {
-                var entity = dbContext.Invoices.Find(id);
-                if (entity == null) throw new AccountingException("Not found ID", false, ErrorCodes.NotFound);
+                var entity = dbContext.Invoices.Find(invoiceId);
+                if (entity == null)
+                    throw new AccountingException("Not found ID", false, ErrorCodes.NotFound);
                 entity.DeletedDate = DateTime.Now;
-                entity.Status = InvoiceStatus.Delete;
-                dbContext.Attach(entity);
-                await dbContext.SaveChangesAsync();
-                logger.LogInformation("InvoiceRepository DeleteAsync was Done for ");
+                var invoiceX = new InvoiceX
+                {
+                    InvoiceId = invoiceId,
+                    Status = InvoiceStatus.Delete
+                };
+                await ChangeStatus(invoiceX);
+                logger.LogInformation("InvoiceRepository DeleteAsync was Done for");
                 return true;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "InvoiceRepository DeleteAsync was Failed for ");
+                logger.LogError(ex, "InvoiceRepository DeleteAsync was Failed for");
                 throw;
             }
         }
-        public async Task<PaymentResult> PaymentAsync(long invoiceId)
+        public async Task<bool> CloseInvoiceAsync(long invoiceId)
         {
-            Random random = new Random();
-            var invoice = await dbContext.Invoices.Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.Id.Equals(invoiceId));
-            var accountUserId = invoice.AccountUserId;
-            // var wallets = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.AccountUserId.Equals(accountUserId));
-            long totallPrice = invoice.TotalPrice;
-            if (totallPrice != 0)
-            {
-                if (10 > totallPrice)
-                {
-                    var type = await dbContext.TransactionTypes.FirstOrDefaultAsync(i => i.Id == 2);
-                    var transaction = new AccountTransaction()
-                    {
-                        Invoice = invoice,
-                        TransactionTypeId = type.Id,
-                        TransactionType = type,
-                        TransactionNumber = random.Next(99999, 1000000).ToString(),
-                    };
-                    await dbContext.AccountTransactions.AddAsync(transaction);
-                    await dbContext.SaveChangesAsync();
-
-                    // حساب مشتری 
-                    var accountUser = await dbContext.Accounts.Include(i => i.AccountUser)
-                        .FirstOrDefaultAsync(i => i.AccountUserId == invoice.AccountUserId);
-                    if (accountUser != null)
-                    {
-
-                        //var wallet = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.Id == accountUser.Id);
-                        //if (wallet != null)
-                        //    wallet.Amount -= invoice.TotalPrice;
-                    }
-                    // حساب شرکت
-                    var accountCompany = await dbContext.Accounts.FirstOrDefaultAsync();
-                    if (accountCompany != null)
-                    {
-
-                        //var wallet = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.Id == accountCompany.Id);
-                        //if (wallet != null)
-                        //    wallet.Amount += invoice.TotalPrice;
-                    }
-                    invoice.Status = InvoiceStatus.Pay;
-
-                    await dbContext.SaveChangesAsync();
-                    return PaymentResult.Done;
-                }
-                else
-                    return PaymentResult.DontMoney;
-            }
-            else
-                return PaymentResult.DontInvoiceItem;
-        }
-        public async Task<bool> CloseInvoice(long invoiceId)
-        {
-            logger.LogInformation("InvoiceRepository CloseInvoice was called for ");
+            logger.LogInformation("InvoiceRepository CloseInvoice was called");
             try
             {
                 var invoice = await dbContext.Invoices.FindAsync(invoiceId);
                 if (invoice != null && invoice.Status == InvoiceStatus.Open)
                 {
-                    invoice.Status = InvoiceStatus.Close;
-                    await dbContext.SaveChangesAsync();
-                    logger.LogInformation("InvoiceRepository CloseInvoice was Done for ");
+                    var invoiceX = new InvoiceX
+                    {
+                        InvoiceId = invoiceId,
+                        Invoice = invoice,
+                        Status = InvoiceStatus.Close
+                    };
+                    await ChangeStatus(invoiceX);
+                    logger.LogInformation("InvoiceRepository CloseInvoice was Done");
                     return true;
                 }
                 else
@@ -179,137 +138,90 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "InvoiceRepository CloseInvoice was Failed for ");
+                logger.LogError(ex, "InvoiceRepository CloseInvoice was Failed");
                 throw;
             }
         }
-        public async Task<bool> DepositAsync(Payment payment)
-        {
-            Random random = new Random();
-            var accountType = await dbContext.Accounts.FindAsync(payment.AccountId);
-            if (accountType != null)
-            {
-                if (accountType.AccountTypeId == 1)
-                {
-                    await dbContext.Payments.AddAsync(payment);
-                    await dbContext.SaveChangesAsync();
-
-                    var type = await dbContext.TransactionTypes.FirstOrDefaultAsync(i => i.Id == 1);
-                    var transaction = new AccountTransaction()
-                    {
-                        Payment = payment,
-                        TransactionTypeId = type.Id,
-                        TransactionType = type,
-                        TransactionNumber = random.Next(99999, 1000000).ToString(),
-                    };
-                    await dbContext.AccountTransactions.AddAsync(transaction);
-                    await dbContext.SaveChangesAsync();
-
-                    var account = await dbContext.Accounts.FindAsync(payment.AccountId);
-                    if (account != null)
-                    {
-                        account.Amount += payment.Price;
-                    }
-
-                    var accountCompany = await dbContext.Accounts.FirstOrDefaultAsync(i => i.AccountTypeId == 1);
-                    if (accountCompany != null)
-                    {
-                        accountCompany.Amount -= payment.Price;
-                    }
-
-                    await dbContext.SaveChangesAsync();
-                    return true;
-                }
-            }
-            return false;
-        }
-        public async Task<CancelInvoiceResult> CancelInvoiceAsync(long invoiceId)
-        {
-            var invoice = await dbContext.Invoices.FindAsync(invoiceId);
-            if (invoice != null)
-            {
-                switch (invoice.Status)
-                {
-                    case InvoiceStatus.Open:
-                        invoice.Status = InvoiceStatus.Cancel;
-                        await dbContext.SaveChangesAsync();
-                        return CancelInvoiceResult.Success;
-                    case InvoiceStatus.Close:
-                        return CancelInvoiceResult.CloseInvoice;
-                    case InvoiceStatus.Cancel:
-                        return CancelInvoiceResult.CanceledBefor;
-                    case InvoiceStatus.Returen:
-                        return CancelInvoiceResult.Returnd;
-                    case InvoiceStatus.Pay:
-                        return CancelInvoiceResult.PaymentBefor;
-                    case InvoiceStatus.Delete:
-                        return CancelInvoiceResult.Deleted;
-                }
-            }
-            return CancelInvoiceResult.UnFoundInvoice;
-        }
         public async Task<bool> ReturnedInvoiceAsync(long invoiceId)
         {
-            Random random = new Random();
-            var invoice = await dbContext.Invoices.Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.Id.Equals(invoiceId));
-            if (invoice != null)
+            logger.LogInformation("InvoiceRepository ReturnedInvoice was called");
+            try
             {
-                if (invoice.Status == InvoiceStatus.Pay)
+                Random random = new Random();
+                var invoice = await dbContext.Invoices.Include(i => i.User).FirstOrDefaultAsync(i => i.Id.Equals(invoiceId));
+                if (invoice != null)
                 {
-                    invoice.Status = InvoiceStatus.Returen;
-                    dbContext.Attach(invoice);
-
-                    long price = invoice.TotalPrice;
-                    long accountUserId = invoice.AccountUserId;
-
-                    var accountWallet = await dbContext.Accounts.Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.AccountUserId.Equals(accountUserId) && i.AccountTypeId == 2);
-                    var accountCompany = await dbContext.Accounts.FirstAsync();
-
-                    if (accountWallet != null && accountCompany != null)
+                    if (invoice.Status == InvoiceStatus.Pay)
                     {
-                        accountWallet.Amount += price;
-                        accountCompany.Amount -= price;
+                        long price = invoice.TotalPrice;
+                        long UserId = invoice.UserId;
 
-                        dbContext.Attach(accountWallet);
-                        dbContext.Attach(accountCompany);
+                        var accountWallet = await dbContext.Accounts.Include(i => i.User).FirstOrDefaultAsync(i => i.UserId.Equals(UserId) && i.AccountTypeId == 2);
+                        var accountCompany = await dbContext.Accounts.FirstAsync();
 
-                        var walletTransaction = new AccountTransaction()
+                        if (accountWallet != null && accountCompany != null)
                         {
-                            InvoiceId = invoice.Id,
-                            Invoice = invoice,
-                            TransactionTypeId = 7,
-                            AccountNumber = accountWallet.AccountNumber,
-                            AccountUsername = accountWallet.AccountUser?.UserName,
-                            InvoiceNumber = invoice.SerialNumber,
-                            TransactionNumber = random.Next(99999, 1000000).ToString(),
-                            Description = "ورود " + price.ToString() + " وجه نقد به حساب کیف پول " + accountWallet.AccountNumber + " بابت مرجوع فاکتور  " + invoice.SerialNumber
-                        };
-                        var companyTransaction = new AccountTransaction()
-                        {
-                            InvoiceId = invoice.Id,
-                            Invoice = invoice,
-                            TransactionTypeId = 7,
-                            AccountNumber = accountCompany?.AccountNumber,
-                            AccountUsername = accountCompany?.AccountUser?.UserName,
-                            InvoiceNumber = invoice.SerialNumber,
-                            TransactionNumber = random.Next(99999, 1000000).ToString(),
-                            Description = "خروج " + price.ToString() + " وجه نقد از حساب صندوق  " + accountCompany?.AccountNumber + " بابت مرجوع فاکتور " + invoice.SerialNumber
-                        };
-                        await dbContext.AccountTransactions.AddAsync(walletTransaction);
-                        await dbContext.AccountTransactions.AddAsync(companyTransaction);
+                            accountWallet.Amount += price;
+                            accountCompany.Amount -= price;
 
-                        await dbContext.SaveChangesAsync();
-                        return true;
+                            dbContext.Attach(accountWallet);
+                            dbContext.Attach(accountCompany);
+
+                            var walletTransaction = new Transactions()
+                            {
+                                InvoiceId = invoice.Id,
+                                Invoice = invoice,
+                                TransactionTypeId = 7,
+                                AccountNumber = accountWallet.AccountNumber,
+                                Username = accountWallet.User?.UserName,
+                                InvoiceNumber = invoice.SerialNumber,
+                                TransactionNumber = random.Next(99999, 1000000).ToString(),
+                                Price = price,
+                                Description = "ورود " + price.ToString() + " وجه نقد به حساب کیف پول " + accountWallet.AccountNumber + " بابت مرجوع فاکتور  " + invoice.SerialNumber
+                            };
+                            var companyTransaction = new Transactions()
+                            {
+                                InvoiceId = invoice.Id,
+                                Invoice = invoice,
+                                TransactionTypeId = 7,
+                                AccountNumber = accountCompany?.AccountNumber,
+                                Username = accountCompany?.User?.UserName,
+                                InvoiceNumber = invoice.SerialNumber,
+                                TransactionNumber = random.Next(99999, 1000000).ToString(),
+                                Price = price,
+                                Description = "خروج " + price.ToString() + " وجه نقد از حساب صندوق  " + accountCompany?.AccountNumber + " بابت مرجوع فاکتور " + invoice.SerialNumber
+                            };
+                            await dbContext.Transactionss.AddAsync(walletTransaction);
+                            await dbContext.Transactionss.AddAsync(companyTransaction);
+
+                            await transactionRepository.UpdateRefrenceId(walletTransaction, companyTransaction);
+
+                            var invoiceX = new InvoiceX
+                            {
+                                InvoiceId = invoice.Id,
+                                Invoice = invoice,
+                                Status = InvoiceStatus.Returen
+                            };
+                            await ChangeStatus(invoiceX);
+
+                            logger.LogInformation("InvoiceRepository ReturnedInvoice was Done");
+                            return true;
+                        }
+                        return false;
                     }
                     return false;
                 }
                 return false;
             }
-            return false;
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceRepository ReturnedInvoice was Failed");
+                throw;
+            }
         }
         public async Task<bool> BuyChargeAsync(BuyChargeDto model)
         {
-            logger.LogInformation("InvoiceRepository BuyChargeAsync was called for ");
+            logger.LogInformation("InvoiceRepository BuyCharge was called");
             try
             {
                 Random random = new Random();
@@ -317,7 +229,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
 
                 var invoice = new Invoice()
                 {
-                    AccountUserId = model.AccountUserId,
+                    UserId = model.UserId,
                     Title = "خرید شارژ",
                     SerialNumber = serialNumber,
                     Price = model.Price,
@@ -343,25 +255,73 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         Price = model.Price,
                     };
                     await dbContext.InvoiceItems.AddAsync(invoiceItem);
-                    await dbContext.SaveChangesAsync();
 
+                    var invoiceX = new InvoiceX
+                    {
+                        InvoiceId = invoice.Id,
+                        Invoice = invoice,
+                        Status = InvoiceStatus.Open
+                    };
+                    await ChangeStatus(invoiceX);
+
+                    logger.LogInformation("InvoiceRepository BuyCharge was Done");
                     return true;
                 }
                 return false;
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "InvoiceRepository BuyChargeAsync was Failed for ");
+                logger.LogError(ex, "InvoiceRepository BuyCharge was Failed");
+                throw;
+            }
+        }
+        public async Task<CancelInvoiceResult> CancelInvoiceAsync(long invoiceId)
+        {
+            logger.LogInformation("InvoiceRepository CancelInvoice was called");
+            try
+            {
+                var invoice = await dbContext.Invoices.FindAsync(invoiceId);
+                if (invoice != null)
+                {
+                    switch (invoice.Status)
+                    {
+                        case InvoiceStatus.Open:
+                            var invoiceX = new InvoiceX
+                            {
+                                InvoiceId = invoiceId,
+                                Invoice = invoice,
+                                Status = InvoiceStatus.Cancel
+                            };
+                            await ChangeStatus(invoiceX);
+                            logger.LogInformation("InvoiceRepository CancelInvoice was Done");
+                            return CancelInvoiceResult.Success;
+                        case InvoiceStatus.Close:
+                            return CancelInvoiceResult.CloseInvoice;
+                        case InvoiceStatus.Cancel:
+                            return CancelInvoiceResult.CanceledBefor;
+                        case InvoiceStatus.Returen:
+                            return CancelInvoiceResult.Returnd;
+                        case InvoiceStatus.Pay:
+                            return CancelInvoiceResult.PaymentBefor;
+                        case InvoiceStatus.Delete:
+                            return CancelInvoiceResult.Deleted;
+                    }
+                }
+                return CancelInvoiceResult.UnFoundInvoice;
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceRepository CancelInvoice was Failed");
                 throw;
             }
         }
         public async Task<PaymentResult> PaymentChargeAsync(PaymentChargeDto model)
         {
-            logger.LogInformation("InvoiceRepository BuyChargeAsync was called for ");
+            logger.LogInformation("InvoiceRepository PaymentCharge was called");
             try
             {
                 Random random = new Random();
-                var account = await dbContext.Accounts.Include(i => i.AccountUser).Where(i => i.AccountUserId.Equals(model.AccountUserId)).ToListAsync();
+                var account = await dbContext.Accounts.Include(i => i.User).Where(i => i.UserId.Equals(model.UserId)).ToListAsync();
                 if (account != null)
                 {
                     var invoice = await dbContext.Invoices.Include(i => i.InvoiceItems).ThenInclude(i => i.Item).FirstOrDefaultAsync(i => i.Id.Equals(model.InvoiceId));
@@ -373,6 +333,16 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     {
                         if (invoice.Status == InvoiceStatus.Open)
                         {
+                            var invoiceX = new InvoiceX
+                            {
+                                InvoiceId = invoice.Id,
+                                Invoice = invoice,
+                                Status = InvoiceStatus.Close
+                            };
+                            await ChangeStatus(invoiceX);
+                        }
+                        if (invoice.Status == InvoiceStatus.Close)
+                        {
                             var accountCash = account.First(i => i.AccountTypeId == 1);
                             var accountWallet = account.First(i => i.AccountTypeId == 2);
                             long price = invoice.TotalPrice;
@@ -383,35 +353,44 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 accountWallet.Amount += price;
                                 dbContext.AttachRange(account);
 
-                                var cashTransaction = new AccountTransaction()
+                                var cashTransaction = new Transactions()
                                 {
                                     InvoiceId = invoice.Id,
                                     Invoice = invoice,
                                     TransactionTypeId = 2,
                                     AccountNumber = accountCash.AccountNumber,
-                                    AccountUsername = accountCash.AccountUser?.UserName,
+                                    Username = accountCash.User?.UserName,
                                     InvoiceNumber = invoice.SerialNumber,
                                     TransactionNumber = random.Next(99999, 1000000).ToString(),
+                                    Price = price,
                                     Description = "خروج " + price.ToString() + " وجه نقد از حساب نقدی " + accountCash.AccountNumber + " به حساب کیف پول " + accountWallet?.AccountNumber
                                 };
-                                var walletTransaction = new AccountTransaction()
+                                var walletTransaction = new Transactions()
                                 {
                                     InvoiceId = invoice.Id,
                                     Invoice = invoice,
                                     TransactionTypeId = 3,
                                     AccountNumber = accountWallet?.AccountNumber,
-                                    AccountUsername = accountWallet?.AccountUser?.UserName,
+                                    Username = accountWallet?.User?.UserName,
                                     InvoiceNumber = invoice.SerialNumber,
                                     TransactionNumber = random.Next(99999, 1000000).ToString(),
+                                    Price = price,
                                     Description = "ورود " + price.ToString() + " وجه نقد به حساب کیف پول " + accountWallet?.AccountNumber + " از حساب نقدی " + accountCash?.AccountNumber
                                 };
-                                await dbContext.AccountTransactions.AddAsync(cashTransaction);
-                                await dbContext.AccountTransactions.AddAsync(walletTransaction);
+                                await dbContext.Transactionss.AddAsync(cashTransaction);
+                                await dbContext.Transactionss.AddAsync(walletTransaction);
 
-                                invoice.Status = InvoiceStatus.Pay;
-                                dbContext.Attach(invoice);
+                                await transactionRepository.UpdateRefrenceId(cashTransaction, walletTransaction);
 
-                                await dbContext.SaveChangesAsync();
+                                var invoiceX = new InvoiceX()
+                                {
+                                    InvoiceId = invoice.Id,
+                                    Invoice = invoice,
+                                    Status = InvoiceStatus.Pay
+                                };
+                                await ChangeStatus(invoiceX);
+
+                                logger.LogInformation("InvoiceRepository PaymentCharge was Done");
                                 return PaymentResult.Done;
                             }
                             return PaymentResult.DontMoney;
@@ -423,7 +402,67 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             }
             catch (AccountingException ex)
             {
-                logger.LogError(ex, "InvoiceRepository BuyChargeAsync was Failed for ");
+                logger.LogError(ex, "InvoiceRepository PaymentCharge was Failed");
+                throw;
+            }
+        }
+        public async Task<InvoiceStatusListDto> InvoiceStatusListAsync(long invoiceId)
+        {
+            logger.LogInformation("InvoiceRepository InvoiceStatusList was called");
+            try
+            {
+                var query = dbContext.InvoiceXes.Include(i => i.Invoice).Where(i => i.InvoiceId.Equals(invoiceId));
+                if (query != null)
+                {
+                    var invoice = await query.FirstAsync();
+                    var statuslist = query.Select(i => new InvoiceStatusDto
+                    {
+                        ChangeTime = i.CreatedDate,
+                        Status = i.Status == InvoiceStatus.Open ? "فاکتور باز است" : i.Status == InvoiceStatus.Close ? "فاکتور بسته شده است" :
+                                 i.Status == InvoiceStatus.Cancel ? "فاکتور کنسل شده است" : i.Status == InvoiceStatus.Pay ? "فاکتور پرداخت شده است" :
+                                 i.Status == InvoiceStatus.Delete ? "فاکتور حذف شده است" : i.Status == InvoiceStatus.Pending ? "فاکتور درحال پرداخت است" : "فاکتور لغو شده است",
+                    }).ToList();
+
+                    var result = new InvoiceStatusListDto()
+                    {
+                        InvoiceId = invoiceId,
+                        Title = invoice.Invoice?.Title,
+                        SerialNumber = invoice.Invoice?.SerialNumber,
+                        TotalPrice = invoice.Invoice?.TotalPrice,
+                        InvoiceStatusDtos = statuslist
+                    };
+                    logger.LogInformation("InvoiceRepository InvoiceStatusList was Done");
+                    return result;
+                }
+                return new InvoiceStatusListDto()
+                {
+                    InvoiceStatusDtos = new List<InvoiceStatusDto>()
+                };
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceRepository InvoiceStatusList was Failed");
+                throw;
+            }
+        }
+        public async Task ChangeStatus(InvoiceX model)
+        {
+            logger.LogInformation("InvoiceXRepository ChangeStatus was called");
+            try
+            {
+                var invoice = await dbContext.Invoices.FindAsync(model.InvoiceId);
+                if (invoice != null)
+                {
+                    invoice.Status = model.Status;
+                    dbContext.Attach(invoice);
+                    await dbContext.AddAsync(model);
+                    await dbContext.SaveChangesAsync();
+                    logger.LogInformation("InvoiceXRepository ChangeStatus was Done");
+                }
+            }
+            catch (AccountingException ex)
+            {
+                logger.LogError(ex, "InvoiceXRepository ChangeStatus was Failed");
                 throw;
             }
         }

@@ -8,8 +8,16 @@ namespace EcoBar.Accounting.Data.SeedData
         {
             return new List<AccountType>()
             {
-                new AccountType() {Id=1, Type = "حساب نقدی"},
-                new AccountType() {Id=2, Type = "حساب کیف پول"},
+                new AccountType()
+                {
+                    Id=1,
+                    Type = "حساب نقدی"
+                },
+                new AccountType()
+                {
+                    Id=2,
+                    Type = "حساب کیف پول"
+                },
             };
         }
     }

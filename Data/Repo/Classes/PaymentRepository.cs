@@ -9,50 +9,18 @@ namespace EcoBar.Accounting.Data.Repo.Classes
 {
     public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
     {
-        public PaymentRepository(AccountingDbContext dbContext, ILogger<BaseRepository<Payment>> logger) : base(dbContext, logger)
+        private readonly IInvoiceRepository invoiceRepository;
+        private readonly ITransactionsRepository transactionRepository;
+        public PaymentRepository(AccountingDbContext dbContext, ILogger<BaseRepository<Payment>> logger
+            , IInvoiceRepository invoiceRepository, ITransactionsRepository transactionRepository) : base(dbContext, logger)
         {
-        }
-        public async Task<Payment> CreatePaymentAsync(Payment payment)
-        {
-            Random random = new Random();
-            await dbContext.Payments.AddAsync(payment);
-            await dbContext.SaveChangesAsync();
-
-            var transaction = new AccountTransaction()
-            {
-                Payment = payment,
-                TransactionNumber = random.Next(99999, 1000000).ToString(),
-            };
-            await dbContext.AccountTransactions.AddAsync(transaction);
-            await dbContext.SaveChangesAsync();
-
-            var account = await dbContext.Accounts.Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.AccountUserId == payment.Account.AccountUserId);
-            if (account != null)
-            {
-                //var exist = await dbContext.Wallets.Include(i => i.Account).FirstOrDefaultAsync(i => i.Account.Id == account.Id);
-                //if (exist == null)
-                //{
-                //    var wallet = new Wallet()
-                //    {
-                //        Account = account,
-                //        Amount = payment.Price,
-                //        WalletNumber = Guid.NewGuid()
-                //    };
-                //    await dbContext.Wallets.AddAsync(wallet);
-                //}
-                //else
-                //{
-                //    long amount = exist.Amount;
-                //    exist.Amount = payment.Price + amount;
-                //}
-                await dbContext.SaveChangesAsync();
-            }
-            return payment;
+            this.invoiceRepository = invoiceRepository;
+            this.transactionRepository = transactionRepository;
         }
         public async Task<bool> DepositAsync(Payment payment)
         {
             Random random = new Random();
-            var account = await dbContext.Accounts.Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.Id.Equals(payment.AccountId));
+            var account = await dbContext.Accounts.Include(i => i.User).FirstOrDefaultAsync(i => i.Id.Equals(payment.AccountId));
             if (account != null)
             {
                 if (account.AccountTypeId == 1)
@@ -61,39 +29,43 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     await dbContext.Payments.AddAsync(payment);
                     await dbContext.SaveChangesAsync();
 
-                    var accountCompany = await dbContext.Accounts.Include(i => i.AccountUser).FirstOrDefaultAsync();
+                    var accountCompany = await dbContext.Accounts.Include(i => i.User).FirstOrDefaultAsync();
                     if (accountCompany != null)
                     {
                         string trackingnumber = random.Next(99999, 1000000).ToString();
                         long price = payment.Price;
 
-                        var cashTransaction = new AccountTransaction()
-                        {
-                            Payment = payment,
-                            TransactionTypeId = 1,
-                            AccountNumber = account.AccountNumber,
-                            AccountUsername = account.AccountUser?.UserName,
-                            TrackingNumber = trackingnumber,
-                            TransactionNumber = random.Next(99999, 1000000).ToString(),
-                            Description = "ورود " + price + " وجه نقد به حساب نقدی " + account.AccountNumber + "  با شماره پیگیری  " + trackingnumber
-                        };
-                        var companyTransaction = new AccountTransaction()
-                        {
-                            Payment = payment,
-                            TransactionTypeId = 1,
-                            AccountNumber = accountCompany?.AccountNumber,
-                            AccountUsername = accountCompany?.AccountUser?.UserName,
-                            TrackingNumber = trackingnumber,
-                            TransactionNumber = random.Next(99999, 1000000).ToString(),
-                            Description = "ورود " + price + " وجه نقد به حساب صندوق " + accountCompany?.AccountNumber + "  با شماره پیگیری  " + trackingnumber
-                        };
-                        await dbContext.AccountTransactions.AddAsync(cashTransaction);
-                        await dbContext.AccountTransactions.AddAsync(companyTransaction);
-
                         account.Amount += price;
                         accountCompany.Amount -= price;
                         dbContext.Attach(account);
                         dbContext.Attach(accountCompany);
+
+                        var cashTransaction = new Transactions()
+                        {
+                            Payment = payment,
+                            TransactionTypeId = 1,
+                            AccountNumber = account.AccountNumber,
+                            Username = account.User?.UserName,
+                            TrackingNumber = trackingnumber,
+                            TransactionNumber = random.Next(99999, 1000000).ToString(),
+                            Price = price,
+                            Description = "ورود " + price + " وجه نقد به حساب نقدی " + account.AccountNumber + "  با شماره پیگیری  " + trackingnumber
+                        };
+                        var companyTransaction = new Transactions()
+                        {
+                            Payment = payment,
+                            TransactionTypeId = 1,
+                            AccountNumber = accountCompany?.AccountNumber,
+                            Username = accountCompany?.User?.UserName,
+                            TrackingNumber = trackingnumber,
+                            TransactionNumber = random.Next(99999, 1000000).ToString(),
+                            Price = price,
+                            Description = "ورود " + price + " وجه نقد به حساب صندوق " + accountCompany?.AccountNumber + "  با شماره پیگیری  " + trackingnumber
+                        };
+                        await dbContext.Transactionss.AddAsync(cashTransaction);
+                        await dbContext.Transactionss.AddAsync(companyTransaction);
+
+                        await transactionRepository.UpdateRefrenceId(cashTransaction, companyTransaction);
 
                         await dbContext.SaveChangesAsync();
                         return true;
@@ -105,7 +77,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
         public async Task<PaymentResult> PaymentAsync(PaymentInvoiceDto model)
         {
             Random random = new Random();
-            var account = await dbContext.Accounts.Include(i => i.AccountUser).FirstOrDefaultAsync(i => i.Id.Equals(model.AccountId));
+            var account = await dbContext.Accounts.Include(i => i.User).FirstOrDefaultAsync(i => i.Id.Equals(model.AccountId));
             if (account?.AccountTypeId == 1)
             {
                 return PaymentResult.PayWithWallet;
@@ -119,57 +91,84 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 }
                 if (invoice.Status == InvoiceStatus.Open)
                 {
-                    invoice.Status = InvoiceStatus.Close;
-                    dbContext.Attach(invoice);
-                    await dbContext.SaveChangesAsync();
+                    var invoiceX = new InvoiceX
+                    {
+                        InvoiceId = invoice.Id,
+                        Invoice = invoice,
+                        Status = InvoiceStatus.Close
+                    };
+                    await invoiceRepository.ChangeStatus(invoiceX);
                 }
-                if (invoice.Status == InvoiceStatus.Close)
+                if (invoice.Status == InvoiceStatus.Close || invoice.Status == InvoiceStatus.Pending)
                 {
                     long invoicePrice = invoice.TotalPrice;
-                    if (account.Amount < invoicePrice)
+                    long price = model.Price;
+                    if (price > invoicePrice)
+                    {
+                        return PaymentResult.MostPrice;
+                    }
+                    if (account.Amount < price)
                     {
                         return PaymentResult.DontMoney;
                     }
                     else
                     {
-                        account.Amount -= invoicePrice;
+                        long p = 0;
+                        var tr = dbContext.Transactionss.Where(i => i.InvoiceId.Equals(invoice.Id));
+                        if (tr != null)
+                        {
+                            long payment = tr.Sum(i => i.Price) / 2;
+                            p = invoicePrice - payment;
+                            if (price > p)
+                                return PaymentResult.MostPrice;
+                        }
+                        account.Amount -= price;
                         dbContext.Attach(account);
 
-                        var accountCompany = await dbContext.Accounts.Include(i => i.AccountUser).FirstOrDefaultAsync();
+                        var accountCompany = await dbContext.Accounts.Include(i => i.User).FirstOrDefaultAsync();
                         if (accountCompany != null)
                         {
-                            accountCompany.Amount += invoicePrice;
+                            accountCompany.Amount += price;
                             dbContext.Attach(accountCompany);
 
-                            var customerTransaction = new AccountTransaction()
+                            var customerTransaction = new Transactions()
                             {
                                 InvoiceId = invoice.Id,
                                 Invoice = invoice,
                                 TransactionTypeId = 4,
                                 AccountNumber = account.AccountNumber,
-                                AccountUsername = account.AccountUser?.UserName,
+                                Username = account.User?.UserName,
                                 InvoiceNumber = invoice.SerialNumber,
                                 TransactionNumber = random.Next(99999, 1000000).ToString(),
-                                Description = "خروج " + invoicePrice + " وجه نقد از حساب کیف پول " + account.AccountNumber + "  برای پرداخت فاکتور  " + invoice.SerialNumber
+                                Price = price,
+                                Description = "خروج " + price + " وجه نقد از حساب کیف پول " + account.AccountNumber + "  برای پرداخت فاکتور  " + invoice.SerialNumber
                             };
-                            var companyTransaction = new AccountTransaction()
+                            var companyTransaction = new Transactions()
                             {
                                 InvoiceId = invoice.Id,
                                 Invoice = invoice,
                                 TransactionTypeId = 5,
                                 AccountNumber = accountCompany?.AccountNumber,
-                                AccountUsername = accountCompany?.AccountUser?.UserName,
+                                Username = accountCompany?.User?.UserName,
                                 InvoiceNumber = invoice.SerialNumber,
                                 TransactionNumber = random.Next(99999, 1000000).ToString(),
-                                Description = "ورود " + invoicePrice + " وجه نقد به حساب صندوق " + accountCompany?.AccountNumber + "  برای پرداخت فاکتور  " + invoice.SerialNumber
+                                Price = price,
+                                Description = "ورود " + price + " وجه نقد به حساب صندوق " + accountCompany?.AccountNumber + "  برای پرداخت فاکتور  " + invoice.SerialNumber
                             };
-                            await dbContext.AccountTransactions.AddAsync(customerTransaction);
-                            await dbContext.AccountTransactions.AddAsync(companyTransaction);
+                            await dbContext.Transactionss.AddAsync(customerTransaction);
+                            await dbContext.Transactionss.AddAsync(companyTransaction);
 
-                            invoice.Status = InvoiceStatus.Pay;
-                            dbContext.Attach(invoice);
+                            await transactionRepository.UpdateRefrenceId(customerTransaction, companyTransaction);
 
-                            await dbContext.SaveChangesAsync();
+                            InvoiceStatus status = (p == 0 && price == invoicePrice) ? InvoiceStatus.Pay : (p == 0 && price < invoicePrice) ? InvoiceStatus.Pending :
+                                                   (p != 0 && price == p) ? InvoiceStatus.Pay : InvoiceStatus.Pending;
+                            var invoiceX = new InvoiceX
+                            {
+                                InvoiceId = invoice.Id,
+                                Invoice = invoice,
+                                Status = status
+                            };
+                            await invoiceRepository.ChangeStatus(invoiceX);
 
                             return PaymentResult.Done;
                         }

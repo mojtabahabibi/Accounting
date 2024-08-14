@@ -25,36 +25,6 @@ namespace EcoBar.Accounting.Core.Services.Classes
             this.paymentValidator = paymentValidator;
             this.paymentRepository = paymentRepository;
         }
-        public async Task<BaseResponseDto<bool?>> AddPaymentAsync(CreatePaymentDto dto)
-        {
-            logger.LogInformation("PaymentService AddPayment Began");
-            try
-            {
-                var validation = await createValidator.ValidateAsync(dto);
-                var response = new BaseResponseDto<bool?>();
-                if (!validation.IsValid)
-                {
-                    response.ErrorCode = ErrorCodes.BadRequest;
-                    response.Status = false;
-                    response.Message = validation.Errors.Select(i => i.ErrorMessage).First();
-                }
-                else
-                {
-                    var acc = await paymentRepository.CreatePaymentAsync(mapper.Map<Payment>(dto));
-                    logger.LogInformation("PaymentService AddPayment Done");
-
-                    response.ErrorCode = ErrorCodes.OK;
-                    response.Status = true;
-                    response.Message = "ایجاد شد";
-                }
-                return response;
-            }
-            catch (AccountingException ex)
-            {
-                logger.LogError(ex, "PaymentService CreateFinancialYear Failed");
-                throw;
-            }
-        }
         public async Task<BaseResponseDto<bool?>> DepositAsync(CreatePaymentDto dto)
         {
             logger.LogInformation("InvoiceService Deposit Began");
@@ -111,53 +81,58 @@ namespace EcoBar.Accounting.Core.Services.Classes
                 {
                     var result = await paymentRepository.PaymentAsync(dto);
                     logger.LogInformation("PaymentService Payment Done");
-                    if (result == PaymentResult.Done)
+                    switch (result)
                     {
-                        response.ErrorCode = ErrorCodes.OK;
-                        response.Status = true;
-                        response.Message = "پرداخت شد";
-                    }
-                    else if (result == PaymentResult.DontAccount)
-                    {
-                        response.ErrorCode = ErrorCodes.NotFound;
-                        response.Status = false;
-                        response.Message = "کاربر شماره حساب در سیستم ندارد";
-                    }
-                    else if (result == PaymentResult.DontMoney)
-                    {
-                        response.ErrorCode = ErrorCodes.NotFound;
-                        response.Status = false;
-                        response.Message = "کاربر پول کافی برای خرید ندارد";
-                    }
-                    else if (result == PaymentResult.DontInvoice)
-                    {
-                        response.ErrorCode = ErrorCodes.NotFound;
-                        response.Status = false;
-                        response.Message = "شماره فاکتور وجود ندارد";
-                    }
-                    else if (result == PaymentResult.DontWallet)
-                    {
-                        response.ErrorCode = ErrorCodes.NotFound;
-                        response.Status = false;
-                        response.Message = "کاربر کیف پول ندارد";
-                    }
-                    else if (result == PaymentResult.DontInvoiceItem)
-                    {
-                        response.ErrorCode = ErrorCodes.NotFound;
-                        response.Status = false;
-                        response.Message = "فاکتور هیچگونه اقلام فاکتوری ندارد";
-                    }
-                    else if (result == PaymentResult.PayWithWallet)
-                    {
-                        response.ErrorCode = ErrorCodes.NotFound;
-                        response.Status = false;
-                        response.Message = "با حساب کیف پول خرید کنید";
-                    }
-                    else if (result == PaymentResult.StatusInvoice)
-                    {
-                        response.ErrorCode = ErrorCodes.NotFound;
-                        response.Status = false;
-                        response.Message = "فاکتور انتخاب شده در وضعیت غیرقابل پرداخت است";
+                        case PaymentResult.DontWallet:
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "کاربر کیف پول ندارد";
+                            break;
+                        case PaymentResult.DontMoney:
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "کاربر پول کافی برای خرید ندارد";
+                            break;
+                        case PaymentResult.DontAccount:
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "کاربر شماره حساب در سیستم ندارد";
+                            break;
+                        case PaymentResult.DontInvoice:
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "شماره فاکتور وجود ندارد";
+                            break;
+                        case PaymentResult.DontInvoiceItem:
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "فاکتور هیچگونه اقلام فاکتوری ندارد";
+                            break;
+                        case PaymentResult.InnerExeption:
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "با خطای داخلی سیستم مواجه شده است";
+                            break;
+                        case PaymentResult.PayWithWallet:
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "با حساب کیف پول خرید کنید";
+                            break;
+                        case PaymentResult.StatusInvoice:
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "فاکتور انتخاب شده در وضعیت غیرقابل پرداخت است";
+                            break;
+                        case PaymentResult.MostPrice:
+                            response.ErrorCode = ErrorCodes.NotFound;
+                            response.Status = false;
+                            response.Message = "قیمت وارد شده بیشتر از مقدار فاکتور است";
+                            break;
+                        case PaymentResult.Done:
+                            response.ErrorCode = ErrorCodes.OK;
+                            response.Status = true;
+                            response.Message = "فاکتور پرداخت شد";
+                            break;
                     }
                 }
                 return response;

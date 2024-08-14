@@ -16,15 +16,15 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             logger.LogInformation("CompanyRepository AddAsync was called for ");
             try
             {
-                var user = new AccountUser()
+                var user = new User()
                 {
                     UserName = "Comapny",
                     Password = entity.Economicalnumber,
                 };
-                await dbContext.AccountUsers.AddAsync(user);
+                await dbContext.Users.AddAsync(user);
                 await dbContext.SaveChangesAsync();
 
-                entity.AccountUserId = user.Id;
+                entity.UserId = user.Id;
                 await dbContext.Companies.AddAsync(entity);
                 await dbContext.SaveChangesAsync();
                 logger.LogInformation("CompanyRepository AddAsync was Done for ");

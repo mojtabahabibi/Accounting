@@ -4,8 +4,8 @@ namespace EcoBar.Accounting.Data.Entities
 {
     public class Invoice : BaseEntity
     {
-        public long AccountUserId { get; set; }
-        public AccountUser? AccountUser { get; set; }
+        public long UserId { get; set; }
+        public User? User { get; set; }
 
         public string? Title { get; set; }
         public string? SerialNumber { get; set; }
@@ -15,7 +15,8 @@ namespace EcoBar.Accounting.Data.Entities
         public DateTime Date { get; set; }
         public InvoiceStatus Status { get; set; }
 
-        public ICollection<AccountTransaction>? AccountTransactions { get; set; }
+        public ICollection<Transactions>? Transactionss { get; set; }
         public ICollection<InvoiceItem>? InvoiceItems { get; set; }
+        public ICollection<InvoiceX>? InvoiceXes { get; set; }
     }
 }

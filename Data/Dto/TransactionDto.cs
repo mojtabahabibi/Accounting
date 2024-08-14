@@ -1,16 +1,18 @@
 ﻿namespace EcoBar.Accounting.Data.Dto
 {
-    public class AccountTransactionUserNameDto
+    public class TransactionsUserNameDto
     {
-        public required string AccountUserName { get; set; }
+        public required string UserName { get; set; }
     }
-    public class AccountTransactionNumberDto
+    public class TransactionsNumberDto
     {
         public required string TransactionNumber { get; set; }
     }
-    public class AccountTransactionListDto
+    public class TransactionsListDto
     {
         public long? AccountId { get; set; }
+        public required long TransactionId { get; set; }
+        public required long RefrenceId { get; set; }
         public string? TransactionType { get; set; }
         public string? AccountNumber { get; set; }
         public string? UserName { get; set; }
@@ -21,15 +23,15 @@
         public DateTime Time { get; set; }
         public string? Description { get; set; }
     }
-    public class AccountTranasctionGetAllResponseDto : BaseResponseDto<List<AccountTransactionListDto>>
+    public class AccountTranasctionGetAllResponseDto : BaseResponseDto<List<TransactionsListDto>>
     {
 
     }
-    public class AccountTranasctionGetByAccountIdResponseDto : BaseResponseDto<List<AccountTransactionListDto>>
+    public class AccountTranasctionGetByAccountIdResponseDto : BaseResponseDto<List<TransactionsListDto>>
     {
 
     }
-    public class AccountTranasctionGetByUsernameResponseDto : BaseResponseDto<List<AccountTransactionListDto>>
+    public class AccountTranasctionGetByUsernameResponseDto : BaseResponseDto<List<TransactionsListDto>>
     {
 
     }

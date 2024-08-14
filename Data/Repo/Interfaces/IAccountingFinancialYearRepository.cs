@@ -4,7 +4,7 @@ using EcoBar.Accounting.Data.Enums;
 
 namespace EcoBar.Accounting.Data.Repo.Interfaces
 {
-    public interface IAccountingFinancialYearRepository : IBaseRepository<AccountingFinancialYear>
+    public interface IFinancialYearRepository : IBaseRepository<FinancialYear>
     {
         Task<FinancialYearActiveResult> SetActive(BaseFinancialYearIdDto dto);
         Task<bool> SetClose(BaseFinancialYearIdDto dto);

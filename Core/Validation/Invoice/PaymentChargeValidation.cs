@@ -8,7 +8,7 @@ namespace EcoBar.Accounting.Core.Validation.Invoice
     {
         public PaymentChargeValidation(AccountingDbContext context)
         {
-            RuleFor(i=>i.AccountUserId).Must(id=>context.AccountUsers.Any(i=>i.Id.Equals(id)))
+            RuleFor(i=>i.UserId).Must(id=>context.Users.Any(i=>i.Id.Equals(id)))
                 .WithMessage("شماره کاربری در سیستم وجود ندارد");   
         }
     }

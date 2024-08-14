@@ -2,13 +2,13 @@
 using EcoBar.Accounting.Data.Dto;
 using FluentValidation;
 
-namespace EcoBar.Accounting.Core.Validation.AccountTransaction
+namespace EcoBar.Accounting.Core.Validation.Transactions
 {
-    public class AccountTransactionNumberValidation : AbstractValidator<AccountTransactionNumberDto>
+    public class TransactionsNumberValidation : AbstractValidator<TransactionsNumberDto>
     {
-        public AccountTransactionNumberValidation(AccountingDbContext context)
+        public TransactionsNumberValidation(AccountingDbContext context)
         {
-            RuleFor(i => i.TransactionNumber).Must(number => context.AccountTransactions.Any(i => i.TransactionNumber.Equals(number)))
+            RuleFor(i => i.TransactionNumber).Must(number => context.Transactionss.Any(i => i.TransactionNumber.Equals(number)))
                 .WithMessage("شماره تراکنش مورد نظر یافت نشد");
         }
     }

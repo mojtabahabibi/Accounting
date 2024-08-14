@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcoBar.Accounting.Data.Repo.Classes
 {
-    public class AccountUserRepository : BaseRepository<AccountUser>, IAccountUserRepository
+    public class UserRepository : BaseRepository<User>, IUserRepository
     {
         Random random = new Random();
-        public AccountUserRepository(AccountingDbContext dbContext, ILogger<BaseRepository<AccountUser>> logger) : base(dbContext, logger)
+        public UserRepository(AccountingDbContext dbContext, ILogger<BaseRepository<User>> logger) : base(dbContext, logger)
         {
         }
-        public async Task<AccountUser> CreateUserAsync(AccountUser model)
+        public async Task<User> CreateUserAsync(User model)
         {
-            await dbContext.AccountUsers.AddAsync(model);
+            await dbContext.Users.AddAsync(model);
             await dbContext.SaveChangesAsync();
 
             var accountNumberList = await dbContext.Accounts.Select(i => new { AccountNumber = i.AccountNumber }).ToListAsync();
@@ -34,8 +34,8 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             var AccountCash = new Account()
             {
                 AccountTypeId = 1,
-                AccountUserId = model.Id,
-                AccountUser = model,
+                UserId = model.Id,
+                User = model,
                 Title = "حساب نقدی",
                 AccountNumber = accountNumberCash
             };
@@ -45,8 +45,8 @@ namespace EcoBar.Accounting.Data.Repo.Classes
             var accountWallet = new Account()
             {
                 AccountTypeId = 2,
-                AccountUserId = model.Id,
-                AccountUser = model,
+                UserId = model.Id,
+                User = model,
                 Title = "حساب کیف پول",
                 AccountNumber = accountNumberWallet
             };
