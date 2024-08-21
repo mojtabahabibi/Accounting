@@ -10,7 +10,7 @@ namespace EcoBar.Accounting.Data.Entities
         public string? Title { get; set; }
         public string? SerialNumber { get; set; }
         public long Price { get; set; }
-        public long Off { get; set; }
+        public long Discount { get; set; }
         public long TotalPrice { get; set; }
         public DateTime Date { get; set; }
         public InvoiceStatus Status { get; set; }

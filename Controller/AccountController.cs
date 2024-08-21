@@ -2,6 +2,8 @@ using EcoBar.Accounting.Core.Services.Interfaces;
 using EcoBar.Accounting.Core.Tools;
 using EcoBar.Accounting.Data.Dto;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Xml;
 
 namespace EcoBar.Accounting.Controller
 {
@@ -18,6 +20,7 @@ namespace EcoBar.Accounting.Controller
         }
 
         [HttpGet("GetAll")]
+        [Produces("application/xml")]
         public async Task<ActionResult<AccountCreateGetResponseDto>> GetAll()
         {
             logger.LogInformation("AccountController GetAllAccounts Began");
@@ -43,7 +46,7 @@ namespace EcoBar.Accounting.Controller
             }
         }
         [HttpGet("GetById")]
-        public async Task<ActionResult<AccountGetByIdResponseDto>> GetById([FromQuery]BaseAccountIdDto dto)
+        public async Task<ActionResult<AccountGetByIdResponseDto>> GetById([FromQuery] BaseAccountIdDto dto)
         {
             logger.LogInformation("AccountController GetByIdAccounts Began");
             try

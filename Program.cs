@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AccountingDbContext>(options =>
 builder.Services.RegisterServices();
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
+builder.Services.AddControllers().AddXmlDataContractSerializerFormatters();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

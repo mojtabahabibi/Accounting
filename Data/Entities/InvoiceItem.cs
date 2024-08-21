@@ -10,7 +10,7 @@
 
         public required string Name { get; set; }
         public int Count { get; set; }
-        public long Off { get; set; }
+        public long Discount { get; set; }
         public required long Price { get; set; }
     }
 }

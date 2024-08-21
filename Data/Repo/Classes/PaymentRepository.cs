@@ -48,7 +48,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             Username = account.User?.UserName,
                             TrackingNumber = trackingnumber,
                             TransactionNumber = random.Next(99999, 1000000).ToString(),
-                            Price = price,
+                            Creditor = price,
                             Description = "ورود " + price + " وجه نقد به حساب نقدی " + account.AccountNumber + "  با شماره پیگیری  " + trackingnumber
                         };
                         var companyTransaction = new Transactions()
@@ -59,7 +59,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             Username = accountCompany?.User?.UserName,
                             TrackingNumber = trackingnumber,
                             TransactionNumber = random.Next(99999, 1000000).ToString(),
-                            Price = price,
+                            Debtor = price,
                             Description = "ورود " + price + " وجه نقد به حساب صندوق " + accountCompany?.AccountNumber + "  با شماره پیگیری  " + trackingnumber
                         };
                         await dbContext.Transactionss.AddAsync(cashTransaction);
@@ -117,7 +117,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         var tr = dbContext.Transactionss.Where(i => i.InvoiceId.Equals(invoice.Id));
                         if (tr != null)
                         {
-                            long payment = tr.Sum(i => i.Price) / 2;
+                            long payment = tr.Sum(i => i.Creditor);
                             p = invoicePrice - payment;
                             if (price > p)
                                 return PaymentResult.MostPrice;
@@ -140,7 +140,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 Username = account.User?.UserName,
                                 InvoiceNumber = invoice.SerialNumber,
                                 TransactionNumber = random.Next(99999, 1000000).ToString(),
-                                Price = price,
+                                Debtor = price,
                                 Description = "خروج " + price + " وجه نقد از حساب کیف پول " + account.AccountNumber + "  برای پرداخت فاکتور  " + invoice.SerialNumber
                             };
                             var companyTransaction = new Transactions()
@@ -152,7 +152,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 Username = accountCompany?.User?.UserName,
                                 InvoiceNumber = invoice.SerialNumber,
                                 TransactionNumber = random.Next(99999, 1000000).ToString(),
-                                Price = price,
+                                Creditor = price,
                                 Description = "ورود " + price + " وجه نقد به حساب صندوق " + accountCompany?.AccountNumber + "  برای پرداخت فاکتور  " + invoice.SerialNumber
                             };
                             await dbContext.Transactionss.AddAsync(customerTransaction);

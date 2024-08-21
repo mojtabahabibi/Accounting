@@ -17,6 +17,7 @@
         public string? TrackingNumber { get; set; }
         public string? InvoiceNumber { get; set; }
         public required string TransactionNumber { get; set; }
-        public long Price { get; set; }
+        public long Debtor { get; set; }
+        public long Creditor { get; set; }
     }
 }

@@ -23,8 +23,8 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                 if (invoice != null)
                 {
                     invoice.Price = invoice.Price + (entity.Price * entity.Count);
-                    invoice.Off = invoice.Off + entity.Off;
-                    invoice.TotalPrice = invoice.Price - invoice.Off;
+                    invoice.Discount = invoice.Discount + entity.Discount;
+                    invoice.TotalPrice = invoice.Price - invoice.Discount;
                     dbContext.Invoices.Attach(invoice);
                 }
 

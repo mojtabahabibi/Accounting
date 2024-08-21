@@ -28,7 +28,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         Title = i.Title,
                         SerialNumber = i.SerialNumber,
                         Price = i.Price,
-                        Off = i.Off,
+                        Discount = i.Discount,
                         TotalPrice = i.TotalPrice,
                         Status = i.Status == InvoiceStatus.Open ? "فاکتور باز است" : i.Status == InvoiceStatus.Close ? "فاکتور بسته شده است" :
                                  i.Status == InvoiceStatus.Cancel ? "فاکتور کنسل شده است" : i.Status == InvoiceStatus.Pay ? "فاکتور پرداخت شده است" :
@@ -40,7 +40,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             ItemId = j.ItemId,
                             ItemName = j.Item.Name,
                             Count = j.Count,
-                            Off = j.Off,
+                            Discount = j.Discount,
                             Price = j.Price,
                         }).ToList() : null
                     }).AsNoTracking().ToListAsync();
@@ -66,7 +66,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         Title = i.Title,
                         SerialNumber = i.SerialNumber,
                         Price = i.Price,
-                        Off = i.Off,
+                        Discount = i.Discount,
                         TotalPrice = i.TotalPrice,
                         Status = i.Status == InvoiceStatus.Open ? "فاکتور باز است" : i.Status == InvoiceStatus.Close ? "فاکتور بسته شده است" :
                                  i.Status == InvoiceStatus.Cancel ? "فاکتور کنسل شده است" : i.Status == InvoiceStatus.Pay ? "فاکتور پرداخت شده است" :
@@ -78,7 +78,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                             ItemId = j.ItemId,
                             ItemName = j.Item.Name,
                             Count = j.Count,
-                            Off = j.Off,
+                            Discount = j.Discount,
                             Price = j.Price
                         }).ToList() : null
                     }).AsNoTracking().FirstOrDefaultAsync();
@@ -176,7 +176,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 Username = accountWallet.User?.UserName,
                                 InvoiceNumber = invoice.SerialNumber,
                                 TransactionNumber = random.Next(99999, 1000000).ToString(),
-                                Price = price,
+                                Creditor = price,
                                 Description = "ورود " + price.ToString() + " وجه نقد به حساب کیف پول " + accountWallet.AccountNumber + " بابت مرجوع فاکتور  " + invoice.SerialNumber
                             };
                             var companyTransaction = new Transactions()
@@ -188,7 +188,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                 Username = accountCompany?.User?.UserName,
                                 InvoiceNumber = invoice.SerialNumber,
                                 TransactionNumber = random.Next(99999, 1000000).ToString(),
-                                Price = price,
+                                Debtor=price,
                                 Description = "خروج " + price.ToString() + " وجه نقد از حساب صندوق  " + accountCompany?.AccountNumber + " بابت مرجوع فاکتور " + invoice.SerialNumber
                             };
                             await dbContext.Transactionss.AddAsync(walletTransaction);
@@ -233,7 +233,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                     Title = "خرید شارژ",
                     SerialNumber = serialNumber,
                     Price = model.Price,
-                    Off = 0,
+                    Discount = 0,
                     TotalPrice = model.Price,
                     Date = DateTime.Now,
                 };
@@ -251,7 +251,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                         ItemId = item.Id,
                         Name = "خرید شارژ",
                         Count = 1,
-                        Off = 0,
+                        Discount = 0,
                         Price = model.Price,
                     };
                     await dbContext.InvoiceItems.AddAsync(invoiceItem);
@@ -362,7 +362,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                     Username = accountCash.User?.UserName,
                                     InvoiceNumber = invoice.SerialNumber,
                                     TransactionNumber = random.Next(99999, 1000000).ToString(),
-                                    Price = price,
+                                    Debtor = price,
                                     Description = "خروج " + price.ToString() + " وجه نقد از حساب نقدی " + accountCash.AccountNumber + " به حساب کیف پول " + accountWallet?.AccountNumber
                                 };
                                 var walletTransaction = new Transactions()
@@ -374,7 +374,7 @@ namespace EcoBar.Accounting.Data.Repo.Classes
                                     Username = accountWallet?.User?.UserName,
                                     InvoiceNumber = invoice.SerialNumber,
                                     TransactionNumber = random.Next(99999, 1000000).ToString(),
-                                    Price = price,
+                                    Creditor = price,
                                     Description = "ورود " + price.ToString() + " وجه نقد به حساب کیف پول " + accountWallet?.AccountNumber + " از حساب نقدی " + accountCash?.AccountNumber
                                 };
                                 await dbContext.Transactionss.AddAsync(cashTransaction);

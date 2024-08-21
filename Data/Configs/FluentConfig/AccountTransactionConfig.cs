@@ -9,7 +9,6 @@ namespace EcoBar.Accounting.Data.Configs.FluentConfig
         public void Configure(EntityTypeBuilder<Transactions> builder)
         {
             builder.Property(i => i.TransactionNumber).IsRequired();
-            builder.Property(i => i.Price).IsRequired();
             builder.HasOne(i => i.TransactionType).WithMany(i => i.Transactionss).HasForeignKey(i => i.TransactionTypeId).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(i=>i.Invoice).WithMany(i=>i.Transactionss).HasForeignKey(i=>i.InvoiceId).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(i => i.Payment).WithMany(i => i.Transactionss).HasForeignKey(i => i.PaymentId).OnDelete(DeleteBehavior.NoAction);

@@ -16,7 +16,8 @@
         public string? TransactionType { get; set; }
         public string? AccountNumber { get; set; }
         public string? UserName { get; set; }
-        public long Price { get; set; }
+        public long Debtor { get; set; }
+        public long Creditor { get; set; }
         public string? TrackingNumber { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? TransactionNumber { get; set; }
